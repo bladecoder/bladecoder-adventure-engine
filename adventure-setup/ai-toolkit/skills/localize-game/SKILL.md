@@ -1,0 +1,19 @@
+---
+name: localize-game
+description: Localize adventure dialogue, model/UI text and localized artwork while preserving identifiers, placeholders and verified layout.
+---
+
+For world/chapter authoring, follow [the engine edit workflow](../../docs/edit-workflow.md). Use the explicit edit session to query, create, modify, delete and save MODEL entities. Do not write world/chapter JSON directly or fall back to file edits. Discipline-specific sources and compiled outputs retain their normal workflows.
+
+
+Follow the [opt-in QA policy](../../docs/qa-workflow.md): execute test suites,
+narrative tests, runtime scenarios/playthroughs and media/device probes only
+when explicitly requested by the user. Authoring previews, compilation, static
+reference validation and package generation remain normal production work.
+Report omitted QA as not_run; an implementation request alone does not select QA.
+
+Read the brief/metadata language and inspect the actual owning text bundles and narrative sources. Preserve model `@` keys, format tokens, escaping and markup. Do not translate actor/scene IDs, Ink variables, knots, commands or conditions as displayed prose.
+
+World text belongs to `assets/model/world*.properties`; chapter text belongs to its chapter's `.properties` bundles. Inspect fallback behavior before creating or renaming localized bundles. Ink prose belongs to canonical `.ink` sources and must compile/load through [write-game-ink](../write-game-ink/SKILL.md). The starter has no general Ink translation extraction pipeline; do not invent an extraction command or patch compiled JSON alone. Document a needed extraction/key-ownership workflow before implementing it.
+
+Localized artwork uses explicit locale metadata in [art recipes](../create-game-art/SKILL.md). Run model/reference checks. For explicitly requested QA, run declared locale/viewport scenarios and inspect real UI/dialogue for glyph coverage, wrapping, clipping, hit areas and fallback. Extend the matrix for long strings and changed screens. Accept visual baselines only after actual review; renderer/font incompatibility is unavailable comparison, not a pass. Record linguistic and device review separately.

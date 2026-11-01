@@ -1,7 +1,5 @@
 package com.bladecoder.engine.model;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -17,389 +15,373 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
+import java.util.ArrayList;
 
 public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
-	protected ActorRenderer renderer;
+  protected ActorRenderer renderer;
 
-	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
+  protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
-	private float rot = 0.0f;
-	private float scaleX = 1.0f;
-	private float scaleY = 1.0f;
-	private Color tint;
+  private float rot = 0.0f;
+  private float scaleX = 1.0f;
+  private float scaleY = 1.0f;
+  private Color tint;
 
-	private boolean fakeDepth = false;
+  private boolean fakeDepth = false;
 
-	private boolean bboxFromRenderer = false;
+  private boolean bboxFromRenderer = false;
 
-	private String playingSound;
+  private String playingSound;
 
-	public void setRenderer(ActorRenderer r) {
-		renderer = r;
-	}
+  public void setRenderer(ActorRenderer r) {
+    renderer = r;
+  }
 
-	public ActorRenderer getRenderer() {
-		return renderer;
-	}
+  public ActorRenderer getRenderer() {
+    return renderer;
+  }
 
-	public boolean getFakeDepth() {
-		return fakeDepth;
-	}
+  public boolean getFakeDepth() {
+    return fakeDepth;
+  }
 
-	public void setFakeDepth(boolean fd) {
-		fakeDepth = fd;
-		setDirtyProp(DirtyProps.FAKE_DEPTH);
-	}
+  public void setFakeDepth(boolean fd) {
+    fakeDepth = fd;
+    setDirtyProp(DirtyProps.FAKE_DEPTH);
+  }
 
-	@Override
-	public void setPosition(float x, float y) {
-		super.setPosition(x, y);
+  @Override
+  public void setPosition(float x, float y) {
+    super.setPosition(x, y);
 
-		if (scene != null) {
-			if (fakeDepth) {
-				// interpolation equation
-				float s = scene.getFakeDepthScale(y);
+    if (scene != null) {
+      if (fakeDepth) {
+        // interpolation equation
+        float s = scene.getFakeDepthScale(y);
 
-				setScale(s);
-			}
-		}
+        setScale(s);
+      }
+    }
+  }
+
+  public boolean isBboxFromRenderer() {
+    return bboxFromRenderer;
+  }
+
+  public void setBboxFromRenderer(boolean v) {
+    this.bboxFromRenderer = v;
 
-	}
-
-	public boolean isBboxFromRenderer() {
-		return bboxFromRenderer;
-	}
-
-	public void setBboxFromRenderer(boolean v) {
-		this.bboxFromRenderer = v;
-
-		if (v)
-			renderer.updateBboxFromRenderer(getBBox());
-		else
-			renderer.updateBboxFromRenderer(null);
+    if (v) renderer.updateBboxFromRenderer(getBBox());
+    else renderer.updateBboxFromRenderer(null);
 
-		setDirtyProp(DirtyProps.BBOX_FROM_RENDERER);
-	}
+    setDirtyProp(DirtyProps.BBOX_FROM_RENDERER);
+  }
 
-	public float getWidth() {
-		return renderer.getWidth() * scaleX;
-	}
+  public float getWidth() {
+    return renderer.getWidth() * scaleX;
+  }
 
-	public float getHeight() {
-		return renderer.getHeight() * scaleY;
-	}
+  public float getHeight() {
+    return renderer.getHeight() * scaleY;
+  }
 
-	public float getScale() {
-		return scaleX;
-	}
+  public float getScale() {
+    return scaleX;
+  }
 
-	public float getScaleX() {
-		return scaleX;
-	}
+  public float getScaleX() {
+    return scaleX;
+  }
 
-	public float getScaleY() {
-		return scaleY;
-	}
-
-	public Color getTint() {
-		return tint;
-	}
-
-	public void setTint(Color tint) {
-		this.tint = tint;
-		setDirtyProp(DirtyProps.TINT);
-	}
-
-	public void setScale(float scale) {
-		setScale(scale, scale);
-	}
-
-	public void setScale(float scaleX, float scaleY) {
-		this.scaleX = scaleX;
-		this.scaleY = scaleY;
-
-		if (bboxFromRenderer)
-			getBBox().setScale(scaleX, scaleY);
-		else {
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			getBBox().setScale(scaleX * worldScale, scaleY * worldScale);
-		}
-
-		setDirtyProp(DirtyProps.SCALEX);
-		setDirtyProp(DirtyProps.SCALEY);
-	}
-
-	public void setRot(float rot) {
-		this.rot = rot;
-		getBBox().setRotation(rot);
-		setDirtyProp(DirtyProps.ROT);
-	}
-
-	public float getRot() {
-		return rot;
-	}
-
-	@Override
-	public void update(float delta) {
-		super.update(delta);
-
-		if (isVisible()) {
-			renderer.update(delta);
-
-			for (int i = 0; i < tweens.size(); i++) {
-				Tween<SpriteActor> t = tweens.get(i);
-
-				t.update(delta);
-
-				// Needs extra checks before remove because the update can remove the tween
-				if (t.isComplete() && i < tweens.size() && tweens.get(i) == t) {
-					tweens.remove(i);
-					i--;
-				}
-			}
-		}
-	}
-
-	public void draw(SpriteBatch batch) {
-		if (isVisible()) {
-			if (scaleX != 0 && scaleY != 0) {
-				renderer.draw(batch, getX(), getY(), scaleX, scaleY, rot, tint);
-			}
-		}
-	}
-
-	public void startAnimation(String id, ActionCallback cb) {
-		startAnimation(id, Tween.Type.SPRITE_DEFINED, 1, cb);
-	}
-
-	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
-
-		if (!(renderer instanceof AnimationRenderer))
-			return;
-
-		inAnim();
-
-		// resets posTween when walking
-		removeTween(WalkTween.class);
-
-		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
-
-		((AnimationRenderer) renderer).startAnimation(id, repeatType, count, cb);
-		if (scene != null)
-			scene.getWorld().getEvents().animationStarted(this.id, id, count != Tween.INFINITY);
-
-		outAnim(repeatType);
-	}
-
-	public void removeTween(Class<?> clazz) {
-		for (int i = 0; i < tweens.size(); i++) {
-			Tween<SpriteActor> t = tweens.get(i);
-			if (clazz.isInstance(t)) {
-				tweens.remove(i);
-				i--;
-			}
-		}
-	}
-
-	/**
-	 * Actions to do when setting an animation: - stop previous animation sound -
-	 * add 'out' distance from previous animation
-	 */
-	protected void inAnim() {
-		AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
-
-		if (fa != null) {
-
-			if (fa.sound != null) {
-				// Backwards compatibility
-				String sid = fa.sound;
-				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
-					sid = id + "_" + fa.sound;
-
-				// it will not play the sound in inventory
-				if (scene != null)
-					scene.getSoundManager().stopSound(sid);
-			}
-
-			Vector2 outD = fa.outD;
-
-			if (outD != null) {
-				float s = EngineAssetManager.getInstance().getScale();
-
-				setPosition(getX() + outD.x * s, getY() + outD.y * s);
-			}
-		}
-	}
-
-	/**
-	 * Actions to do when setting an animation: - play animation sound - add 'in'
-	 * distance
-	 */
-	protected void outAnim(Type repeatType) {
-		AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
-
-		if (fa != null) {
+  public float getScaleY() {
+    return scaleY;
+  }
 
-			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
-				// Backwards compatibility
-				String sid = fa.sound;
-				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
-					sid = id + "_" + fa.sound;
-
-				// it will not play the sound in inventory
-				if (scene != null)
-					scene.getSoundManager().playSound(sid);
-			}
-
-			Vector2 inD = fa.inD;
-
-			if (inD != null) {
-				float s = EngineAssetManager.getInstance().getScale();
-
-				setPosition(getX() + inD.x * s, getY() + inD.y * s);
-			}
-		}
-	}
-
-	public void addTween(Tween<SpriteActor> tween) {
-		removeTween(tween.getClass());
-
-		tweens.add(tween);
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + "  Sprite Bbox: " + getBBox().toString() +
-				renderer;
-	}
-
-	@Override
-	public void loadAssets() {
-
-		renderer.loadAssets();
-	}
-
-	@Override
-	public void retrieveAssets() {
-
-		renderer.retrieveAssets();
-
-		// Call setPosition to recalc fake depth and camera follow
-		setPosition(getBBox().getX(), getBBox().getY());
-	}
-
-	@Override
-	public void dispose() {
-		// EngineLogger.debug("DISPOSE: " + id);
+  public Color getTint() {
+    return tint;
+  }
+
+  public void setTint(Color tint) {
+    this.tint = tint;
+    setDirtyProp(DirtyProps.TINT);
+  }
 
-		renderer.dispose();
-	}
+  public void setScale(float scale) {
+    setScale(scale, scale);
+  }
+
+  public void setScale(float scaleX, float scaleY) {
+    this.scaleX = scaleX;
+    this.scaleY = scaleY;
+
+    if (bboxFromRenderer) getBBox().setScale(scaleX, scaleY);
+    else {
+      float worldScale = EngineAssetManager.getInstance().getScale();
+      getBBox().setScale(scaleX * worldScale, scaleY * worldScale);
+    }
+
+    setDirtyProp(DirtyProps.SCALEX);
+    setDirtyProp(DirtyProps.SCALEY);
+  }
+
+  public void setRot(float rot) {
+    this.rot = rot;
+    getBBox().setRotation(rot);
+    setDirtyProp(DirtyProps.ROT);
+  }
+
+  public float getRot() {
+    return rot;
+  }
+
+  @Override
+  public void update(float delta) {
+    super.update(delta);
+
+    if (isVisible()) {
+      renderer.update(delta);
+
+      for (int i = 0; i < tweens.size(); i++) {
+        Tween<SpriteActor> t = tweens.get(i);
+
+        t.update(delta);
 
-	@Override
-	public void write(Json json) {
-		BladeJson bjson = (BladeJson) json;
+        // Needs extra checks before remove because the update can remove the tween
+        if (t.isComplete() && i < tweens.size() && tweens.get(i) == t) {
+          tweens.remove(i);
+          i--;
+        }
+      }
+    }
+  }
 
-		// Reset vertices if bboxFromRenderer to save always with 0.0 value
-		if (bboxFromRenderer && bjson.getMode() == Mode.MODEL) {
-			float[] verts = getBBox().getVertices();
-			getBBox().setVertices(new float[8]);
+  public void draw(SpriteBatch batch) {
+    if (isVisible()) {
+      if (scaleX != 0 && scaleY != 0) {
+        renderer.draw(batch, getX(), getY(), scaleX, scaleY, rot, tint);
+      }
+    }
+  }
 
-			super.write(json);
+  public void startAnimation(String id, ActionCallback cb) {
+    startAnimation(id, Tween.Type.SPRITE_DEFINED, 1, cb);
+  }
 
-			getBBox().setVertices(verts);
-		} else {
-			super.write(json);
-		}
+  public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
-		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("renderer", renderer, null);
+    if (!(renderer instanceof AnimationRenderer)) return;
 
-			if (tint != null)
-				json.writeValue("tint", tint);
-		} else {
-			json.writeValue("renderer", renderer);
-			json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
+    inAnim();
 
-			if (playingSound != null)
-				json.writeValue("playingSound", playingSound);
+    // resets posTween when walking
+    removeTween(WalkTween.class);
 
-			if (isDirty(DirtyProps.TINT))
-				json.writeValue("tint", tint);
-		}
+    EngineLogger.debug("ANIMATION: " + this.id + "." + id);
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEX))
-			json.writeValue("scaleX", scaleX);
+    ((AnimationRenderer) renderer).startAnimation(id, repeatType, count, cb);
+    if (scene != null)
+      scene.getWorld().getEvents().animationStarted(this.id, id, count != Tween.INFINITY);
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEY))
-			json.writeValue("scaleY", scaleY);
+    outAnim(repeatType);
+  }
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ROT))
-			json.writeValue("rot", rot);
+  public void removeTween(Class<?> clazz) {
+    for (int i = 0; i < tweens.size(); i++) {
+      Tween<SpriteActor> t = tweens.get(i);
+      if (clazz.isInstance(t)) {
+        tweens.remove(i);
+        i--;
+      }
+    }
+  }
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.FAKE_DEPTH))
-			json.writeValue("fakeDepth", fakeDepth);
+  /**
+   * Actions to do when setting an animation: - stop previous animation sound - add 'out' distance
+   * from previous animation
+   */
+  protected void inAnim() {
+    AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.BBOX_FROM_RENDERER))
-			json.writeValue("bboxFromRenderer", bboxFromRenderer);
-	}
+    if (fa != null) {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+      if (fa.sound != null) {
+        // Backwards compatibility
+        String sid = fa.sound;
+        if (scene != null && scene.getWorld().getSounds().get(sid) == null)
+          sid = id + "_" + fa.sound;
 
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
-		} else {
-			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
+        // it will not play the sound in inventory
+        if (scene != null) scene.getSoundManager().stopSound(sid);
+      }
 
-			if (tweens == null) {
-				EngineLogger.debug("Couldn't load state of actor: " + id);
-				return;
-			}
+      Vector2 outD = fa.outD;
 
-			for (Tween<SpriteActor> t : tweens)
-				t.setTarget(this);
+      if (outD != null) {
+        float s = EngineAssetManager.getInstance().getScale();
 
-			renderer.read(json, jsonData.get("renderer"));
+        setPosition(getX() + outD.x * s, getY() + outD.y * s);
+      }
+    }
+  }
 
-			playingSound = json.readValue("playingSound", String.class, jsonData);
-		}
+  /** Actions to do when setting an animation: - play animation sound - add 'in' distance */
+  protected void outAnim(Type repeatType) {
+    AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
 
-		renderer.setWorld(bjson.getWorld());
+    if (fa != null) {
 
-		if (jsonData.get("scale") != null) {
-			scaleX = json.readValue("scale", float.class, jsonData);
-			scaleY = scaleX;
-		} else {
-			scaleX = json.readValue("scaleX", float.class, scaleX, jsonData);
-			scaleY = json.readValue("scaleY", float.class, scaleY, jsonData);
-		}
+      if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
+        // Backwards compatibility
+        String sid = fa.sound;
+        if (scene != null && scene.getWorld().getSounds().get(sid) == null)
+          sid = id + "_" + fa.sound;
 
-		rot = json.readValue("rot", float.class, rot, jsonData);
-		tint = json.readValue("tint", Color.class, tint, jsonData);
+        // it will not play the sound in inventory
+        if (scene != null) scene.getSoundManager().playSound(sid);
+      }
 
-		// backwards compatibility fakeDepth
-		if (jsonData.get("depthType") != null) {
-			String depthType = json.readValue("depthType", String.class, (String) null, jsonData);
+      Vector2 inD = fa.inD;
 
-			fakeDepth = "VECTOR".equals(depthType);
-		} else {
-			fakeDepth = json.readValue("fakeDepth", boolean.class, fakeDepth, jsonData);
-		}
+      if (inD != null) {
+        float s = EngineAssetManager.getInstance().getScale();
 
-		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
+        setPosition(getX() + inD.x * s, getY() + inD.y * s);
+      }
+    }
+  }
 
-		if (bboxFromRenderer)
-			renderer.updateBboxFromRenderer(getBBox());
+  public void addTween(Tween<SpriteActor> tween) {
+    removeTween(tween.getClass());
 
-		setScale(scaleX, scaleY);
-		setRot(rot);
+    tweens.add(tween);
+  }
 
-		// restore dirtyProps after rotation and scale
-		dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
-	}
+  @Override
+  public String toString() {
+    return super.toString() + "  Sprite Bbox: " + getBBox().toString() + renderer;
+  }
 
+  @Override
+  public void loadAssets() {
+
+    renderer.loadAssets();
+  }
+
+  @Override
+  public void retrieveAssets() {
+
+    renderer.retrieveAssets();
+
+    // Call setPosition to recalc fake depth and camera follow
+    setPosition(getBBox().getX(), getBBox().getY());
+  }
+
+  @Override
+  public void dispose() {
+    // EngineLogger.debug("DISPOSE: " + id);
+
+    renderer.dispose();
+  }
+
+  @Override
+  public void write(Json json) {
+    BladeJson bjson = (BladeJson) json;
+
+    // Reset vertices if bboxFromRenderer to save always with 0.0 value
+    if (bboxFromRenderer && bjson.getMode() == Mode.MODEL) {
+      float[] verts = getBBox().getVertices();
+      getBBox().setVertices(new float[8]);
+
+      super.write(json);
+
+      getBBox().setVertices(verts);
+    } else {
+      super.write(json);
+    }
+
+    if (bjson.getMode() == Mode.MODEL) {
+      json.writeValue("renderer", renderer, null);
+
+      if (tint != null) json.writeValue("tint", tint);
+    } else {
+      json.writeValue("renderer", renderer);
+      json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
+
+      if (playingSound != null) json.writeValue("playingSound", playingSound);
+
+      if (isDirty(DirtyProps.TINT)) json.writeValue("tint", tint);
+    }
+
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEX))
+      json.writeValue("scaleX", scaleX);
+
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEY))
+      json.writeValue("scaleY", scaleY);
+
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ROT)) json.writeValue("rot", rot);
+
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.FAKE_DEPTH))
+      json.writeValue("fakeDepth", fakeDepth);
+
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.BBOX_FROM_RENDERER))
+      json.writeValue("bboxFromRenderer", bboxFromRenderer);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
+
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
+    } else {
+      tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
+
+      if (tweens == null) {
+        EngineLogger.debug("Couldn't load state of actor: " + id);
+        return;
+      }
+
+      for (Tween<SpriteActor> t : tweens) t.setTarget(this);
+
+      renderer.read(json, jsonData.get("renderer"));
+
+      playingSound = json.readValue("playingSound", String.class, jsonData);
+    }
+
+    renderer.setWorld(bjson.getWorld());
+
+    if (jsonData.get("scale") != null) {
+      scaleX = json.readValue("scale", float.class, jsonData);
+      scaleY = scaleX;
+    } else {
+      scaleX = json.readValue("scaleX", float.class, scaleX, jsonData);
+      scaleY = json.readValue("scaleY", float.class, scaleY, jsonData);
+    }
+
+    rot = json.readValue("rot", float.class, rot, jsonData);
+    tint = json.readValue("tint", Color.class, tint, jsonData);
+
+    // backwards compatibility fakeDepth
+    if (jsonData.get("depthType") != null) {
+      String depthType = json.readValue("depthType", String.class, (String) null, jsonData);
+
+      fakeDepth = "VECTOR".equals(depthType);
+    } else {
+      fakeDepth = json.readValue("fakeDepth", boolean.class, fakeDepth, jsonData);
+    }
+
+    bboxFromRenderer =
+        json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
+
+    if (bboxFromRenderer) renderer.updateBboxFromRenderer(getBBox());
+
+    setScale(scaleX, scaleY);
+    setRot(rot);
+
+    // restore dirtyProps after rotation and scale
+    dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
+  }
 }

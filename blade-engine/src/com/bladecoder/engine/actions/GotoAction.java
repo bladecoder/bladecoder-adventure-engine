@@ -12,78 +12,81 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
-	public enum Align {
-		CENTER, LEFT, RIGHT
-	}
+  public enum Align {
+    CENTER,
+    LEFT,
+    RIGHT
+  }
 
-	@ActionPropertyDescription("The walking actor")
-	@ActionProperty(type = Type.CHARACTER_ACTOR, required = true)
-	private String actor;
+  @ActionPropertyDescription("The walking actor")
+  @ActionProperty(type = Type.CHARACTER_ACTOR, required = true)
+  private String actor;
 
-	@ActionPropertyDescription("Walks to this actor")
-	@ActionProperty(type = Type.ACTOR)
-	private String target;
+  @ActionPropertyDescription("Walks to this actor")
+  @ActionProperty(type = Type.ACTOR)
+  private String target;
 
-	@ActionProperty
-	@ActionPropertyDescription("The absolute position to walk to if no target actor is selected. Relative to target if selected.")
-	private Vector2 pos;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The absolute position to walk to if no target actor is selected. Relative to target if selected.")
+  private Vector2 pos;
 
-	@ActionProperty(required = true, defaultValue = "false")
-	@ActionPropertyDescription("Ignore the walking zone and walk in a straight line.")
-	private boolean ignoreWalkZone = false;
+  @ActionProperty(required = true, defaultValue = "false")
+  @ActionPropertyDescription("Ignore the walking zone and walk in a straight line.")
+  private boolean ignoreWalkZone = false;
 
-	@ActionProperty(required = true, defaultValue = "true")
-	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	private boolean wait = true;
+  @ActionProperty(required = true, defaultValue = "true")
+  @ActionPropertyDescription(
+      "If this param is 'false' the text is showed and the action continues inmediatly")
+  private boolean wait = true;
 
-	private World w;
+  private World w;
 
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-	@Override
-	public boolean run(VerbRunner cb) {
+  @Override
+  public boolean run(VerbRunner cb) {
 
-		CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(this.actor, false);
+    CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(this.actor, false);
 
-		float x = actor.getX();
-		float y = actor.getY();
+    float x = actor.getX();
+    float y = actor.getY();
 
-		if (target != null) {
-			BaseActor targetActor = w.getCurrentScene().getActor(target, false);
+    if (target != null) {
+      BaseActor targetActor = w.getCurrentScene().getActor(target, false);
 
-			if (targetActor == null) {
-				EngineLogger.error(target + " not found in the current scene.");
-				return false;
-			}
+      if (targetActor == null) {
+        EngineLogger.error(target + " not found in the current scene.");
+        return false;
+      }
 
-			x = targetActor.getX();
-			y = targetActor.getY();
+      x = targetActor.getX();
+      y = targetActor.getY();
 
-			if (targetActor instanceof InteractiveActor && targetActor != actor) {
-				Vector2 refPoint = ((InteractiveActor) targetActor).getRefPoint();
-				x += refPoint.x;
-				y += refPoint.y;
-			}
+      if (targetActor instanceof InteractiveActor && targetActor != actor) {
+        Vector2 refPoint = ((InteractiveActor) targetActor).getRefPoint();
+        x += refPoint.x;
+        y += refPoint.y;
+      }
 
-			if (pos != null) {
-				float scale = EngineAssetManager.getInstance().getScale();
+      if (pos != null) {
+        float scale = EngineAssetManager.getInstance().getScale();
 
-				x += pos.x * scale;
-				y += pos.y * scale;
-			}
-		} else if (pos != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
+        x += pos.x * scale;
+        y += pos.y * scale;
+      }
+    } else if (pos != null) {
+      float scale = EngineAssetManager.getInstance().getScale();
 
-			x = pos.x * scale;
-			y = pos.y * scale;
-		}
+      x = pos.x * scale;
+      y = pos.y * scale;
+    }
 
-		actor.goTo(new Vector2(x, y), wait ? cb : null, ignoreWalkZone);
+    actor.goTo(new Vector2(x, y), wait ? cb : null, ignoreWalkZone);
 
-		return wait;
-	}
-
+    return wait;
+  }
 }

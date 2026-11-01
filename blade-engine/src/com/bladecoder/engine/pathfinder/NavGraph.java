@@ -1,16 +1,20 @@
 package com.bladecoder.engine.pathfinder;
 
-/** The description for the data we're pathfinding over as an arbitrary graph. This provides the contract between the data being
- * searched (i.e. the game map) and the path finding generic tools.
- * <p>
- * Original implementation by Kevin Glass from Slick2D.
- * </p>
- * @author hneuer */
+/**
+ * The description for the data we're pathfinding over as an arbitrary graph. This provides the
+ * contract between the data being searched (i.e. the game map) and the path finding generic tools.
+ *
+ * <p>Original implementation by Kevin Glass from Slick2D.
+ *
+ * @author hneuer
+ */
 public interface NavGraph<N extends NavNode<N>> {
-	/** Check if the given location is blocked, i.e. blocks movement of the supplied mover. */
-    boolean blocked(NavContext<N> context, N targetNode);
+  /** Check if the given location is blocked, i.e. blocks movement of the supplied mover. */
+  boolean blocked(NavContext<N> context, N targetNode);
 
-	/** Get the cost of moving to the target node. This can be used to make certain areas more desirable. A simple and valid
-	 * implementation of this method would be to return 1 in all cases. */
-    float getCost(NavContext<N> context, N targetNode);
+  /**
+   * Get the cost of moving to the target node. This can be used to make certain areas more
+   * desirable. A simple and valid implementation of this method would be to return 1 in all cases.
+   */
+  float getCost(NavContext<N> context, N targetNode);
 }

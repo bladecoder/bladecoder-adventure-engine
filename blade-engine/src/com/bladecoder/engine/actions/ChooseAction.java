@@ -1,81 +1,80 @@
 package com.bladecoder.engine.actions;
 
-import java.util.List;
-
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import java.util.List;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction extends AbstractControlAction implements Serializable {
-	public enum ChooseCriteria {
-		ITERATE, RANDOM, CYCLE
-	}
+  public enum ChooseCriteria {
+    ITERATE,
+    RANDOM,
+    CYCLE
+  }
 
-	/**
-	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
-	 */
-	@ActionProperty(required = true, defaultValue = "CYCLE")
-	@ActionPropertyDescription("The action to execute will be selected following this criteria.")
-	private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
+  /**
+   * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the
+   * verb to execute.
+   */
+  @ActionProperty(required = true, defaultValue = "CYCLE")
+  @ActionPropertyDescription("The action to execute will be selected following this criteria.")
+  private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
 
-	/** Used when choose_criteria is 'iterate' or 'cycle' */
-	int chooseCount = -1;
-	
-	@Override
-	public void init(World w) {
-	}
+  /** Used when choose_criteria is 'iterate' or 'cycle' */
+  int chooseCount = -1;
 
-	@Override
-	public boolean run(VerbRunner cb) {
+  @Override
+  public void init(World w) {}
 
-		int startIp = cb.getIP();
-		int ip0 = startIp + 1;
-		final List<Action> actions = cb.getActions();
+  @Override
+  public boolean run(VerbRunner cb) {
 
-		int ip = skipControlIdBlock(actions, startIp);
-		int numActions = ip - startIp - 1;
+    int startIp = cb.getIP();
+    int ip0 = startIp + 1;
+    final List<Action> actions = cb.getActions();
 
-		if(numActions <= 0)
-			return false;
+    int ip = skipControlIdBlock(actions, startIp);
+    int numActions = ip - startIp - 1;
 
-		switch (chooseCriteria) {
-			case ITERATE:
-				chooseCount++;
-				break;
-			case RANDOM:
-				chooseCount = MathUtils.random(0, numActions - 1);
-				break;
-			case CYCLE:
-				chooseCount = (chooseCount + 1) % numActions;
-				break;
-		}
+    if (numActions <= 0) return false;
 
-		cb.setIP(ip);
+    switch (chooseCriteria) {
+      case ITERATE:
+        chooseCount++;
+        break;
+      case RANDOM:
+        chooseCount = MathUtils.random(0, numActions - 1);
+        break;
+      case CYCLE:
+        chooseCount = (chooseCount + 1) % numActions;
+        break;
+    }
 
-		if(chooseCount < numActions) {
-			return actions.get(ip0 + chooseCount).run(cb);
-		}
+    cb.setIP(ip);
 
-		return false;
-	}
+    if (chooseCount < numActions) {
+      return actions.get(ip0 + chooseCount).run(cb);
+    }
 
-	@Override
-	public String getControlActionID() {
-		return caID;
-	}
-	
-	
-	@Override
-	public void write(Json json) {
-		json.writeValue("chooseCount", chooseCount);
-	}
+    return false;
+  }
 
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-		chooseCount = json.readValue("chooseCount", int.class, 0, jsonData);
-	}
+  @Override
+  public String getControlActionID() {
+    return caID;
+  }
+
+  @Override
+  public void write(Json json) {
+    json.writeValue("chooseCount", chooseCount);
+  }
+
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    chooseCount = json.readValue("chooseCount", int.class, 0, jsonData);
+  }
 }

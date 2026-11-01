@@ -11,72 +11,69 @@ import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.util.DPIUtils;
 
 /**
- * WARNING!!! This is a *struct* in C# so we have to use assign instead of '='
- * operator. And always create the object, null value is not allowed.
- * 
+ * WARNING!!! This is a *struct* in C# so we have to use assign instead of '=' operator. And always
+ * create the object, null value is not allowed.
  */
 public class Pointer extends Actor {
-	private static final String POINTER_ICON = "pointer";
+  private static final String POINTER_ICON = "pointer";
 
-	private Drawable pointerIcon;
+  private Drawable pointerIcon;
 
-	private final Vector2 mousepos = new Vector2();
+  private final Vector2 mousepos = new Vector2();
 
-	private float pointerScale;
+  private float pointerScale;
 
-	private UI ui;
+  private UI ui;
 
-	public Pointer(UI ui) {
-		this.ui = ui;
-		pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
-		setTouchable(Touchable.disabled);
+  public Pointer(UI ui) {
+    this.ui = ui;
+    pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
+    setTouchable(Touchable.disabled);
 
-		resize();
-		show();
-	}
+    resize();
+    show();
+  }
 
-	private void getInputUnproject(Viewport v, Vector2 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY());
+  private void getInputUnproject(Viewport v, Vector2 out) {
+    out.set(Gdx.input.getX(), Gdx.input.getY());
 
-		v.unproject(out);
-	}
+    v.unproject(out);
+  }
 
-	@Override
-	public void act(float delta) {
+  @Override
+  public void act(float delta) {
 
-		if (pointerIcon instanceof AnimationDrawable)
-			((AnimationDrawable) pointerIcon).act(delta);
+    if (pointerIcon instanceof AnimationDrawable) ((AnimationDrawable) pointerIcon).act(delta);
 
-		super.act(delta);
+    super.act(delta);
 
-		if (getStage().getActors().get(getStage().getActors().size - 1) != this)
-			toFront();
-	}
+    if (getStage().getActors().get(getStage().getActors().size - 1) != this) toFront();
+  }
 
-	@Override
-	public void draw(Batch batch, float alpha) {
+  @Override
+  public void draw(Batch batch, float alpha) {
 
-		getInputUnproject(getStage().getViewport(), mousepos);
+    getInputUnproject(getStage().getViewport(), mousepos);
 
-		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
+    setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
 
-		pointerIcon.draw(batch, getX(), getY(), getWidth(), getHeight());
-	}
+    pointerIcon.draw(batch, getX(), getY(), getWidth(), getHeight());
+  }
 
-	public void resize() {
-		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
-		setSize(pointerIcon.getMinWidth() * pointerScale, pointerIcon.getMinHeight() * pointerScale);
-	}
+  public void resize() {
+    pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
+    setSize(pointerIcon.getMinWidth() * pointerScale, pointerIcon.getMinHeight() * pointerScale);
+  }
 
-	public void show() {
-		if (ui.getInputMode() == InputMode.TOUCHPANEL) {
-			setVisible(false);
-		} else {
-			setVisible(true);
-		}
-	}
+  public void show() {
+    if (ui.getInputMode() == InputMode.TOUCHPANEL) {
+      setVisible(false);
+    } else {
+      setVisible(true);
+    }
+  }
 
-	public void hide() {
-		setVisible(false);
-	}
+  public void hide() {
+    setVisible(false);
+  }
 }

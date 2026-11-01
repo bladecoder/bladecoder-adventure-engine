@@ -3,22 +3,22 @@ package com.bladecoder.engine.actions;
 import java.util.List;
 
 public abstract class AbstractControlAction implements Action {
-	
-	@ActionProperty(required = true)
-	protected String caID;
 
-	protected int skipControlIdBlock(List<Action> actions, int ip) {
-		final String caID = getControlActionID();
+  @ActionProperty(required = true)
+  protected String caID;
 
-		do {
-			ip++;
-		} while (!(actions.get(ip) instanceof AbstractControlAction)
-				|| !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
+  protected int skipControlIdBlock(List<Action> actions, int ip) {
+    final String caID = getControlActionID();
 
-		return ip;
-	}
+    do {
+      ip++;
+    } while (!(actions.get(ip) instanceof AbstractControlAction)
+        || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
 
-	public String getControlActionID() {
-		return caID;
-	}
+    return ip;
+  }
+
+  public String getControlActionID() {
+    return caID;
+  }
 }

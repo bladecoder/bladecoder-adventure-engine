@@ -2,65 +2,58 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Dispatches player-visible events for one {@link World}. */
 public class WorldEventDispatcher {
-    public void diagnostic(String type, java.util.Map<String,Object> data) {
-        for (WorldEventListener listener : snapshot()) listener.diagnostic(type, data);
-    }
+  public void diagnostic(String type, Map<String, Object> data) {
+    for (WorldEventListener listener : snapshot()) listener.diagnostic(type, data);
+  }
 
-    private final List<WorldEventListener> listeners = new ArrayList<WorldEventListener>();
+  private final List<WorldEventListener> listeners = new ArrayList<WorldEventListener>();
 
-    public void addListener(WorldEventListener listener) {
-        if (listener != null && !listeners.contains(listener))
-            listeners.add(listener);
-    }
+  public void addListener(WorldEventListener listener) {
+    if (listener != null && !listeners.contains(listener)) listeners.add(listener);
+  }
 
-    public void removeListener(WorldEventListener listener) {
-        listeners.remove(listener);
-    }
+  public void removeListener(WorldEventListener listener) {
+    listeners.remove(listener);
+  }
 
-    public void text(Text text) {
-        for (WorldEventListener listener : snapshot())
-            listener.text(text);
-    }
+  public void text(Text text) {
+    for (WorldEventListener listener : snapshot()) listener.text(text);
+  }
 
-    public void sceneChanged(String sceneId) {
-        for (WorldEventListener listener : snapshot())
-            listener.sceneChanged(sceneId);
-    }
+  public void sceneChanged(String sceneId) {
+    for (WorldEventListener listener : snapshot()) listener.sceneChanged(sceneId);
+  }
 
-    public void cutMode(boolean value) {
-        for (WorldEventListener listener : snapshot())
-            listener.cutMode(value);
-    }
+  public void cutMode(boolean value) {
+    for (WorldEventListener listener : snapshot()) listener.cutMode(value);
+  }
 
-    public void dialogOptionsChanged() {
-        for (WorldEventListener listener : snapshot())
-            listener.dialogOptionsChanged();
-    }
+  public void dialogOptionsChanged() {
+    for (WorldEventListener listener : snapshot()) listener.dialogOptionsChanged();
+  }
 
-    public void inventoryChanged() {
-        for (WorldEventListener listener : snapshot())
-            listener.inventoryChanged();
-    }
+  public void inventoryChanged() {
+    for (WorldEventListener listener : snapshot()) listener.inventoryChanged();
+  }
 
-    public void pause(boolean value) {
-        for (WorldEventListener listener : snapshot())
-            listener.pause(value);
-    }
+  public void pause(boolean value) {
+    for (WorldEventListener listener : snapshot()) listener.pause(value);
+  }
 
-    public void animationStarted(String actorId, String animationId, boolean finite) {
-        for (WorldEventListener listener : snapshot())
-            listener.animationStarted(actorId, animationId, finite);
-    }
+  public void animationStarted(String actorId, String animationId, boolean finite) {
+    for (WorldEventListener listener : snapshot())
+      listener.animationStarted(actorId, animationId, finite);
+  }
 
-    public void gameEnded() {
-        for (WorldEventListener listener : snapshot())
-            listener.gameEnded();
-    }
+  public void gameEnded() {
+    for (WorldEventListener listener : snapshot()) listener.gameEnded();
+  }
 
-    private List<WorldEventListener> snapshot() {
-        return new ArrayList<WorldEventListener>(listeners);
-    }
+  private List<WorldEventListener> snapshot() {
+    return new ArrayList<WorldEventListener>(listeners);
+  }
 }

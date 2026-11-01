@@ -7,29 +7,27 @@ import com.bladecoder.engine.model.ActorRenderer;
 
 public class RendererDrawable extends BaseDrawable {
 
-	private ActorRenderer renderer;
+  private ActorRenderer renderer;
 
-	public void setRenderer(ActorRenderer r) {
-		renderer = r;
-		
-		if (r != null) {
-			setMinWidth(renderer.getWidth());
-			setMinHeight(renderer.getHeight());
-		}
-	}
+  public void setRenderer(ActorRenderer r) {
+    renderer = r;
 
-	@Override
-	public void draw(Batch batch, float x, float y, float width, float height) {
-		if (renderer == null)
-			return;
+    if (r != null) {
+      setMinWidth(renderer.getWidth());
+      setMinHeight(renderer.getHeight());
+    }
+  }
 
-		float scale;
+  @Override
+  public void draw(Batch batch, float x, float y, float width, float height) {
+    if (renderer == null) return;
 
-		if (renderer.getWidth() > renderer.getHeight())
-			scale = width / renderer.getWidth();
-		else
-			scale = height / renderer.getHeight();
+    float scale;
 
-		renderer.draw((SpriteBatch) batch, x + renderer.getWidth() * scale  / 2, y, scale, scale, 0f, null);
-	}
+    if (renderer.getWidth() > renderer.getHeight()) scale = width / renderer.getWidth();
+    else scale = height / renderer.getHeight();
+
+    renderer.draw(
+        (SpriteBatch) batch, x + renderer.getWidth() * scale / 2, y, scale, scale, 0f, null);
+  }
 }

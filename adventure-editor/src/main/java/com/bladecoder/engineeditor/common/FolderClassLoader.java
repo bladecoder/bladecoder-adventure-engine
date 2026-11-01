@@ -9,105 +9,108 @@ import java.util.Hashtable;
 
 public class FolderClassLoader extends ClassLoader {
 
-	private String dirName = null; // Path to the .class folder
-	private Hashtable<String, Class<?>> classes = new Hashtable<String, Class<?>>(); // used
-																						// to
-																						// cache
-																						// already
+  private String dirName = null; // Path to the .class folder
+  private Hashtable<String, Class<?>> classes = new Hashtable<String, Class<?>>(); // used
 
-	// defined classes
-	public FolderClassLoader(String dir) throws IOException {
-		super(FolderClassLoader.class.getClassLoader()); // calls the parent
-															// class
-															// loader's
-															// constructor
+  // to
+  // cache
+  // already
 
-		this.dirName = dir;
+  // defined classes
+  public FolderClassLoader(String dir) throws IOException {
+    super(FolderClassLoader.class.getClassLoader()); // calls the parent
+    // class
+    // loader's
+    // constructor
 
-		loadClassesInFolder(new File(dirName), null);
-	}
+    this.dirName = dir;
 
-	public void reload() throws IOException {
-		loadClassesInFolder(new File(dirName), null);
-	}
+    loadClassesInFolder(new File(dirName), null);
+  }
 
-	@Override
-	public Class<?> loadClass(String className) throws ClassNotFoundException {
-		return findClass(className);
-	}
+  public void reload() throws IOException {
+    loadClassesInFolder(new File(dirName), null);
+  }
 
-	@Override
-	public Class<?> findClass(String className) {
-		Class<?> result = null;
+  @Override
+  public Class<?> loadClass(String className) throws ClassNotFoundException {
+    return findClass(className);
+  }
 
-		result = (Class<?>) classes.get(className); // checks in cached classes
-		if (result != null) {
-			return result;
-		}
+  @Override
+  public Class<?> findClass(String className) {
+    Class<?> result = null;
 
-		try {
-			return findSystemClass(className);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    result = (Class<?>) classes.get(className); // checks in cached classes
+    if (result != null) {
+      return result;
+    }
 
-	private void loadClassesInFolder(File folder, String classPackage) throws IOException, NoClassDefFoundError {
-		byte[] classByte;
+    try {
+      return findSystemClass(className);
+    } catch (Exception e) {
+      return null;
+    }
+  }
 
-		File[] list = folder.listFiles();
+  private void loadClassesInFolder(File folder, String classPackage)
+      throws IOException, NoClassDefFoundError {
+    byte[] classByte;
 
-		if (list != null) {
+    File[] list = folder.listFiles();
 
-			for (File f : list) {
-				if (f.isDirectory()) {
+    if (list != null) {
 
-					String pkg = classPackage;
+      for (File f : list) {
+        if (f.isDirectory()) {
 
-					if (pkg != null) {
-						pkg += ".";
-						pkg += f.getName();
-					} else {
-						pkg = f.getName();
-					}
+          String pkg = classPackage;
 
-					loadClassesInFolder(f, pkg);
-				} else if (f.getName().endsWith(".class")) {
-					InputStream is = null;
+          if (pkg != null) {
+            pkg += ".";
+            pkg += f.getName();
+          } else {
+            pkg = f.getName();
+          }
 
-					try {
+          loadClassesInFolder(f, pkg);
+        } else if (f.getName().endsWith(".class")) {
+          InputStream is = null;
 
-						is = new FileInputStream(f);
-						ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-						int nextValue = is.read();
-						while (-1 != nextValue) {
-							byteStream.write(nextValue);
-							nextValue = is.read();
-						}
+          try {
 
-						classByte = byteStream.toByteArray();
-						String className = classPackage + "." + f.getName().substring(0, f.getName().length() - 6);
-						EditorLogger.debug(">>>>>>>>>> LOADING CLASS: " + className);
+            is = new FileInputStream(f);
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            int nextValue = is.read();
+            while (-1 != nextValue) {
+              byteStream.write(nextValue);
+              nextValue = is.read();
+            }
 
-						if (classes.get(className) == null) {
+            classByte = byteStream.toByteArray();
+            String className =
+                classPackage + "." + f.getName().substring(0, f.getName().length() - 6);
+            EditorLogger.debug(">>>>>>>>>> LOADING CLASS: " + className);
 
-							Class<?> result = defineClass(className, classByte, 0, classByte.length, null);
+            if (classes.get(className) == null) {
 
-							classes.put(className, result);
-						}
-					} catch (NoClassDefFoundError e) {
-						EditorLogger.error("ERROR - Could not load class: " + e.getMessage());
-					} catch (IOException e) {						
-						throw e;
-					} finally {
-						is.close();
-					}
-				}
-			}
-		}
-	}
+              Class<?> result = defineClass(className, classByte, 0, classByte.length, null);
 
-	public Hashtable<String, Class<?>> getClasses() {
-		return classes;
-	}
+              classes.put(className, result);
+            }
+          } catch (NoClassDefFoundError e) {
+            EditorLogger.error("ERROR - Could not load class: " + e.getMessage());
+          } catch (IOException e) {
+            throw e;
+          } finally {
+            is.close();
+          }
+        }
+      }
+    }
+  }
+
+  public Hashtable<String, Class<?>> getClasses() {
+    return classes;
+  }
 }

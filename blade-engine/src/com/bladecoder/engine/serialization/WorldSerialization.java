@@ -1,14 +1,5 @@
 package com.bladecoder.engine.serialization;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
@@ -38,563 +29,581 @@ import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @SuppressWarnings("deprecation")
 public class WorldSerialization implements Serializable {
-	public static final String GAMESTATE_EXT = ".gamestate.v14";
+  public static final String GAMESTATE_EXT = ".gamestate.v14";
 
-	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
+  private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
-	private final World w;
+  private final World w;
 
-	public WorldSerialization(World w) {
-		this.w = w;
-	}
+  public WorldSerialization(World w) {
+    this.w = w;
+  }
 
-	/**
-	 * Load the world description in 'world.json'.
-	 * 
-	 * @throws IOException
-	 */
-	public void loadWorldDesc() throws IOException {
+  /**
+   * Load the world description in 'world.json'.
+   *
+   * @throws IOException
+   */
+  public void loadWorldDesc() throws IOException {
 
-		String worldFilename = EngineAssetManager.WORLD_FILENAME;
+    String worldFilename = EngineAssetManager.WORLD_FILENAME;
 
-		if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
+    if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
 
-			// Search the world file with ".json" ext if not found.
-			worldFilename = EngineAssetManager.WORLD_FILENAME + ".json";
+      // Search the world file with ".json" ext if not found.
+      worldFilename = EngineAssetManager.WORLD_FILENAME + ".json";
 
-			if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
-				EngineLogger.error("ERROR LOADING WORLD: world file not found.");
-				w.dispose();
-				throw new IOException("ERROR LOADING WORLD: world file not found.");
-			}
-		}
+      if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
+        EngineLogger.error("ERROR LOADING WORLD: world file not found.");
+        w.dispose();
+        throw new IOException("ERROR LOADING WORLD: world file not found.");
+      }
+    }
 
-		JsonValue root = new JsonReader()
-				.parse(EngineAssetManager.getInstance().getModelFile(worldFilename).reader("UTF-8"));
+    JsonValue root =
+        new JsonReader()
+            .parse(EngineAssetManager.getInstance().getModelFile(worldFilename).reader("UTF-8"));
+
+    Json json = new BladeJson(w, Mode.MODEL);
+    json.setIgnoreUnknownFields(true);
+
+    int width = json.readValue("width", Integer.class, root);
+    int height = json.readValue("height", Integer.class, root);
 
-		Json json = new BladeJson(w, Mode.MODEL);
-		json.setIgnoreUnknownFields(true);
+    // We know the world width, so we can set the scale
+    EngineAssetManager.getInstance().setScale(width, height);
+    float scale = EngineAssetManager.getInstance().getScale();
 
-		int width = json.readValue("width", Integer.class, root);
-		int height = json.readValue("height", Integer.class, root);
+    w.setWidth((int) (width * scale));
+    w.setHeight((int) (height * scale));
+    w.setInitChapter(json.readValue("initChapter", String.class, root));
+    w.getVerbManager().read(json, root);
+    w.getI18N().loadWorld(EngineAssetManager.MODEL_DIR + EngineAssetManager.WORLD_FILENAME);
+  }
 
-		// We know the world width, so we can set the scale
-		EngineAssetManager.getInstance().setScale(width, height);
-		float scale = EngineAssetManager.getInstance().getScale();
+  public void saveWorldDesc(FileHandle file) throws IOException {
 
-		w.setWidth((int) (width * scale));
-		w.setHeight((int) (height * scale));
-		w.setInitChapter(json.readValue("initChapter", String.class, root));
-		w.getVerbManager().read(json, root);
-		w.getI18N().loadWorld(EngineAssetManager.MODEL_DIR + EngineAssetManager.WORLD_FILENAME);
-	}
+    float scale = EngineAssetManager.getInstance().getScale();
 
-	public void saveWorldDesc(FileHandle file) throws IOException {
+    Json json = new BladeJson(w, Mode.MODEL);
+    json.setOutputType(OutputType.json);
 
-		float scale = EngineAssetManager.getInstance().getScale();
+    json.setWriter(new StringWriter());
 
-		Json json = new BladeJson(w, Mode.MODEL);
-		json.setOutputType(OutputType.json);
+    json.writeObjectStart();
+    json.writeValue("width", w.getWidth() / scale);
+    json.writeValue("height", w.getHeight() / scale);
+    json.writeValue("initChapter", w.getInitChapter());
+    w.getVerbManager().write(json);
+    json.writeObjectEnd();
+
+    String s = null;
+
+    if (EngineLogger.debugMode()) s = json.prettyPrint(json.getWriter().getWriter().toString());
+    else s = json.getWriter().getWriter().toString();
 
-		json.setWriter(new StringWriter());
+    Writer w = file.writer(false, "UTF-8");
+    w.write(s);
+    w.close();
+  }
 
-		json.writeObjectStart();
-		json.writeValue("width", w.getWidth() / scale);
-		json.writeValue("height", w.getHeight() / scale);
-		json.writeValue("initChapter", w.getInitChapter());
-		w.getVerbManager().write(json);
-		json.writeObjectEnd();
+  public void loadChapter() throws IOException {
+    loadChapter(null, null, true);
+  }
 
-		String s = null;
+  /**
+   * Loads a JSON chapter file.
+   *
+   * @param chapterName filename without path and extension.
+   * @param scene the init scene. null to use the chapter defined init scene.
+   * @param initScene false only when it comes from loading a saved game.
+   * @throws IOException
+   */
+  public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
+    if (!w.isDisposed()) w.dispose();
 
-		if (EngineLogger.debugMode())
-			s = json.prettyPrint(json.getWriter().getWriter().toString());
-		else
-			s = json.getWriter().getWriter().toString();
+    long initTime = System.currentTimeMillis();
 
-		Writer w = file.writer(false, "UTF-8");
-		w.write(s);
-		w.close();
-	}
+    if (chapterName == null) chapterName = w.getInitChapter();
 
-	public void loadChapter() throws IOException {
-		loadChapter(null, null, true);
-	}
+    w.setChapter(chapterName);
 
-	/**
-	 * Loads a JSON chapter file.
-	 * 
-	 * @param chapterName filename without path and extension.
-	 * @param scene       the init scene. null to use the chapter defined init
-	 *                    scene.
-	 * @param initScene   false only when it comes from loading a saved game.
-	 * @throws IOException
-	 */
-	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
-		if (!w.isDisposed())
-			w.dispose();
+    if (EngineAssetManager.getInstance()
+        .getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT)
+        .exists()) {
 
-		long initTime = System.currentTimeMillis();
+      JsonValue root =
+          new JsonReader()
+              .parse(
+                  EngineAssetManager.getInstance()
+                      .getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT)
+                      .reader("UTF-8"));
+
+      Json json = new BladeJson(w, Mode.MODEL, initScene);
+      json.setIgnoreUnknownFields(true);
 
-		if (chapterName == null)
-			chapterName = w.getInitChapter();
+      read(json, root);
 
-		w.setChapter(chapterName);
+      if (scene == null) w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene, null);
+      else w.setCurrentScene(w.getScenes().get(scene), initScene, null);
+
+      w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
-		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
+      w.getCustomProperties().put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
+      w.getCustomProperties()
+          .put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
+    } else {
+      EngineLogger.error(
+          "ERROR LOADING CHAPTER: "
+              + chapterName
+              + EngineAssetManager.CHAPTER_EXT
+              + " doesn't exists.");
+      w.dispose();
+      throw new IOException(
+          "ERROR LOADING CHAPTER: "
+              + chapterName
+              + EngineAssetManager.CHAPTER_EXT
+              + " doesn't exists.");
+    }
 
-			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
-					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
+    EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+  }
 
-			Json json = new BladeJson(w, Mode.MODEL, initScene);
-			json.setIgnoreUnknownFields(true);
+  public void saveModel(String chapterId) throws IOException {
+    EngineLogger.debug("SAVING GAME MODEL");
 
-			read(json, root);
+    if (w.isDisposed()) return;
 
-			if (scene == null)
-				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene, null);
-			else
-				w.setCurrentScene(w.getScenes().get(scene), initScene, null);
-
-			w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
-
-			w.getCustomProperties().put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
-			w.getCustomProperties().put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
-		} else {
-			EngineLogger.error(
-					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
-			w.dispose();
-			throw new IOException(
-					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
-		}
-
-		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-	}
-
-	public void saveModel(String chapterId) throws IOException {
-		EngineLogger.debug("SAVING GAME MODEL");
-
-		if (w.isDisposed())
-			return;
-
-		Json json = new BladeJson(w, Mode.MODEL);
-		json.setOutputType(OutputType.json);
-
-		String s = null;
-
-		if (EngineLogger.debugMode())
-			s = json.prettyPrint(this);
-		else
-			s = json.toJson(this);
-
-		Writer w = EngineAssetManager.getInstance().getModelFile(chapterId + EngineAssetManager.CHAPTER_EXT)
-				.writer(false, "UTF-8");
-
-		try {
-			w.write(s);
-			w.flush();
-		} catch (IOException e) {
-			throw new IOException("ERROR SAVING MODEL", e);
-		} finally {
-			w.close();
-		}
-	}
-
-	public void loadGameState(FileHandle savedFile) throws IOException {
-		EngineLogger.debug("LOADING GAME STATE");
-
-		if (savedFile.exists()) {
-
-			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
-
-			Json json = new BladeJson(w, Mode.STATE);
-			json.setIgnoreUnknownFields(true);
-
-			read(json, root);
-
-		} else {
-			throw new IOException("LOADGAMESTATE: no saved game exists");
-		}
-	}
-
-	public void saveGameState(String filename, boolean screenshot) throws IOException {
-		EngineLogger.debug("SAVING GAME STATE");
-
-		if (w.isDisposed())
-			return;
-
-		Json json = new BladeJson(w, Mode.STATE);
-		json.setOutputType(OutputType.json);
-		json.setSortFields(true);
-
-		String s = null;
-
-		if (EngineLogger.debugMode())
-			s = json.prettyPrint(this);
-		else
-			s = json.toJson(this);
-
-		Writer writer = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
-
-		try {
-			writer.write(s);
-			writer.flush();
-		} catch (IOException e) {
-			throw new IOException("ERROR SAVING GAME", e);
-		} finally {
-			writer.close();
-		}
-
-		// Save Screenshot
-		if (screenshot)
-			w.takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
-	}
-
-	@Override
-	public void write(Json json) {
-		BladeJson bjson = (BladeJson) json;
-
-		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
-				Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
-
-		if (bjson.getMode() == Mode.MODEL) {
-			SortedMap<String, SoundDesc> sortedSounds = new TreeMap<>();
-			sortedSounds.putAll(w.getSounds());
-			json.writeValue("sounds", sortedSounds, sortedSounds.getClass(), SoundDesc.class);
-
-			SortedMap<String, Scene> sortedScenes = new TreeMap<>();
-			sortedScenes.putAll(w.getScenes());
-			json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
-
-			json.writeValue("initScene", w.getInitScene());
-
-		} else {
-			json.writeValue(Config.VERSION_PROP, Config.getInstance().getProperty(Config.VERSION_PROP, null));
-
-			SortedMap<String, Scene> sortedScenes = new TreeMap<>();
-			sortedScenes.putAll(w.getScenes());
-			json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
-
-			json.writeValue("currentScene", w.getCurrentScene().getId());
-			json.writeValue("inventories", w.getInventories());
-			json.writeValue("currentInventory", w.getCurrentInventory());
-			json.writeValue("timeOfGame", w.getTimeOfGame());
-			json.writeValue("cutmode", w.inCutMode());
-			w.getVerbManager().write(json);
-			json.writeValue("customProperties", w.getCustomProperties(), w.getCustomProperties().getClass(),
-					String.class);
-
-			if (w.getCurrentDialog() != null) {
-				json.writeValue("dialogActor", w.getCurrentDialog().getActor().getId());
-				json.writeValue("currentDialog", w.getCurrentDialog().getId());
-			}
-
-			if (w.getTransition() != null)
-				json.writeValue("transition", w.getTransition());
-
-			json.writeValue("chapter", w.getCurrentChapter());
-			json.writeValue("musicEngine", w.getMusicManager());
-
-			if (!w.getUIActors().getActors().isEmpty())
-				json.writeValue("uiActors", w.getUIActors());
-		}
-
-		if (w.getInkManager() != null && w.getInkManager().getStoryName() != null)
-			json.writeValue("inkManager", w.getInkManager());
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-
-		String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
-
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			if (bladeVersion != null
-					&& !bladeVersion.equals(Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Model Engine Version v" + bladeVersion + " differs from Current Engine Version v"
-						+ Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
-			}
-
-			// SOUNDS
-			JsonValue jsonSounds = jsonData.get("sounds");
-			HashMap<String, SoundDesc> sounds = w.getSounds();
-
-			if (jsonSounds != null) {
-				for (int i = 0; i < jsonSounds.size; i++) {
-					JsonValue jsonValue = jsonSounds.get(i);
-					SoundDesc s = json.readValue(SoundDesc.class, jsonValue);
-					sounds.put(jsonValue.name, s);
-				}
-			}
-
-			// SCENES
-			JsonValue jsonScenes = jsonData.get("scenes");
-			Map<String, Scene> scenes = w.getScenes();
-
-			for (int i = 0; i < jsonScenes.size; i++) {
-				JsonValue jsonValue = jsonScenes.get(i);
-				Scene s = new Scene(w);
-				scenes.put(jsonValue.name, s);
-				s.read(json, jsonValue);
-			}
-
-			w.setInitScene(json.readValue("initScene", String.class, jsonData));
-
-			if (w.getInitScene() == null && !w.getScenes().isEmpty()) {
-				w.setInitScene(w.getScenes().keySet().toArray(new String[0])[0]);
-			}
-
-			for (Scene s : w.getScenes().values()) {
-				s.resetCamera(w.getWidth(), w.getHeight());
-			}
-
-			// Load Ink story
-			if (jsonData.get("inkManager") != null) {
-				w.getInkManager().read(json, jsonData.get("inkManager"));
-			}
-
-			// Add sounds to cache
-			cacheSounds();
-		} else {
-			if (bladeVersion != null
-					&& !bladeVersion.equals(Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger
-						.debug("Saved Game Engine Version v" + bladeVersion + " differs from Current Engine Version v"
-								+ Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
-			}
-
-			String currentChapter = json.readValue("chapter", String.class, jsonData);
-			String currentScene = json.readValue("currentScene", String.class, jsonData);
-
-			try {
-				loadChapter(currentChapter, currentScene, false);
-			} catch (IOException e1) {
-				EngineLogger.error("Error Loading Chapter");
-				return;
-			}
-
-			// read inkManager after setting he current scene but before reading
-			// scenes and verbs tweens
-			if (jsonData.get("inkManager") != null) {
-				w.getInkManager().read(json, jsonData.get("inkManager"));
-			}
-
-			// inventories have to be put in the hash to find the actors when
-			// reading saved data
-			w.setCurrentInventory(json.readValue("currentInventory", String.class, jsonData));
-
-			JsonValue jsonInventories = jsonData.get("inventories");
-
-			for (int i = 0; i < jsonInventories.size; i++) {
-				JsonValue jsonValue = jsonInventories.get(i);
-				Inventory inv = new Inventory();
-				w.getInventories().put(jsonValue.name, inv);
-				inv.read(json, jsonValue);
-			}
-
-			if (jsonData.get("uiActors") != null) {
-				w.getUIActors().read(json, jsonData.get("uiActors"));
-			}
-
-			for (Scene s : w.getScenes().values()) {
-				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
-
-				if (jsonValue != null)
-					s.read(json, jsonValue);
-				else
-					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
-			}
-
-			w.setTimeOfGame(json.readValue("timeOfGame", long.class, 0L, jsonData));
-			w.setCutMode(json.readValue("cutmode", boolean.class, false, jsonData));
-
-			w.getVerbManager().read(json, jsonData);
-
-			// CUSTOM PROPERTIES
-			JsonValue jsonProperties = jsonData.get("customProperties");
-			HashMap<String, String> props = w.getCustomProperties();
-
-			for (int i = 0; i < jsonProperties.size; i++) {
-				JsonValue jsonValue = jsonProperties.get(i);
-				props.put(jsonValue.name, jsonValue.asString());
-			}
-
-			String version = json.readValue(Config.VERSION_PROP, String.class, jsonData);
-			if (version == null)
-				version = "TEST";
-			props.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
-
-			String actorId = json.readValue("dialogActor", String.class, jsonData);
-			String dialogId = json.readValue("currentDialog", String.class, jsonData);
-
-			if (dialogId != null) {
-				CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(actorId, false);
-				w.setCurrentDialog(actor.getDialog(dialogId));
-			}
-
-			w.getTransition().read(json, jsonData.get("transition"));
-			w.getMusicManager().read(json, jsonData.get("musicEngine"));
-
-			w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + w.getCurrentChapter());
-		}
-	}
-
-	private void cacheSounds() {
-		for (Scene s : w.getScenes().values()) {
-
-			HashMap<String, Verb> verbs = s.getVerbManager().getVerbs();
-
-			// Search SoundAction and PlaySoundAction
-			for (Verb v : verbs.values()) {
-				ArrayList<Action> actions = v.getActions();
-
-				for (int i = 0; i < actions.size(); i++) {
-
-					Action act = actions.get(i);
-
-					try {
-						if (act instanceof SoundAction) {
-
-							String actor = ActionUtils.getStringValue(act, "actor");
-							String play = ActionUtils.getStringValue(act, "play");
-							if (play != null) {
-
-								if (actor.equals("$PLAYER"))
-									actor = s.getPlayer().getId();
-
-								SoundDesc sd = w.getSounds().get(actor + "_" + play);
-
-								if (sd == null) {
-									EngineLogger.error(
-											"Reference to sound not found: " + s.getId() + "." + actor + "." + play);
-									continue;
-								}
-
-								s.getSoundManager().addSoundToLoad(sd);
-
-								HashMap<String, String> params = new HashMap<>();
-								params.put("sound", sd.getId());
-
-								try {
-									Action a2 = ActionFactory.create(PlaySoundAction.class.getName(), params);
-									actions.set(i, a2);
-									a2.init(w);
-								} catch (ClassNotFoundException | ReflectionException e) {
-									e.printStackTrace();
-								}
-								EngineLogger.debug("Converting SoundAction:" + s.getId() + "." + v.getId());
-							} else {
-								EngineLogger
-										.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + v.getId());
-							}
-
-						} else if (act instanceof PlaySoundAction) {
-							String sound = ActionUtils.getStringValue(act, "sound");
-							SoundDesc sd = w.getSounds().get(sound);
-
-							if (sd != null && sd.isPreload())
-								s.getSoundManager().addSoundToLoad(sd);
-
-						}
-					} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-					}
-				}
-			}
-
-			for (BaseActor a : s.getActors().values()) {
-
-				if (a instanceof InteractiveActor) {
-					HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
-
-					for (Verb v : actorVerbs.values()) {
-						ArrayList<Action> actions = v.getActions();
-
-						for (int i = 0; i < actions.size(); i++) {
-
-							Action act = actions.get(i);
-
-							try {
-								if (act instanceof SoundAction) {
-
-									String actor = ActionUtils.getStringValue(act, "actor");
-									String play = ActionUtils.getStringValue(act, "play");
-
-									if (play != null) {
-										if ("$PLAYER".equals(actor))
-											actor = s.getPlayer().getId();
-
-										SoundDesc sd = w.getSounds().get(actor + "_" + play);
-
-										if (sd == null) {
-											EngineLogger.error("Reference to sound not found: " + s.getId() + "."
-													+ actor + "." + play);
-											continue;
-										}
-
-										s.getSoundManager().addSoundToLoad(sd);
-
-										HashMap<String, String> params = new HashMap<>();
-										params.put("sound", sd.getId());
-
-										try {
-											Action a2 = ActionFactory.create(PlaySoundAction.class.getName(), params);
-											actions.set(i, a2);
-											a2.init(w);
-										} catch (ClassNotFoundException | ReflectionException e) {
-											e.printStackTrace();
-										}
-										EngineLogger.debug("Converting SoundAction in:" + s.getId() + "." + a.getId()
-												+ "." + v.getId());
-									} else {
-										EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "."
-												+ a.getId() + "." + v.getId());
-									}
-
-								} else if (act instanceof PlaySoundAction) {
-									String sound = ActionUtils.getStringValue(act, "sound");
-									SoundDesc sd = w.getSounds().get(sound);
-
-									if (sd != null && sd.isPreload())
-										s.getSoundManager().addSoundToLoad(sd);
-
-								}
-							} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-							}
-						}
-					}
-				}
-
-				if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
-					HashMap<String, AnimationDesc> anims = ((AnimationRenderer) ((SpriteActor) a).getRenderer())
-							.getAnimations();
-
-					for (AnimationDesc ad : anims.values()) {
-						if (ad.sound != null) {
-							String sid = ad.sound;
-
-							SoundDesc sd = w.getSounds().get(sid);
-
-							if (sd == null)
-								sid = a.getId() + "_" + sid;
-
-							sd = w.getSounds().get(sid);
-
-							if (sd != null) {
-								if (sd.isPreload())
-									s.getSoundManager().addSoundToLoad(sd);
-							} else
-								EngineLogger.error(
-										a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
-						}
-					}
-				}
-
-			}
-		}
-
-	}
+    Json json = new BladeJson(w, Mode.MODEL);
+    json.setOutputType(OutputType.json);
+
+    String s = null;
+
+    if (EngineLogger.debugMode()) s = json.prettyPrint(this);
+    else s = json.toJson(this);
+
+    Writer w =
+        EngineAssetManager.getInstance()
+            .getModelFile(chapterId + EngineAssetManager.CHAPTER_EXT)
+            .writer(false, "UTF-8");
+
+    try {
+      w.write(s);
+      w.flush();
+    } catch (IOException e) {
+      throw new IOException("ERROR SAVING MODEL", e);
+    } finally {
+      w.close();
+    }
+  }
+
+  public void loadGameState(FileHandle savedFile) throws IOException {
+    EngineLogger.debug("LOADING GAME STATE");
+
+    if (savedFile.exists()) {
+
+      JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
+
+      Json json = new BladeJson(w, Mode.STATE);
+      json.setIgnoreUnknownFields(true);
+
+      read(json, root);
+
+    } else {
+      throw new IOException("LOADGAMESTATE: no saved game exists");
+    }
+  }
+
+  public void saveGameState(String filename, boolean screenshot) throws IOException {
+    EngineLogger.debug("SAVING GAME STATE");
+
+    if (w.isDisposed()) return;
+
+    Json json = new BladeJson(w, Mode.STATE);
+    json.setOutputType(OutputType.json);
+    json.setSortFields(true);
+
+    String s = null;
+
+    if (EngineLogger.debugMode()) s = json.prettyPrint(this);
+    else s = json.toJson(this);
+
+    Writer writer = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
+
+    try {
+      writer.write(s);
+      writer.flush();
+    } catch (IOException e) {
+      throw new IOException("ERROR SAVING GAME", e);
+    } finally {
+      writer.close();
+    }
+
+    // Save Screenshot
+    if (screenshot) w.takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
+  }
+
+  @Override
+  public void write(Json json) {
+    BladeJson bjson = (BladeJson) json;
+
+    json.writeValue(
+        Config.BLADE_ENGINE_VERSION_PROP,
+        Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+
+    if (bjson.getMode() == Mode.MODEL) {
+      SortedMap<String, SoundDesc> sortedSounds = new TreeMap<>();
+      sortedSounds.putAll(w.getSounds());
+      json.writeValue("sounds", sortedSounds, sortedSounds.getClass(), SoundDesc.class);
+
+      SortedMap<String, Scene> sortedScenes = new TreeMap<>();
+      sortedScenes.putAll(w.getScenes());
+      json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
+
+      json.writeValue("initScene", w.getInitScene());
+
+    } else {
+      json.writeValue(
+          Config.VERSION_PROP, Config.getInstance().getProperty(Config.VERSION_PROP, null));
+
+      SortedMap<String, Scene> sortedScenes = new TreeMap<>();
+      sortedScenes.putAll(w.getScenes());
+      json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
+
+      json.writeValue("currentScene", w.getCurrentScene().getId());
+      json.writeValue("inventories", w.getInventories());
+      json.writeValue("currentInventory", w.getCurrentInventory());
+      json.writeValue("timeOfGame", w.getTimeOfGame());
+      json.writeValue("cutmode", w.inCutMode());
+      w.getVerbManager().write(json);
+      json.writeValue(
+          "customProperties",
+          w.getCustomProperties(),
+          w.getCustomProperties().getClass(),
+          String.class);
+
+      if (w.getCurrentDialog() != null) {
+        json.writeValue("dialogActor", w.getCurrentDialog().getActor().getId());
+        json.writeValue("currentDialog", w.getCurrentDialog().getId());
+      }
+
+      if (w.getTransition() != null) json.writeValue("transition", w.getTransition());
+
+      json.writeValue("chapter", w.getCurrentChapter());
+      json.writeValue("musicEngine", w.getMusicManager());
+
+      if (!w.getUIActors().getActors().isEmpty()) json.writeValue("uiActors", w.getUIActors());
+    }
+
+    if (w.getInkManager() != null && w.getInkManager().getStoryName() != null)
+      json.writeValue("inkManager", w.getInkManager());
+  }
+
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+
+    String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
+
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      if (bladeVersion != null
+          && !bladeVersion.equals(
+              Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+        EngineLogger.debug(
+            "Model Engine Version v"
+                + bladeVersion
+                + " differs from Current Engine Version v"
+                + Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+      }
+
+      // SOUNDS
+      JsonValue jsonSounds = jsonData.get("sounds");
+      HashMap<String, SoundDesc> sounds = w.getSounds();
+
+      if (jsonSounds != null) {
+        for (int i = 0; i < jsonSounds.size; i++) {
+          JsonValue jsonValue = jsonSounds.get(i);
+          SoundDesc s = json.readValue(SoundDesc.class, jsonValue);
+          sounds.put(jsonValue.name, s);
+        }
+      }
+
+      // SCENES
+      JsonValue jsonScenes = jsonData.get("scenes");
+      Map<String, Scene> scenes = w.getScenes();
+
+      for (int i = 0; i < jsonScenes.size; i++) {
+        JsonValue jsonValue = jsonScenes.get(i);
+        Scene s = new Scene(w);
+        scenes.put(jsonValue.name, s);
+        s.read(json, jsonValue);
+      }
+
+      w.setInitScene(json.readValue("initScene", String.class, jsonData));
+
+      if (w.getInitScene() == null && !w.getScenes().isEmpty()) {
+        w.setInitScene(w.getScenes().keySet().toArray(new String[0])[0]);
+      }
+
+      for (Scene s : w.getScenes().values()) {
+        s.resetCamera(w.getWidth(), w.getHeight());
+      }
+
+      // Load Ink story
+      if (jsonData.get("inkManager") != null) {
+        w.getInkManager().read(json, jsonData.get("inkManager"));
+      }
+
+      // Add sounds to cache
+      cacheSounds();
+    } else {
+      if (bladeVersion != null
+          && !bladeVersion.equals(
+              Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+        EngineLogger.debug(
+            "Saved Game Engine Version v"
+                + bladeVersion
+                + " differs from Current Engine Version v"
+                + Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+      }
+
+      String currentChapter = json.readValue("chapter", String.class, jsonData);
+      String currentScene = json.readValue("currentScene", String.class, jsonData);
+
+      try {
+        loadChapter(currentChapter, currentScene, false);
+      } catch (IOException e1) {
+        EngineLogger.error("Error Loading Chapter");
+        return;
+      }
+
+      // read inkManager after setting he current scene but before reading
+      // scenes and verbs tweens
+      if (jsonData.get("inkManager") != null) {
+        w.getInkManager().read(json, jsonData.get("inkManager"));
+      }
+
+      // inventories have to be put in the hash to find the actors when
+      // reading saved data
+      w.setCurrentInventory(json.readValue("currentInventory", String.class, jsonData));
+
+      JsonValue jsonInventories = jsonData.get("inventories");
+
+      for (int i = 0; i < jsonInventories.size; i++) {
+        JsonValue jsonValue = jsonInventories.get(i);
+        Inventory inv = new Inventory();
+        w.getInventories().put(jsonValue.name, inv);
+        inv.read(json, jsonValue);
+      }
+
+      if (jsonData.get("uiActors") != null) {
+        w.getUIActors().read(json, jsonData.get("uiActors"));
+      }
+
+      for (Scene s : w.getScenes().values()) {
+        JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
+
+        if (jsonValue != null) s.read(json, jsonValue);
+        else EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
+      }
+
+      w.setTimeOfGame(json.readValue("timeOfGame", long.class, 0L, jsonData));
+      w.setCutMode(json.readValue("cutmode", boolean.class, false, jsonData));
+
+      w.getVerbManager().read(json, jsonData);
+
+      // CUSTOM PROPERTIES
+      JsonValue jsonProperties = jsonData.get("customProperties");
+      HashMap<String, String> props = w.getCustomProperties();
+
+      for (int i = 0; i < jsonProperties.size; i++) {
+        JsonValue jsonValue = jsonProperties.get(i);
+        props.put(jsonValue.name, jsonValue.asString());
+      }
+
+      String version = json.readValue(Config.VERSION_PROP, String.class, jsonData);
+      if (version == null) version = "TEST";
+      props.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
+
+      String actorId = json.readValue("dialogActor", String.class, jsonData);
+      String dialogId = json.readValue("currentDialog", String.class, jsonData);
+
+      if (dialogId != null) {
+        CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(actorId, false);
+        w.setCurrentDialog(actor.getDialog(dialogId));
+      }
+
+      w.getTransition().read(json, jsonData.get("transition"));
+      w.getMusicManager().read(json, jsonData.get("musicEngine"));
+
+      w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + w.getCurrentChapter());
+    }
+  }
+
+  private void cacheSounds() {
+    for (Scene s : w.getScenes().values()) {
+
+      HashMap<String, Verb> verbs = s.getVerbManager().getVerbs();
+
+      // Search SoundAction and PlaySoundAction
+      for (Verb v : verbs.values()) {
+        ArrayList<Action> actions = v.getActions();
+
+        for (int i = 0; i < actions.size(); i++) {
+
+          Action act = actions.get(i);
+
+          try {
+            if (act instanceof SoundAction) {
+
+              String actor = ActionUtils.getStringValue(act, "actor");
+              String play = ActionUtils.getStringValue(act, "play");
+              if (play != null) {
+
+                if (actor.equals("$PLAYER")) actor = s.getPlayer().getId();
+
+                SoundDesc sd = w.getSounds().get(actor + "_" + play);
+
+                if (sd == null) {
+                  EngineLogger.error(
+                      "Reference to sound not found: " + s.getId() + "." + actor + "." + play);
+                  continue;
+                }
+
+                s.getSoundManager().addSoundToLoad(sd);
+
+                HashMap<String, String> params = new HashMap<>();
+                params.put("sound", sd.getId());
+
+                try {
+                  Action a2 = ActionFactory.create(PlaySoundAction.class.getName(), params);
+                  actions.set(i, a2);
+                  a2.init(w);
+                } catch (ClassNotFoundException | ReflectionException e) {
+                  e.printStackTrace();
+                }
+                EngineLogger.debug("Converting SoundAction:" + s.getId() + "." + v.getId());
+              } else {
+                EngineLogger.debug(
+                    "WARNING: Cannot convert SoundAction:" + s.getId() + "." + v.getId());
+              }
+
+            } else if (act instanceof PlaySoundAction) {
+              String sound = ActionUtils.getStringValue(act, "sound");
+              SoundDesc sd = w.getSounds().get(sound);
+
+              if (sd != null && sd.isPreload()) s.getSoundManager().addSoundToLoad(sd);
+            }
+          } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+          }
+        }
+      }
+
+      for (BaseActor a : s.getActors().values()) {
+
+        if (a instanceof InteractiveActor) {
+          HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
+
+          for (Verb v : actorVerbs.values()) {
+            ArrayList<Action> actions = v.getActions();
+
+            for (int i = 0; i < actions.size(); i++) {
+
+              Action act = actions.get(i);
+
+              try {
+                if (act instanceof SoundAction) {
+
+                  String actor = ActionUtils.getStringValue(act, "actor");
+                  String play = ActionUtils.getStringValue(act, "play");
+
+                  if (play != null) {
+                    if ("$PLAYER".equals(actor)) actor = s.getPlayer().getId();
+
+                    SoundDesc sd = w.getSounds().get(actor + "_" + play);
+
+                    if (sd == null) {
+                      EngineLogger.error(
+                          "Reference to sound not found: " + s.getId() + "." + actor + "." + play);
+                      continue;
+                    }
+
+                    s.getSoundManager().addSoundToLoad(sd);
+
+                    HashMap<String, String> params = new HashMap<>();
+                    params.put("sound", sd.getId());
+
+                    try {
+                      Action a2 = ActionFactory.create(PlaySoundAction.class.getName(), params);
+                      actions.set(i, a2);
+                      a2.init(w);
+                    } catch (ClassNotFoundException | ReflectionException e) {
+                      e.printStackTrace();
+                    }
+                    EngineLogger.debug(
+                        "Converting SoundAction in:"
+                            + s.getId()
+                            + "."
+                            + a.getId()
+                            + "."
+                            + v.getId());
+                  } else {
+                    EngineLogger.debug(
+                        "WARNING: Cannot convert SoundAction:"
+                            + s.getId()
+                            + "."
+                            + a.getId()
+                            + "."
+                            + v.getId());
+                  }
+
+                } else if (act instanceof PlaySoundAction) {
+                  String sound = ActionUtils.getStringValue(act, "sound");
+                  SoundDesc sd = w.getSounds().get(sound);
+
+                  if (sd != null && sd.isPreload()) s.getSoundManager().addSoundToLoad(sd);
+                }
+              } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+              }
+            }
+          }
+        }
+
+        if (a instanceof SpriteActor
+            && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
+          HashMap<String, AnimationDesc> anims =
+              ((AnimationRenderer) ((SpriteActor) a).getRenderer()).getAnimations();
+
+          for (AnimationDesc ad : anims.values()) {
+            if (ad.sound != null) {
+              String sid = ad.sound;
+
+              SoundDesc sd = w.getSounds().get(sid);
+
+              if (sd == null) sid = a.getId() + "_" + sid;
+
+              sd = w.getSounds().get(sid);
+
+              if (sd != null) {
+                if (sd.isPreload()) s.getSoundManager().addSoundToLoad(sd);
+              } else
+                EngineLogger.error(
+                    a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
+            }
+          }
+        }
+      }
+    }
+  }
 }

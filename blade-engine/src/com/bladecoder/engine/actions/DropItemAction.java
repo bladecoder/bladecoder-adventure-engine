@@ -1,7 +1,5 @@
 package com.bladecoder.engine.actions;
 
-import java.text.MessageFormat;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
@@ -12,90 +10,90 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import java.text.MessageFormat;
 
 @ActionDescription("Drops the selected inventory actor.")
 public class DropItemAction implements Action {
-	@ActionProperty
-	@ActionPropertyDescription("The 'id' from the inventory item to remove. If empty remove all items.")
-	private String actor;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The 'id' from the inventory item to remove. If empty remove all items.")
+  private String actor;
 
-	@ActionProperty(type = Type.SCENE, required = false)
-	@ActionPropertyDescription("The target scene. If not selected the item is dropped in the current scene.")
-	private String scene = null;
+  @ActionProperty(type = Type.SCENE, required = false)
+  @ActionPropertyDescription(
+      "The target scene. If not selected the item is dropped in the current scene.")
+  private String scene = null;
 
-	@ActionProperty
-	@ActionPropertyDescription("Position in the scene where de actor is dropped")
-	private Vector2 pos;
+  @ActionProperty
+  @ActionPropertyDescription("Position in the scene where de actor is dropped")
+  private Vector2 pos;
 
-	@ActionProperty
-	@ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
-	private String inventory;
+  @ActionProperty
+  @ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
+  private String inventory;
 
-	private World w;
+  private World w;
 
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-	@Override
-	public boolean run(VerbRunner cb) {
-		Scene ts = null;
+  @Override
+  public boolean run(VerbRunner cb) {
+    Scene ts = null;
 
-		if (scene == null)
-			ts = w.getCurrentScene();
-		else
-			ts = w.getScene(scene);
+    if (scene == null) ts = w.getCurrentScene();
+    else ts = w.getScene(scene);
 
-		Inventory inv = null;
+    Inventory inv = null;
 
-		if (inventory == null) {
-			inv = w.getInventory();
-		} else {
-			inv = w.getInventories().get(inventory);
-			if (inv == null) {
-				EngineLogger.error("Inventory not found: " + inventory);
-				return false;
-			}
-		}
+    if (inventory == null) {
+      inv = w.getInventory();
+    } else {
+      inv = w.getInventories().get(inventory);
+      if (inv == null) {
+        EngineLogger.error("Inventory not found: " + inventory);
+        return false;
+      }
+    }
 
-		BaseActor a;
+    BaseActor a;
 
-		if (actor != null) {
-			a = inv.get(actor);
+    if (actor != null) {
+      a = inv.get(actor);
 
-			if (a == null) {
-				EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", actor));
-				return false;
-			}
+      if (a == null) {
+        EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", actor));
+        return false;
+      }
 
-			removeActor(inv, ts, a);
-		} else {
-			int n = inv.getNumItems();
+      removeActor(inv, ts, a);
+    } else {
+      int n = inv.getNumItems();
 
-			for (int i = n - 1; i >= 0; i--) {
-				a = inv.get(i);
+      for (int i = n - 1; i >= 0; i--) {
+        a = inv.get(i);
 
-				removeActor(inv, ts, a);
-			}
-		}
+        removeActor(inv, ts, a);
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	private void removeActor(Inventory inv, Scene ts, BaseActor a) {
+  private void removeActor(Inventory inv, Scene ts, BaseActor a) {
 
-		float scale = EngineAssetManager.getInstance().getScale();
+    float scale = EngineAssetManager.getInstance().getScale();
 
-		inv.removeItem(a.getId());
+    inv.removeItem(a.getId());
 
-		if (ts != w.getCurrentScene() && w.getCachedScene(ts.getId()) == null && a instanceof Disposable)
-			((Disposable) a).dispose();
+    if (ts != w.getCurrentScene()
+        && w.getCachedScene(ts.getId()) == null
+        && a instanceof Disposable) ((Disposable) a).dispose();
 
-		ts.addActor(a);
+    ts.addActor(a);
 
-		if (pos != null)
-			a.setPosition(pos.x * scale, pos.y * scale);
-	}
-
+    if (pos != null) a.setPosition(pos.x * scale, pos.y * scale);
+  }
 }

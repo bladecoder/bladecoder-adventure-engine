@@ -14,121 +14,152 @@ import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
-	private InputPanel text;
-	private InputPanel voice;
-	private InputPanel responseText;
-	private InputPanel responseVoice;
-	private InputPanel verb;
-	private InputPanel next;
-	private InputPanel visible;
-	private InputPanel once;
-	private int pos;
-	
+  private InputPanel text;
+  private InputPanel voice;
+  private InputPanel responseText;
+  private InputPanel responseVoice;
+  private InputPanel verb;
+  private InputPanel next;
+  private InputPanel visible;
+  private InputPanel once;
+  private int pos;
 
-	public EditOptionDialog(Skin skin, Dialog parent, DialogOption e, int pos) {
-		super(skin);
-		
-		this.pos = e == null ? pos + 1 : pos;
+  public EditOptionDialog(Skin skin, Dialog parent, DialogOption e, int pos) {
+    super(skin);
 
-		text = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player",
-				Type.SMALL_TEXT, true);
-		voice = InputPanelFactory.createInputPanel(skin, "Voice", "The voice filename for the player lines",
-				Type.VOICE, false);
-		responseText = InputPanelFactory.createInputPanel(skin, "Response Text", "The response said by the character",
-				Type.TEXT, false);
-		responseVoice = InputPanelFactory.createInputPanel(skin, "Response Voice", "The voice filename for the response lines",
-				Type.VOICE, false);
-		verb = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
-		next = InputPanelFactory.createInputPanel(skin, "Next Dialog",
-				"The next dialog to show when this option is selected",
-				getActorDialogs((CharacterActor) Ctx.project.getSelectedActor()), false);
-		visible = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, true, "true");
-		once = InputPanelFactory.createInputPanel(skin, "Once", "When true, the option is hidden after selection",
-				Param.Type.BOOLEAN, false);
+    this.pos = e == null ? pos + 1 : pos;
 
-		setInfo("A dialog is composed of an option tree. Each option is a dialog sentence that the user can choose to say");
+    text =
+        InputPanelFactory.createInputPanel(
+            skin, "Text", "The sentence of the dialog to say by the player", Type.SMALL_TEXT, true);
+    voice =
+        InputPanelFactory.createInputPanel(
+            skin, "Voice", "The voice filename for the player lines", Type.VOICE, false);
+    responseText =
+        InputPanelFactory.createInputPanel(
+            skin, "Response Text", "The response said by the character", Type.TEXT, false);
+    responseVoice =
+        InputPanelFactory.createInputPanel(
+            skin, "Response Voice", "The voice filename for the response lines", Type.VOICE, false);
+    verb =
+        InputPanelFactory.createInputPanel(
+            skin, "Verb", "The verb to execute when choosing this option");
+    next =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Next Dialog",
+            "The next dialog to show when this option is selected",
+            getActorDialogs((CharacterActor) Ctx.project.getSelectedActor()),
+            false);
+    visible =
+        InputPanelFactory.createInputPanel(
+            skin, "Visible", "The visibility", Param.Type.BOOLEAN, true, "true");
+    once =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Once",
+            "When true, the option is hidden after selection",
+            Param.Type.BOOLEAN,
+            false);
 
-		text.getCell(text.getField()).fillX();
-		responseText.getCell(responseText.getField()).fillX();
+    setInfo(
+        "A dialog is composed of an option tree. Each option is a dialog sentence that the user can choose to say");
 
-		init(parent, e, new InputPanel[] { text, responseText, voice, responseVoice, verb, next, visible, once });
-	}
+    text.getCell(text.getField()).fillX();
+    responseText.getCell(responseText.getField()).fillX();
 
-	@Override
-	protected void inputsToModel(boolean create) {
+    init(
+        parent,
+        e,
+        new InputPanel[] {text, responseText, voice, responseVoice, verb, next, visible, once});
+  }
 
-		if (create) {
-			e = new DialogOption();
-//			parent.addOption(e);
-			
-			parent.getOptions().add(pos, e);
-		}
-		
-		String key = e.getText();
+  @Override
+  protected void inputsToModel(boolean create) {
 
-		if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-			key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, "text");
+    if (create) {
+      e = new DialogOption();
+      //			parent.addOption(e);
 
-		Ctx.project.getI18N().setTranslation(key, text.getText());
+      parent.getOptions().add(pos, e);
+    }
 
-		if (text.getText() != null && !text.getText().isEmpty())
-			e.setText(key);
-		else
-			e.setText(null);
+    String key = e.getText();
 
-		String responseKey = e.getResponseText();
-		
-		if (responseKey == null || responseKey.isEmpty() || responseKey.charAt(0) != I18N.PREFIX)
-			responseKey = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, "responseText");
-		
-		Ctx.project.getI18N().setTranslation(responseKey, responseText.getText());
+    if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+      key =
+          Ctx.project
+              .getI18N()
+              .genKey(
+                  Ctx.project.getSelectedScene().getId(),
+                  Ctx.project.getSelectedActor().getId(),
+                  parent.getId(),
+                  pos,
+                  "text");
 
-		if (responseText.getText() != null && !responseText.getText().isEmpty())
-			e.setResponseText(responseKey);
-		else
-			e.setResponseText(null);
+    Ctx.project.getI18N().setTranslation(key, text.getText());
 
-		e.setVerbId(verb.getText());
-		e.setNext(next.getText());
-		e.setVisible(Boolean.parseBoolean(visible.getText()));
-		e.setOnce(Boolean.parseBoolean(once.getText()));
-		e.setVoiceId(voice.getText());
-		e.setResponseVoiceId(responseVoice.getText());
-		
+    if (text.getText() != null && !text.getText().isEmpty()) e.setText(key);
+    else e.setText(null);
 
-		// TODO UNDO OP
-		// UndoOp undoOp = new UndoAddElement(doc, e);
-		// Ctx.project.getUndoStack().add(undoOp);
+    String responseKey = e.getResponseText();
 
-		Ctx.project.setModified();
-	}
+    if (responseKey == null || responseKey.isEmpty() || responseKey.charAt(0) != I18N.PREFIX)
+      responseKey =
+          Ctx.project
+              .getI18N()
+              .genKey(
+                  Ctx.project.getSelectedScene().getId(),
+                  Ctx.project.getSelectedActor().getId(),
+                  parent.getId(),
+                  pos,
+                  "responseText");
 
-	@Override
-	protected void modelToInputs() {
-		text.setText(Ctx.project.translate(e.getText()));
-		
-		
-		responseText.setText(Ctx.project.translate(e.getResponseText()));
-		
-		verb.setText(e.getVerbId());
-		next.setText(e.getNext());
+    Ctx.project.getI18N().setTranslation(responseKey, responseText.getText());
 
-		visible.setText(Boolean.toString(e.isVisible()));
-		once.setText(Boolean.toString(e.isOnce()));
-		voice.setText(e.getVoiceId());
-		responseVoice.setText(e.getResponseVoiceId());
-	}
+    if (responseText.getText() != null && !responseText.getText().isEmpty())
+      e.setResponseText(responseKey);
+    else e.setResponseText(null);
 
-	private String[] getActorDialogs(CharacterActor actor) {
-		Dialog[] array = actor.getDialogs().values().toArray(new Dialog[0]);
+    e.setVerbId(verb.getText());
+    e.setNext(next.getText());
+    e.setVisible(Boolean.parseBoolean(visible.getText()));
+    e.setOnce(Boolean.parseBoolean(once.getText()));
+    e.setVoiceId(voice.getText());
+    e.setResponseVoiceId(responseVoice.getText());
 
-		String[] result = new String[array.length + 1];
-		result[0] = "this";
+    // TODO UNDO OP
+    // UndoOp undoOp = new UndoAddElement(doc, e);
+    // Ctx.project.getUndoStack().add(undoOp);
 
-		for (int i = 0; i < array.length; i++) {
-			result[i + 1] = array[i].getId();
-		}
+    Ctx.project.setModified();
+  }
 
-		return result;
-	}
+  @Override
+  protected void modelToInputs() {
+    text.setText(Ctx.project.translate(e.getText()));
+
+    responseText.setText(Ctx.project.translate(e.getResponseText()));
+
+    verb.setText(e.getVerbId());
+    next.setText(e.getNext());
+
+    visible.setText(Boolean.toString(e.isVisible()));
+    once.setText(Boolean.toString(e.isOnce()));
+    voice.setText(e.getVoiceId());
+    responseVoice.setText(e.getResponseVoiceId());
+  }
+
+  private String[] getActorDialogs(CharacterActor actor) {
+    Dialog[] array = actor.getDialogs().values().toArray(new Dialog[0]);
+
+    String[] result = new String[array.length + 1];
+    result[0] = "this";
+
+    for (int i = 0; i < array.length; i++) {
+      result[i + 1] = array[i].getId();
+    }
+
+    return result;
+  }
 }

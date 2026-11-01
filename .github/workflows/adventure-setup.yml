@@ -1,0 +1,92 @@
+name: Independent adventure consumers
+
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      media:
+        description: Run native audio and Spine capture checks (installs FFmpeg and PulseAudio).
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Python visual verification dependency
+        run: python -m pip install -r adventure-setup/ai-toolkit/tools/requirements-visual.txt
+      - name: Install audio capture prerequisites
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.media }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pulseaudio pulseaudio-utils ffmpeg
+      - name: Build shared setup and paired engine
+        run: |
+          ./gradlew :adventure-setup:check :adventure-setup:bundle :adventure-editor:compileJava :blade-engine:publishToMavenLocal :blade-engine-spine-plugin:publishToMavenLocal --console=plain
+      - name: Verify editor create and load through shared generator
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a ./gradlew :adventure-editor:verifySetupFlow -PsetupFlowOutput="$RUNNER_TEMP/setup-editor" --console=plain > "$RUNNER_TEMP/setup-editor.log" 2>&1
+      - name: Verify generated consumers and native desktop smoke
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          ALSOFT_DRIVERS: ${{ github.event_name == 'workflow_dispatch' && inputs.media && 'pulse' || 'null' }}
+          VERIFY_MEDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.media }}
+        run: |
+          media_args=()
+          if [[ "$VERIFY_MEDIA" == "true" ]]; then
+            pulseaudio --start --exit-idle-time=-1
+            pactl load-module module-null-sink sink_name=setup_ci
+            export PULSE_SINK=setup_ci
+            media_args+=(--media)
+          fi
+          bundle_path=$(find adventure-setup/build/distributions -name 'adventure-setup-*.zip' -print -quit)
+          test -n "$bundle_path"
+          xvfb-run -a -s '-screen 0 1600x1000x24' python .github/scripts/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native "${media_args[@]}"
+      - name: Verify packaged HTTP player and debug contracts
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          xvfb-run -a -s '-screen 0 1600x1000x24' python .github/scripts/verify_template_http.py --jar "$RUNNER_TEMP/setup-consumer/desktop café game/desktop/build/libs/desktop-0.1.0.jar" --out "$RUNNER_TEMP/setup-consumer/protocol" --playable
+      - name: Retain bundle and bounded consumer reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-adventure-consumer
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            adventure-setup/build/distributions/adventure-setup-*.zip
+            adventure-setup/build/distributions/adventure-setup-*.zip.sha256
+            ${{ runner.temp }}/setup-editor/result.json
+            ${{ runner.temp }}/setup-editor.log
+            ${{ runner.temp }}/setup-consumer/result.json
+            ${{ runner.temp }}/setup-consumer/protocol/result.json
+            ${{ runner.temp }}/setup-consumer/protocol/*/*.png
+            ${{ runner.temp }}/setup-consumer/*.log
+            ${{ runner.temp }}/setup-consumer/*-fast/result.json
+            ${{ runner.temp }}/setup-consumer/*-fast/report.md
+            ${{ runner.temp }}/setup-consumer/*-fast/artifacts/**
+            ${{ runner.temp }}/setup-consumer/*-native/result.json
+            ${{ runner.temp }}/setup-consumer/*-native/report.md
+            ${{ runner.temp }}/setup-consumer/*-native/artifacts/**
+            ${{ runner.temp }}/setup-consumer/*-media/result.json
+            ${{ runner.temp }}/setup-consumer/*-media/report.md
+            ${{ runner.temp }}/setup-consumer/*-media/artifacts/**

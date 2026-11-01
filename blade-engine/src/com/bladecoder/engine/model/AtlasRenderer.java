@@ -1,8 +1,5 @@
 package com.bladecoder.engine.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -21,325 +18,329 @@ import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AtlasRenderer extends AnimationRenderer {
 
-	private AtlasRegion tex;
-	private FATween faTween;
+  private AtlasRegion tex;
+  private FATween faTween;
+
+  private int currentFrameIndex;
 
-	private int currentFrameIndex;
+  public AtlasRenderer() {}
+
+  @Override
+  public String[] getInternalAnimations(AnimationDesc anim) {
+    retrieveSource(anim.source);
 
-	public AtlasRenderer() {
+    TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.source);
 
-	}
+    Array<AtlasRegion> animations = atlas.getRegions();
+    ArrayList<String> l = new ArrayList<>();
 
-	@Override
-	public String[] getInternalAnimations(AnimationDesc anim) {
-		retrieveSource(anim.source);
+    for (int i = 0; i < animations.size; i++) {
+      AtlasRegion a = animations.get(i);
+      if (!l.contains(a.name)) l.add(a.name);
+    }
 
-		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.source);
+    return l.toArray(new String[l.size()]);
+  }
 
-		Array<AtlasRegion> animations = atlas.getRegions();
-		ArrayList<String> l = new ArrayList<>();
+  @Override
+  public void update(float delta) {
+    if (faTween != null) {
+      faTween.update(delta);
+      if (faTween != null && faTween.isComplete()) {
+        faTween = null;
+        computeBbox();
+      }
+    }
+  }
 
-		for (int i = 0; i < animations.size; i++) {
-			AtlasRegion a = animations.get(i);
-			if (!l.contains(a.name))
-				l.add(a.name);
-		}
+  public int getCurrentFrameIndex() {
+    return currentFrameIndex;
+  }
 
-		return l.toArray(new String[l.size()]);
-	}
+  public void setFrame(int i) {
+    currentFrameIndex = i;
+    tex = ((AtlasAnimationDesc) currentAnimation).regions.get(i);
+  }
 
-	@Override
-	public void update(float delta) {
-		if (faTween != null) {
-			faTween.update(delta);
-			if (faTween != null && faTween.isComplete()) {
-				faTween = null;
-				computeBbox();
-			}
-		}
-	}
+  @Override
+  public void draw(
+      SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
-	public int getCurrentFrameIndex() { return currentFrameIndex; }
+    float dx = getAlignDx(getWidth(), orgAlign);
+    float dy = getAlignDy(getHeight(), orgAlign);
 
-	public void setFrame(int i) {
-		currentFrameIndex = i;
-		tex = ((AtlasAnimationDesc) currentAnimation).regions.get(i);
-	}
+    if (tex == null) {
+      RectangleRenderer.draw(
+          batch,
+          x + dx * scaleX,
+          y + dy * scaleY,
+          getWidth() * scaleX,
+          getHeight() * scaleY,
+          Color.RED);
 
-	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
+      return;
+    }
 
-		float dx = getAlignDx(getWidth(), orgAlign);
-		float dy = getAlignDy(getHeight(), orgAlign);
+    x = x + tex.offsetX + dx;
+    y = y + tex.offsetY + dy;
 
-		if (tex == null) {
-			RectangleRenderer.draw(batch, x + dx * scaleX, y + dy * scaleY, getWidth() * scaleX, getHeight() * scaleY,
-					Color.RED);
+    if (tint != null) batch.setColor(tint);
 
-			return;
-		}
+    batch.draw(
+        tex,
+        x,
+        y,
+        -dx - tex.offsetX,
+        -dy - tex.offsetY,
+        tex.packedWidth,
+        tex.packedHeight,
+        flipX ? -scaleX : scaleX,
+        scaleY,
+        rotation);
 
-		x = x + tex.offsetX + dx;
-		y = y + tex.offsetY + dy;
+    if (tint != null) batch.setColor(Color.WHITE);
+  }
 
-		if (tint != null)
-			batch.setColor(tint);
+  @Override
+  public float getWidth() {
+    if (tex == null) return super.getWidth();
 
-		batch.draw(tex, x, y, -dx - tex.offsetX, -dy - tex.offsetY, tex.packedWidth, tex.packedHeight,
-				flipX ? -scaleX : scaleX, scaleY, rotation);
+    return tex.originalWidth;
+  }
 
-		if (tint != null)
-			batch.setColor(Color.WHITE);
-	}
+  @Override
+  public float getHeight() {
+    if (tex == null) return super.getHeight();
+
+    return tex.originalHeight;
+  }
 
-	@Override
-	public float getWidth() {
-		if (tex == null)
-			return super.getWidth();
+  @Override
+  public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
-		return tex.originalWidth;
-	}
+    if (id == null) id = initAnimation;
 
-	@Override
-	public float getHeight() {
-		if (tex == null)
-			return super.getHeight();
+    AtlasAnimationDesc fa = (AtlasAnimationDesc) getAnimation(id);
 
-		return tex.originalHeight;
-	}
+    if (fa == null) {
+      EngineLogger.error("AnimationDesc not found: " + id);
 
-	@Override
-	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
+      return;
+    }
 
-		if (id == null)
-			id = initAnimation;
+    if (currentAnimation != null && currentAnimation.disposeWhenPlayed) {
+      disposeSource(currentAnimation.source);
+      ((AtlasAnimationDesc) currentAnimation).regions = null;
+    }
 
-		AtlasAnimationDesc fa = (AtlasAnimationDesc) getAnimation(id);
+    currentAnimation = fa;
 
-		if (fa == null) {
-			EngineLogger.error("AnimationDesc not found: " + id);
+    // If the source is not loaded. Load it.
+    if (fa.regions == null) {
 
-			return;
-		}
+      retrieveFA(fa);
 
-		if (currentAnimation != null && currentAnimation.disposeWhenPlayed) {
-			disposeSource(currentAnimation.source);
-			((AtlasAnimationDesc) currentAnimation).regions = null;
-		}
+      if (fa.regions == null || fa.regions.size == 0) {
+        EngineLogger.error(
+            currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
+        fanims.remove(currentAnimation.id);
+      }
+    }
 
-		currentAnimation = fa;
+    if (fa.regions.size == 1 || fa.duration == 0.0) {
 
-		// If the source is not loaded. Load it.
-		if (fa.regions == null) {
+      setFrame(0);
+      computeBbox();
 
-			retrieveFA(fa);
+      if (cb != null) {
+        ActionCallback tmpcb = cb;
+        cb = null;
+        tmpcb.resume();
+      }
 
-			if (fa.regions == null || fa.regions.size == 0) {
-				EngineLogger.error(currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
-				fanims.remove(currentAnimation.id);
-			}
-		}
+      return;
+    }
 
-		if (fa.regions.size == 1 || fa.duration == 0.0) {
+    if (repeatType == Tween.Type.SPRITE_DEFINED) {
+      repeatType = currentAnimation.animationType;
+      count = currentAnimation.count;
+    }
 
-			setFrame(0);
-			computeBbox();
+    faTween = new FATween();
+    faTween.start(this, repeatType, count, currentAnimation.duration, cb);
 
-			if (cb != null) {
-				ActionCallback tmpcb = cb;
-				cb = null;
-				tmpcb.resume();
-			}
+    if (repeatType == Tween.Type.REVERSE) setFrame(getNumFrames() - 1);
+    else setFrame(0);
 
-			return;
-		}
+    computeBbox();
+  }
 
-		if (repeatType == Tween.Type.SPRITE_DEFINED) {
-			repeatType = currentAnimation.animationType;
-			count = currentAnimation.count;
-		}
-
-		faTween = new FATween();
-		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
+  public int getNumFrames() {
+    return ((AtlasAnimationDesc) currentAnimation).regions.size;
+  }
 
-		if (repeatType == Tween.Type.REVERSE)
-			setFrame(getNumFrames() - 1);
-		else
-			setFrame(0);
+  @Override
+  public void startAnimation(
+      String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
+    StringBuilder sb = new StringBuilder(id);
 
-		computeBbox();
-	}
+    // if dir==null gets the current animation direction
+    if (direction == null) {
+      int idx = getCurrentAnimationId().indexOf('.');
 
-	public int getNumFrames() {
-		return ((AtlasAnimationDesc) currentAnimation).regions.size;
-	}
+      if (idx != -1) {
+        String dir = getCurrentAnimationId().substring(idx);
+        sb.append(dir);
+      }
+    } else {
+      sb.append('.');
+      sb.append(direction);
+    }
 
-	@Override
-	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
-		StringBuilder sb = new StringBuilder(id);
-
-		// if dir==null gets the current animation direction
-		if (direction == null) {
-			int idx = getCurrentAnimationId().indexOf('.');
-
-			if (idx != -1) {
-				String dir = getCurrentAnimationId().substring(idx);
-				sb.append(dir);
-			}
-		} else {
-			sb.append('.');
-			sb.append(direction);
-		}
-
-		String anim = sb.toString();
-
-		if (getAnimation(anim) == null) {
-			anim = id;
-		}
-
-		startAnimation(anim, repeatType, count, null);
-	}
-
-	@Override
-	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
-	}
-
-	private void loadSource(String source) {
-		CacheEntry entry = sourceCache.get(source);
-
-		if (entry == null) {
-			entry = new CacheEntry();
-			sourceCache.put(source, entry);
-		}
-
-		if (entry.refCounter == 0)
-			EngineAssetManager.getInstance().loadAtlas(source);
-
-		entry.refCounter++;
-	}
-
-	private void retrieveFA(AtlasAnimationDesc fa) {
-		retrieveSource(fa.source);
-		fa.regions = EngineAssetManager.getInstance().getRegions(fa.source, fa.id);
-	}
-
-	private void retrieveSource(String source) {
-		CacheEntry entry = sourceCache.get(source);
-
-		if (entry == null || entry.refCounter < 1) {
-			loadSource(source);
-			EngineAssetManager.getInstance().finishLoading();
-		}
-	}
-
-	private void disposeSource(String source) {
-		CacheEntry entry = sourceCache.get(source);
-
-		if (entry.refCounter == 1) {
-			EngineAssetManager.getInstance().disposeAtlas(source);
-		}
-
-		entry.refCounter--;
-	}
-
-	@Override
-	public void loadAssets() {
-		for (AnimationDesc fa : fanims.values()) {
-			if (fa.preload)
-				loadSource(fa.source);
-		}
-
-		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source);
-		} else if (currentAnimation == null && initAnimation != null) {
-			String a = initAnimation;
-
-			if (flipX) {
-				a = getFlipId(a);
-			}
-
-			AnimationDesc fa = fanims.get(a);
-
-			if (fa != null && !fa.preload)
-				loadSource(fa.source);
-		}
-	}
-
-	@Override
-	public void retrieveAssets() {
-		for (AnimationDesc fa : fanims.values()) {
-			if (fa.preload)
-				retrieveFA((AtlasAnimationDesc) fa);
-		}
-
-		if (currentAnimation != null && !currentAnimation.preload) {
-			retrieveFA((AtlasAnimationDesc) currentAnimation);
-		} else if (currentAnimation == null && initAnimation != null) {
-			String a = initAnimation;
-
-			if (flipX) {
-				a = getFlipId(a);
-			}
-
-			AtlasAnimationDesc fa = (AtlasAnimationDesc) fanims.get(a);
-
-			if (fa != null && !fa.preload)
-				retrieveFA(fa);
-		}
-
-		if (currentAnimation != null) {
-			setFrame(currentFrameIndex);
-		} else if (initAnimation != null) {
-			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
-		}
-
-		computeBbox();
-	}
-
-	@Override
-	public void dispose() {
-		for (String key : sourceCache.keySet()) {
-			if (sourceCache.get(key).refCounter > 0)
-				EngineAssetManager.getInstance().disposeAtlas(key);
-		}
-
-		sourceCache.clear();
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-
-		} else {
-			json.writeValue("currentFrameIndex", currentFrameIndex);
-
-			if (faTween != null)
-				json.writeValue("faTween", faTween);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
-		} else {
-
-			currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
-			faTween = json.readValue("faTween", FATween.class, jsonData);
-
-			if (faTween != null)
-				faTween.setTarget(this);
-		}
-	}
+    String anim = sb.toString();
+
+    if (getAnimation(anim) == null) {
+      anim = id;
+    }
+
+    startAnimation(anim, repeatType, count, null);
+  }
+
+  @Override
+  public void startAnimation(
+      String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+    startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
+  }
+
+  private void loadSource(String source) {
+    CacheEntry entry = sourceCache.get(source);
+
+    if (entry == null) {
+      entry = new CacheEntry();
+      sourceCache.put(source, entry);
+    }
+
+    if (entry.refCounter == 0) EngineAssetManager.getInstance().loadAtlas(source);
+
+    entry.refCounter++;
+  }
+
+  private void retrieveFA(AtlasAnimationDesc fa) {
+    retrieveSource(fa.source);
+    fa.regions = EngineAssetManager.getInstance().getRegions(fa.source, fa.id);
+  }
+
+  private void retrieveSource(String source) {
+    CacheEntry entry = sourceCache.get(source);
+
+    if (entry == null || entry.refCounter < 1) {
+      loadSource(source);
+      EngineAssetManager.getInstance().finishLoading();
+    }
+  }
+
+  private void disposeSource(String source) {
+    CacheEntry entry = sourceCache.get(source);
+
+    if (entry.refCounter == 1) {
+      EngineAssetManager.getInstance().disposeAtlas(source);
+    }
+
+    entry.refCounter--;
+  }
+
+  @Override
+  public void loadAssets() {
+    for (AnimationDesc fa : fanims.values()) {
+      if (fa.preload) loadSource(fa.source);
+    }
+
+    if (currentAnimation != null && !currentAnimation.preload) {
+      loadSource(currentAnimation.source);
+    } else if (currentAnimation == null && initAnimation != null) {
+      String a = initAnimation;
+
+      if (flipX) {
+        a = getFlipId(a);
+      }
+
+      AnimationDesc fa = fanims.get(a);
+
+      if (fa != null && !fa.preload) loadSource(fa.source);
+    }
+  }
+
+  @Override
+  public void retrieveAssets() {
+    for (AnimationDesc fa : fanims.values()) {
+      if (fa.preload) retrieveFA((AtlasAnimationDesc) fa);
+    }
+
+    if (currentAnimation != null && !currentAnimation.preload) {
+      retrieveFA((AtlasAnimationDesc) currentAnimation);
+    } else if (currentAnimation == null && initAnimation != null) {
+      String a = initAnimation;
+
+      if (flipX) {
+        a = getFlipId(a);
+      }
+
+      AtlasAnimationDesc fa = (AtlasAnimationDesc) fanims.get(a);
+
+      if (fa != null && !fa.preload) retrieveFA(fa);
+    }
+
+    if (currentAnimation != null) {
+      setFrame(currentFrameIndex);
+    } else if (initAnimation != null) {
+      startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
+    }
+
+    computeBbox();
+  }
+
+  @Override
+  public void dispose() {
+    for (String key : sourceCache.keySet()) {
+      if (sourceCache.get(key).refCounter > 0) EngineAssetManager.getInstance().disposeAtlas(key);
+    }
+
+    sourceCache.clear();
+  }
+
+  @Override
+  public void write(Json json) {
+    super.write(json);
+
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+
+    } else {
+      json.writeValue("currentFrameIndex", currentFrameIndex);
+
+      if (faTween != null) json.writeValue("faTween", faTween);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
+
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
+    } else {
+
+      currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
+      faTween = json.readValue("faTween", FATween.class, jsonData);
+
+      if (faTween != null) faTween.setTarget(this);
+    }
+  }
 }

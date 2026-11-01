@@ -7,62 +7,65 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.InterpolationMode;
 
-/**
- * Tween for SpriteActor alpha animation
- */
+/** Tween for SpriteActor alpha animation */
 public class SpriteAlphaTween extends Tween<SpriteActor> {
 
-	private float startAlpha;
-	private float targetAlpha;
+  private float startAlpha;
+  private float targetAlpha;
 
-	public SpriteAlphaTween() {
-	}
+  public SpriteAlphaTween() {}
 
-	public void start(SpriteActor target, Type repeatType, int count, float tAlpha, float duration,
-			InterpolationMode interpolation, ActionCallback cb) {
+  public void start(
+      SpriteActor target,
+      Type repeatType,
+      int count,
+      float tAlpha,
+      float duration,
+      InterpolationMode interpolation,
+      ActionCallback cb) {
 
-		setTarget(target);
+    setTarget(target);
 
-		if (target.getTint() == null) {
-			target.setTint(Color.WHITE.cpy());
-		} else {
-			// to set the flag dirty
-			target.setTint(target.getTint());
-		}
+    if (target.getTint() == null) {
+      target.setTint(Color.WHITE.cpy());
+    } else {
+      // to set the flag dirty
+      target.setTint(target.getTint());
+    }
 
-		startAlpha = target.getTint().a;
-		targetAlpha = tAlpha;
+    startAlpha = target.getTint().a;
+    targetAlpha = tAlpha;
 
-		setDuration(duration);
-		setType(repeatType);
-		setCount(count);
-		setInterpolation(interpolation);
+    setDuration(duration);
+    setType(repeatType);
+    setCount(count);
+    setInterpolation(interpolation);
 
-		if (cb != null) {
-			setCb(cb);
-		}
+    if (cb != null) {
+      setCb(cb);
+    }
 
-		restart();
-	}
+    restart();
+  }
 
-	@Override
-	public void updateTarget() {
-		target.getTint().a = startAlpha + getPercent() * (targetAlpha - startAlpha);
-	}
+  @Override
+  public void updateTarget() {
+    target.getTint().a = startAlpha + getPercent() * (targetAlpha - startAlpha);
+  }
 
-	@Override
-	public void write(Json json) {
-		super.write(json);
+  @Override
+  public void write(Json json) {
+    super.write(json);
 
-		json.writeValue("startAlpha", startAlpha);
-		json.writeValue("targetAlpha", targetAlpha);
-	}
+    json.writeValue("startAlpha", startAlpha);
+    json.writeValue("targetAlpha", targetAlpha);
+  }
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
 
-		startAlpha = json.readValue("startAlpha", float.class, 1.0f, jsonData);
-		targetAlpha = json.readValue("targetAlpha", float.class, 1.0f, jsonData);
-	}
+    startAlpha = json.readValue("startAlpha", float.class, 1.0f, jsonData);
+    targetAlpha = json.readValue("targetAlpha", float.class, 1.0f, jsonData);
+  }
 }

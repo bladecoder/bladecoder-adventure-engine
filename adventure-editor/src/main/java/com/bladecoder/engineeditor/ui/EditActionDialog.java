@@ -1,7 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -20,156 +18,184 @@ import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.panels.ScopePanel;
+import java.util.Arrays;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
-	private InputPanel actionPanel;
-	private String scope;
-	private int pos;
+  private InputPanel actionPanel;
+  private String scope;
+  private int pos;
 
-	@SuppressWarnings("unchecked")
-	public EditActionDialog(Skin skin, Verb parent, Action e, String scope, int pos) {
-		super(skin);
+  @SuppressWarnings("unchecked")
+  public EditActionDialog(Skin skin, Verb parent, Action e, String scope, int pos) {
+    super(skin);
 
-		this.scope = scope;
-		this.pos = e == null ? pos + 1 : pos;
+    this.scope = scope;
+    this.pos = e == null ? pos + 1 : pos;
 
-		String[] actions = ActionDetector.getActionNames();
-		Arrays.sort(actions);
+    String[] actions = ActionDetector.getActionNames();
+    Arrays.sort(actions);
 
-		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions, true);
+    actionPanel =
+        InputPanelFactory.createInputPanel(
+            skin, "Action", "Select the action to create.", actions, true);
 
-		((FilteredSelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
+    ((FilteredSelectBox<String>) actionPanel.getField())
+        .addListener(
+            new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				setAction();
-			}
-		});
+              @Override
+              public void changed(ChangeEvent event, Actor actor) {
+                setAction();
+              }
+            });
 
-		if (e != null) {
-			String id = ActionUtils.getName(e.getClass());
+    if (e != null) {
+      String id = ActionUtils.getName(e.getClass());
 
-			if (id != null) {
-				actionPanel.setText(id);
-			}
+      if (id != null) {
+        actionPanel.setText(id);
+      }
+    }
 
-		}
+    init(parent, e, new InputPanel[0]);
 
-		init(parent, e, new InputPanel[0]);
+    setAction();
 
-		setAction();
+    if (e != null) modelToInputs();
+  }
 
-		if (e != null)
-			modelToInputs();
+  private void setAction() {
+    String id = actionPanel.getText();
 
-	}
+    getCenterPanel().clear();
+    addInputPanel(actionPanel);
 
-	private void setAction() {
-		String id = actionPanel.getText();
+    Action tmp = null;
 
-		getCenterPanel().clear();
-		addInputPanel(actionPanel);
+    tmp = ActionDetector.create(id, null);
 
-		Action tmp = null;
+    String info = ActionUtils.getInfo(tmp.getClass());
 
-		tmp = ActionDetector.create(id, null);
-		
-		String info = ActionUtils.getInfo(tmp.getClass());
-		
-		if(ActionUtils.isDeprecated(tmp.getClass()))
-			info = "[RED]DEPRECATED[]\n" + info;
-		
-		setInfo(info);
+    if (ActionUtils.isDeprecated(tmp.getClass())) info = "[RED]DEPRECATED[]\n" + info;
 
-		if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
-			e = tmp;
+    setInfo(info);
 
-		if (e != null) {
-			Param[] params = ActionUtils.getParams(e);
+    if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
+      e = tmp;
 
-			i = new InputPanel[params.length];
+    if (e != null) {
+      Param[] params = ActionUtils.getParams(e);
 
-			for (int j = 0; j < params.length; j++) {
-				if (params[j].options instanceof Enum[]) {
-					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc, params[j].type,
-							params[j].mandatory, params[j].defaultValue, (Enum[]) params[j].options);
-				} else {
-					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc, params[j].type,
-							params[j].mandatory, params[j].defaultValue, (String[]) params[j].options);
-				}
+      i = new InputPanel[params.length];
 
-				addInputPanel(i[j]);
+      for (int j = 0; j < params.length; j++) {
+        if (params[j].options instanceof Enum[]) {
+          i[j] =
+              InputPanelFactory.createInputPanel(
+                  getSkin(),
+                  params[j].name,
+                  params[j].desc,
+                  params[j].type,
+                  params[j].mandatory,
+                  params[j].defaultValue,
+                  (Enum[]) params[j].options);
+        } else {
+          i[j] =
+              InputPanelFactory.createInputPanel(
+                  getSkin(),
+                  params[j].name,
+                  params[j].desc,
+                  params[j].type,
+                  params[j].mandatory,
+                  params[j].defaultValue,
+                  (String[]) params[j].options);
+        }
 
-				if ((i[j].getField() instanceof TextField && params[j].name.toLowerCase().endsWith("text"))
-						|| i[j].getField() instanceof ScrollPane) {
-					i[j].getCell(i[j].getField()).fillX();
-				}
-			}
-		} else {
-			i = new InputPanel[0];
-		}
-	}
+        addInputPanel(i[j]);
 
-	@Override
-	protected void inputsToModel(boolean create) {
-		for (int j = 0; j < i.length; j++) {
-			String v = i[j].getText();
-			try {
-				if (i[j].getTitle().toLowerCase().endsWith("text")) {
+        if ((i[j].getField() instanceof TextField && params[j].name.toLowerCase().endsWith("text"))
+            || i[j].getField() instanceof ScrollPane) {
+          i[j].getCell(i[j].getField()).fillX();
+        }
+      }
+    } else {
+      i = new InputPanel[0];
+    }
+  }
 
-					String key = ActionUtils.getStringValue(e, i[j].getTitle());
+  @Override
+  protected void inputsToModel(boolean create) {
+    for (int j = 0; j < i.length; j++) {
+      String v = i[j].getText();
+      try {
+        if (i[j].getTitle().toLowerCase().endsWith("text")) {
 
-					if (scope.equals(ScopePanel.WORLD_SCOPE)) {
-						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = Ctx.project.getI18N().genKey(null, null, parent.getHashKey(), pos, i[j].getTitle());
+          String key = ActionUtils.getStringValue(e, i[j].getTitle());
 
-						Ctx.project.getI18N().setWorldTranslation(key, v);
-					} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
-						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), null,
-									parent.getHashKey(), pos, i[j].getTitle());
+          if (scope.equals(ScopePanel.WORLD_SCOPE)) {
+            if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+              key =
+                  Ctx.project
+                      .getI18N()
+                      .genKey(null, null, parent.getHashKey(), pos, i[j].getTitle());
 
-						Ctx.project.getI18N().setTranslation(key, v);
-					} else {
-						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(),
-									Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, i[j].getTitle());
+            Ctx.project.getI18N().setWorldTranslation(key, v);
+          } else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
+            if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+              key =
+                  Ctx.project
+                      .getI18N()
+                      .genKey(
+                          Ctx.project.getSelectedScene().getId(),
+                          null,
+                          parent.getHashKey(),
+                          pos,
+                          i[j].getTitle());
 
-						Ctx.project.getI18N().setTranslation(key, v);
-					}
+            Ctx.project.getI18N().setTranslation(key, v);
+          } else {
+            if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+              key =
+                  Ctx.project
+                      .getI18N()
+                      .genKey(
+                          Ctx.project.getSelectedScene().getId(),
+                          Ctx.project.getSelectedActor().getId(),
+                          parent.getHashKey(),
+                          pos,
+                          i[j].getTitle());
 
-					if (v != null && !v.isEmpty())
-						v = key;
-					else
-						v = null;
-				}
+            Ctx.project.getI18N().setTranslation(key, v);
+          }
 
-				ActionUtils.setParam(e, i[j].getTitle(), v);
+          if (v != null && !v.isEmpty()) v = key;
+          else v = null;
+        }
 
-			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				EditorLogger.error(e.getMessage());
-			}
-		}
+        ActionUtils.setParam(e, i[j].getTitle(), v);
 
-		Ctx.project.setModified();
-	}
+      } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+        EditorLogger.error(e.getMessage());
+      }
+    }
 
-	@Override
-	protected void modelToInputs() {
-		for (int j = 0; j < i.length; j++) {
+    Ctx.project.setModified();
+  }
 
-			try {
-				String v = ActionUtils.getStringValue(e, i[j].getTitle());
+  @Override
+  protected void modelToInputs() {
+    for (int j = 0; j < i.length; j++) {
 
-				if (scope.equals(ScopePanel.WORLD_SCOPE))
-					v = Ctx.project.getI18N().getWorldTranslation(v);
-				else
-					v = Ctx.project.translate(v);
+      try {
+        String v = ActionUtils.getStringValue(e, i[j].getTitle());
 
-				i[j].setText(v);
-			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				EditorLogger.error(e.getMessage());
-			}
-		}
-	}
+        if (scope.equals(ScopePanel.WORLD_SCOPE)) v = Ctx.project.getI18N().getWorldTranslation(v);
+        else v = Ctx.project.translate(v);
+
+        i[j].setText(v);
+      } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+        EditorLogger.error(e.getMessage());
+      }
+    }
+  }
 }

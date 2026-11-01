@@ -7,17 +7,16 @@ import com.bladecoder.engineeditor.qa.EndVisitor;
 import com.bladecoder.engineeditor.qa.SceneVisitor;
 
 public class Stats implements SceneVisitor, EndVisitor {
-	
-	int numScenes = 0;
 
-	@Override
-	public void visit(Scene s) {
-		numScenes++;
-	}
+  int numScenes = 0;
 
-	@Override
-	public void end(World w) {
-		EditorLogger.msg("Num Scenes: " + numScenes);
-	}
-	
+  @Override
+  public void visit(Scene s) {
+    numScenes++;
+  }
+
+  @Override
+  public void end(World w) {
+    EditorLogger.msg("Num Scenes: " + numScenes);
+  }
 }

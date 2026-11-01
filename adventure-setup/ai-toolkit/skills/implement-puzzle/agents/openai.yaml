@@ -1,0 +1,3 @@
+interface:
+  display_name: "Implement Puzzle"
+  short_description: "Implement puzzles with real engine verification"

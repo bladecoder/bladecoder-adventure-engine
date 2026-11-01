@@ -11,106 +11,106 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
+@ActionDescription(
+    "Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
-	@ActionPropertyDescription("Sets the camera position relative to this actor.")
-	@ActionProperty(type = Type.ACTOR)
-	private String target;
+  @ActionPropertyDescription("Sets the camera position relative to this actor.")
+  @ActionProperty(type = Type.ACTOR)
+  private String target;
 
-	@ActionProperty
-	@ActionPropertyDescription("The target position")
-	private Vector2 pos;
+  @ActionProperty
+  @ActionPropertyDescription("The target position")
+  private Vector2 pos;
 
-	@ActionProperty
-	@ActionPropertyDescription("The target 'zoom'. If not set, the current zoom is used.")
-	private Float zoom;
+  @ActionProperty
+  @ActionPropertyDescription("The target 'zoom'. If not set, the current zoom is used.")
+  private Float zoom;
 
-	@ActionProperty
-	@ActionPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
-	private Float duration;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "Duration of the animation in seconds. If not '0' and animation is triggered")
+  private Float duration;
 
-	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
-	@ActionProperty(type = Type.ACTOR)
-	private String followActor;
+  @ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
+  @ActionProperty(type = Type.ACTOR)
+  private String followActor;
 
-	@ActionProperty
-	@ActionPropertyDescription("The interpolation mode")
-	private InterpolationMode interpolation;
+  @ActionProperty
+  @ActionPropertyDescription("The interpolation mode")
+  private InterpolationMode interpolation;
 
-	@ActionProperty(defaultValue = "true", required = true)
-	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	private boolean wait = true;
+  @ActionProperty(defaultValue = "true", required = true)
+  @ActionPropertyDescription(
+      "If this param is 'false' the text is showed and the action continues inmediatly")
+  private boolean wait = true;
 
-	private World w;
+  private World w;
 
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-	@Override
-	public boolean run(VerbRunner cb) {
+  @Override
+  public boolean run(VerbRunner cb) {
 
-		Vector2 pos2 = null;
+    Vector2 pos2 = null;
 
-		Float zoom2 = zoom;
+    Float zoom2 = zoom;
 
-		if (pos != null)
-			pos2 = new Vector2(pos);
+    if (pos != null) pos2 = new Vector2(pos);
 
-		float scale = EngineAssetManager.getInstance().getScale();
+    float scale = EngineAssetManager.getInstance().getScale();
 
-		SceneCamera camera = w.getSceneCamera();
+    SceneCamera camera = w.getSceneCamera();
 
-		if (zoom2 == null || zoom2 < 0)
-			zoom2 = camera.getZoom();
+    if (zoom2 == null || zoom2 < 0) zoom2 = camera.getZoom();
 
-		if (pos == null && target == null) {
-			pos2 = new Vector2(camera.getPosition());
-			pos2.x /= scale;
-			pos2.y /= scale;
-		}
+    if (pos == null && target == null) {
+      pos2 = new Vector2(camera.getPosition());
+      pos2.x /= scale;
+      pos2.y /= scale;
+    }
 
-		if (target != null) {
-			BaseActor target = w.getCurrentScene().getActor(this.target, false);
+    if (target != null) {
+      BaseActor target = w.getCurrentScene().getActor(this.target, false);
 
-			float x = target.getX();
-			float y = target.getY();
+      float x = target.getX();
+      float y = target.getY();
 
-			if (target instanceof InteractiveActor) {
-				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
-				x += refPoint.x;
-				y += refPoint.y;
-			}
+      if (target instanceof InteractiveActor) {
+        Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
+        x += refPoint.x;
+        y += refPoint.y;
+      }
 
-			if (pos2 != null) {
-				pos2.x += x;
-				pos2.y += y;
-			} else {
-				pos2 = new Vector2(x, y);
-			}
-		}
+      if (pos2 != null) {
+        pos2.x += x;
+        pos2.y += y;
+      } else {
+        pos2 = new Vector2(x, y);
+      }
+    }
 
-		camera.stopAnim();
+    camera.stopAnim();
 
-		if (followActor != null) {
-			if (followActor.equals("none"))
-				w.getCurrentScene().setCameraFollowActor(null);
-			else {
-				w.getCurrentScene()
-						.setCameraFollowActor((SpriteActor) w.getCurrentScene().getActor(followActor, false));
-			}
-		}
+    if (followActor != null) {
+      if (followActor.equals("none")) w.getCurrentScene().setCameraFollowActor(null);
+      else {
+        w.getCurrentScene()
+            .setCameraFollowActor((SpriteActor) w.getCurrentScene().getActor(followActor, false));
+      }
+    }
 
-		if (duration == null || duration == 0) {
-			camera.setZoom(zoom2);
-			camera.setPosition(pos2.x * scale, pos2.y * scale);
-			return false;
-		} else {
-			camera.startAnimation(pos2.x * scale, pos2.y * scale, zoom2, duration, interpolation, wait ? cb : null);
-		}
+    if (duration == null || duration == 0) {
+      camera.setZoom(zoom2);
+      camera.setPosition(pos2.x * scale, pos2.y * scale);
+      return false;
+    } else {
+      camera.startAnimation(
+          pos2.x * scale, pos2.y * scale, zoom2, duration, interpolation, wait ? cb : null);
+    }
 
-		return wait;
-	}
-
+    return wait;
+  }
 }

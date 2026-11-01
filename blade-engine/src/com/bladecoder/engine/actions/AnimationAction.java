@@ -5,59 +5,67 @@ import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
 
-	@ActionProperty(required = true)
-	@ActionPropertyDescription("The Animation to set")
-	private ActorAnimationRef animation;
+  @ActionProperty(required = true)
+  @ActionPropertyDescription("The Animation to set")
+  private ActorAnimationRef animation;
 
-	@ActionProperty(required = true, defaultValue = "-1")
-	@ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
-	private int count = -1;
+  @ActionProperty(required = true, defaultValue = "-1")
+  @ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
+  private int count = -1;
 
-	@ActionProperty(required = true)
-	@ActionPropertyDescription("Waits to finish the animation.")
-	private boolean wait = true;
+  @ActionProperty(required = true)
+  @ActionPropertyDescription("Waits to finish the animation.")
+  private boolean wait = true;
 
-	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
-	@ActionPropertyDescription("The repeat mode")
-	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
-	
-	@ActionProperty(required = true, defaultValue = "false")
-	@ActionPropertyDescription("Keeps the current actor animation direction.")
-	private boolean keepDirection = false;
-	
-	private World w;
-	
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
+  @ActionPropertyDescription("The repeat mode")
+  private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
-	@Override
-	public boolean run(VerbRunner cb) {
-//		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}.{1}", animation.getActorId(), animation.getAnimationId()));
-		
-		String actorId = animation.getActorId();
-		
-		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actorId, true);
-		
-		String anim = animation.getAnimationId();
-		
-		if(keepDirection) {
-			String c = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
-			
-			if(anim.endsWith(AnimationRenderer.LEFT) && c.endsWith(AnimationRenderer.RIGHT) || 
-					anim.endsWith(AnimationRenderer.RIGHT) && c.endsWith(AnimationRenderer.LEFT)) {
-				anim = AnimationRenderer.getFlipId(anim);
-			}
-		}
+  @ActionProperty(required = true, defaultValue = "false")
+  @ActionPropertyDescription("Keeps the current actor animation direction.")
+  private boolean keepDirection = false;
 
-		a.startAnimation(anim, repeat, count, wait?cb:null);
+  private World w;
 
-		return wait;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
+  @Override
+  public boolean run(VerbRunner cb) {
+    //		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}.{1}", animation.getActorId(),
+    // animation.getAnimationId()));
+
+    String actorId = animation.getActorId();
+
+    SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actorId, true);
+
+    String anim = animation.getAnimationId();
+
+    if (keepDirection) {
+      String c = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
+
+      if (anim.endsWith(AnimationRenderer.LEFT) && c.endsWith(AnimationRenderer.RIGHT)
+          || anim.endsWith(AnimationRenderer.RIGHT) && c.endsWith(AnimationRenderer.LEFT)) {
+        anim = AnimationRenderer.getFlipId(anim);
+      }
+    }
+
+    if (a.getRenderer() instanceof AnimationRenderer
+        && !((AnimationRenderer) a.getRenderer()).hasAnimation(anim)) {
+      EngineLogger.warn(
+          "AnimationDesc not found: " + actorId + "#" + anim + "; keeping current pose");
+      return false;
+    }
+
+    a.startAnimation(anim, repeat, count, wait ? cb : null);
+
+    return wait;
+  }
 }

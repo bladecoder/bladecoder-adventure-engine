@@ -1,0 +1,3 @@
+interface:
+  display_name: "Puzzle Designer"
+  short_description: "Design puzzles with clear state and feedback"

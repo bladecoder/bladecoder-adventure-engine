@@ -8,77 +8,75 @@ import com.bladecoder.engineeditor.common.Message;
 
 public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 
-	protected T e;
-	protected PARENT parent;
-	protected InputPanel[] i;
+  protected T e;
+  protected PARENT parent;
+  protected InputPanel[] i;
 
-	protected ChangeListener listener;
+  protected ChangeListener listener;
 
-	public EditModelDialog(Skin skin) {
-		super("", skin);
-	}
+  public EditModelDialog(Skin skin) {
+    super("", skin);
+  }
 
-	protected void init(PARENT parent, T e, InputPanel[] inputs) {
-		this.e = e;
-		this.parent = parent;
-		this.i = inputs;
+  protected void init(PARENT parent, T e, InputPanel[] inputs) {
+    this.e = e;
+    this.parent = parent;
+    this.i = inputs;
 
-		getCenterPanel().clear();
+    getCenterPanel().clear();
 
-		for (InputPanel i : inputs) {
-			addInputPanel(i);
-		}
+    for (InputPanel i : inputs) {
+      addInputPanel(i);
+    }
 
-		if (e == null) {
-			setTitle("CREATE OBJECT");
-		} else {		
-			setTitle("EDITING " + e.getClass().getSimpleName());
-			
-			try{
-				modelToInputs();
-			} catch (Exception e1) {
-				EditorLogger.error(e1.getMessage(), e1);
-			}			
-		}
+    if (e == null) {
+      setTitle("CREATE OBJECT");
+    } else {
+      setTitle("EDITING " + e.getClass().getSimpleName());
 
-		// TODO Set focus to the 1st element
-		// if(inputs.length > 0) {
-		// getStage().setKeyboardFocus(inputs[0].getField());
-		// }
-	}
+      try {
+        modelToInputs();
+      } catch (Exception e1) {
+        EditorLogger.error(e1.getMessage(), e1);
+      }
+    }
 
-	@Override
-	protected void ok() {
-		try{
-			inputsToModel(e==null);
-		} catch (Exception e1) {
-			Message.showMsg(getStage(), "Error getting fields " + e1.getMessage(), 4);
-			EditorLogger.printStackTrace(e1);
-		}
+    // TODO Set focus to the 1st element
+    // if(inputs.length > 0) {
+    // getStage().setKeyboardFocus(inputs[0].getField());
+    // }
+  }
 
-		if (listener != null)
-			listener.changed(new ChangeEvent(), this);
-	}
+  @Override
+  protected void ok() {
+    try {
+      inputsToModel(e == null);
+    } catch (Exception e1) {
+      Message.showMsg(getStage(), "Error getting fields " + e1.getMessage(), 4);
+      EditorLogger.printStackTrace(e1);
+    }
 
-	public void setListener(ChangeListener l) {
-		listener = l;
-	}
+    if (listener != null) listener.changed(new ChangeEvent(), this);
+  }
 
-	protected abstract void inputsToModel(boolean create);
+  public void setListener(ChangeListener l) {
+    listener = l;
+  }
 
-	protected abstract void modelToInputs();
+  protected abstract void inputsToModel(boolean create);
 
-	public T getElement() {
-		return e;
-	}
+  protected abstract void modelToInputs();
 
-	@Override
-	protected boolean validateFields() {
-		for (InputPanel p : i) {
-			if (p.isVisible() && !p.validateField())
-				return false;
-		}
+  public T getElement() {
+    return e;
+  }
 
-		return true;
-	}
+  @Override
+  protected boolean validateFields() {
+    for (InputPanel p : i) {
+      if (p.isVisible() && !p.validateField()) return false;
+    }
+
+    return true;
+  }
 }

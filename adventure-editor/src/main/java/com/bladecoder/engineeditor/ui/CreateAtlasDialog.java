@@ -1,8 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Timer;
@@ -17,142 +14,169 @@ import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import java.io.IOException;
+import java.util.List;
 
 public class CreateAtlasDialog extends EditDialog {
 
-	private static final String INFO = "Package all the images in the selected dir to a new atlas";
+  private static final String INFO = "Package all the images in the selected dir to a new atlas";
 
-	private static final String[] FILTERS = { "Linear", "Nearest", "MipMap", "MipMapLinearLinear",
-			"MipMapLinearNearest", "MipMapNearestLinear", "MipMapNearestNearest" };
+  private static final String[] FILTERS = {
+    "Linear",
+    "Nearest",
+    "MipMap",
+    "MipMapLinearLinear",
+    "MipMapLinearNearest",
+    "MipMapNearestLinear",
+    "MipMapNearestNearest"
+  };
 
-	private static final String[] OUTPUT_FORMATS = { "png", "jpg" };
+  private static final String[] OUTPUT_FORMATS = {"png", "jpg"};
 
-	private InputPanel name;
-	private InputPanel dir;
-	private InputPanel filterMin;
-	private InputPanel filterMag;
-	private InputPanel maxWidth;
-	private InputPanel maxHeight;
-	private InputPanel outputFormat;
+  private InputPanel name;
+  private InputPanel dir;
+  private InputPanel filterMin;
+  private InputPanel filterMag;
+  private InputPanel maxWidth;
+  private InputPanel maxHeight;
+  private InputPanel outputFormat;
 
-	public CreateAtlasDialog(Skin skin) {
-		super("CREATE ATLAS", skin);
+  public CreateAtlasDialog(Skin skin) {
+    super("CREATE ATLAS", skin);
 
-		name = InputPanelFactory.createInputPanel(skin, "Atlas Name", "The name of the sprite atlas", true);
-		dir = new FileInputPanel(skin, "Input Image Directory",
-				"Select the output directory with the images to create the Atlas", FileInputPanel.DialogType.DIRECTORY);
+    name =
+        InputPanelFactory.createInputPanel(
+            skin, "Atlas Name", "The name of the sprite atlas", true);
+    dir =
+        new FileInputPanel(
+            skin,
+            "Input Image Directory",
+            "Select the output directory with the images to create the Atlas",
+            FileInputPanel.DialogType.DIRECTORY);
 
-		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter", "The filter when the texture is scaled down",
-				FILTERS, true);
-		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter", "The filter when the texture is scaled up",
-				FILTERS, true);
-		maxWidth = InputPanelFactory.createInputPanel(skin, "Max Width",
-				"The atlas max page width. Be careful, some devices has a 4096px limit.", Param.Type.INTEGER, true);
-		maxHeight = InputPanelFactory.createInputPanel(skin, "Max Height",
-				"The atlas max page height. Be careful, some devices has a 4096px limit.", Param.Type.INTEGER, true);
+    filterMin =
+        InputPanelFactory.createInputPanel(
+            skin, "Min Filter", "The filter when the texture is scaled down", FILTERS, true);
+    filterMag =
+        InputPanelFactory.createInputPanel(
+            skin, "Mag Filter", "The filter when the texture is scaled up", FILTERS, true);
+    maxWidth =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Max Width",
+            "The atlas max page width. Be careful, some devices has a 4096px limit.",
+            Param.Type.INTEGER,
+            true);
+    maxHeight =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Max Height",
+            "The atlas max page height. Be careful, some devices has a 4096px limit.",
+            Param.Type.INTEGER,
+            true);
 
-		outputFormat = InputPanelFactory.createInputPanel(skin, "Output format",
-				"The output format of the image. Note that 'jpg' doesn't support transparency.", OUTPUT_FORMATS, true);
+    outputFormat =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Output format",
+            "The output format of the image. Note that 'jpg' doesn't support transparency.",
+            OUTPUT_FORMATS,
+            true);
 
-		addInputPanel(name);
-		addInputPanel(dir);
-		addInputPanel(filterMin);
-		addInputPanel(filterMag);
-		addInputPanel(maxWidth);
-		addInputPanel(maxHeight);
-		addInputPanel(outputFormat);
+    addInputPanel(name);
+    addInputPanel(dir);
+    addInputPanel(filterMin);
+    addInputPanel(filterMag);
+    addInputPanel(maxWidth);
+    addInputPanel(maxHeight);
+    addInputPanel(outputFormat);
 
-		String maxWH = Integer.toString(ImageUtils.getRecommendedAtlasSize());
+    String maxWH = Integer.toString(ImageUtils.getRecommendedAtlasSize());
 
-		maxWidth.setText(maxWH);
-		maxHeight.setText(maxWH);
-		filterMin.setText(FILTERS[0]);
-		filterMag.setText(FILTERS[0]);
-		outputFormat.setText(OUTPUT_FORMATS[0]);
+    maxWidth.setText(maxWH);
+    maxHeight.setText(maxWH);
+    filterMin.setText(FILTERS[0]);
+    filterMag.setText(FILTERS[0]);
+    outputFormat.setText(OUTPUT_FORMATS[0]);
 
-		setInfo(INFO);
-	}
+    setInfo(INFO);
+  }
 
-	@Override
-	protected void ok() {
-		Message.showMsg(getStage(), "Generating atlas...", true);
+  @Override
+  protected void ok() {
+    Message.showMsg(getStage(), "Generating atlas...", true);
 
-		Timer.schedule(new Task() {
-			@Override
-			public void run() {
-				genAtlas();
-			}
-		}, 1);
-	}
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            genAtlas();
+          }
+        },
+        1);
+  }
 
-	@Override
-	protected boolean validateFields() {
-		boolean ok = true;
+  @Override
+  protected boolean validateFields() {
+    boolean ok = true;
 
-		if (!dir.validateField())
-			ok = false;
+    if (!dir.validateField()) ok = false;
 
-		if (!name.validateField())
-			ok = false;
+    if (!name.validateField()) ok = false;
 
-		return ok;
-	}
+    return ok;
+  }
 
-	private void genAtlas() {
-		String outdir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
-		List<String> res = Ctx.project.getResolutions();
-		String name = this.name.getText();
-		String fMin = filterMin.getText();
-		String fMag = filterMag.getText();
+  private void genAtlas() {
+    String outdir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
+    List<String> res = Ctx.project.getResolutions();
+    String name = this.name.getText();
+    String fMin = filterMin.getText();
+    String fMag = filterMag.getText();
 
-		TextureFilter filterMin = null, filterMag = null;
+    TextureFilter filterMin = null, filterMag = null;
 
-		if (fMin.equals("Linear"))
-			filterMin = TextureFilter.Linear;
-		else if (fMin.equals("Nearest"))
-			filterMin = TextureFilter.Nearest;
-		else if (fMin.equals("MipMap"))
-			filterMin = TextureFilter.MipMap;
-		else if (fMin.equals("MipMapLinearLinear"))
-			filterMin = TextureFilter.MipMapLinearLinear;
-		else if (fMin.equals("MipMapLinearNearest"))
-			filterMin = TextureFilter.MipMapLinearNearest;
-		else if (fMin.equals("MipMapNearestLinear"))
-			filterMin = TextureFilter.MipMapNearestLinear;
-		else if (fMin.equals("MipMapNearestNearest"))
-			filterMin = TextureFilter.MipMapNearestNearest;
+    if (fMin.equals("Linear")) filterMin = TextureFilter.Linear;
+    else if (fMin.equals("Nearest")) filterMin = TextureFilter.Nearest;
+    else if (fMin.equals("MipMap")) filterMin = TextureFilter.MipMap;
+    else if (fMin.equals("MipMapLinearLinear")) filterMin = TextureFilter.MipMapLinearLinear;
+    else if (fMin.equals("MipMapLinearNearest")) filterMin = TextureFilter.MipMapLinearNearest;
+    else if (fMin.equals("MipMapNearestLinear")) filterMin = TextureFilter.MipMapNearestLinear;
+    else if (fMin.equals("MipMapNearestNearest")) filterMin = TextureFilter.MipMapNearestNearest;
 
-		if (fMag.equals("Linear"))
-			filterMag = TextureFilter.Linear;
-		else if (fMag.equals("Nearest"))
-			filterMag = TextureFilter.Nearest;
-		else if (fMag.equals("MipMap"))
-			filterMag = TextureFilter.MipMap;
-		else if (fMag.equals("MipMapLinearLinear"))
-			filterMag = TextureFilter.MipMapLinearLinear;
-		else if (fMag.equals("MipMapLinearNearest"))
-			filterMag = TextureFilter.MipMapLinearNearest;
-		else if (fMag.equals("MipMapNearestLinear"))
-			filterMag = TextureFilter.MipMapNearestLinear;
-		else if (fMag.equals("MipMapNearestNearest"))
-			filterMag = TextureFilter.MipMapNearestNearest;
+    if (fMag.equals("Linear")) filterMag = TextureFilter.Linear;
+    else if (fMag.equals("Nearest")) filterMag = TextureFilter.Nearest;
+    else if (fMag.equals("MipMap")) filterMag = TextureFilter.MipMap;
+    else if (fMag.equals("MipMapLinearLinear")) filterMag = TextureFilter.MipMapLinearLinear;
+    else if (fMag.equals("MipMapLinearNearest")) filterMag = TextureFilter.MipMapLinearNearest;
+    else if (fMag.equals("MipMapNearestLinear")) filterMag = TextureFilter.MipMapNearestLinear;
+    else if (fMag.equals("MipMapNearestNearest")) filterMag = TextureFilter.MipMapNearestNearest;
 
-		int maxW = Integer.parseInt(maxWidth.getText());
-		int maxH = Integer.parseInt(maxHeight.getText());
+    int maxW = Integer.parseInt(maxWidth.getText());
+    int maxH = Integer.parseInt(maxHeight.getText());
 
-		for (String r : res) {
-			float scale = Float.parseFloat(r);
+    for (String r : res) {
+      float scale = Float.parseFloat(r);
 
-			try {
-				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, (int) (maxW * scale),
-						(int) (maxH * scale), filterMin, filterMag, outputFormat.getText(), true);
-			} catch (IOException e) {
-				EditorLogger.error(e.getMessage());
-				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
-				return;
-			}
-		}
+      try {
+        ImageUtils.createAtlas(
+            dir.getText(),
+            outdir + "/" + r,
+            name + ".atlas",
+            scale,
+            (int) (maxW * scale),
+            (int) (maxH * scale),
+            filterMin,
+            filterMag,
+            outputFormat.getText(),
+            true);
+      } catch (IOException e) {
+        EditorLogger.error(e.getMessage());
+        Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
+        return;
+      }
+    }
 
-		Message.hideMsg();
-	}
+    Message.hideMsg();
+  }
 }

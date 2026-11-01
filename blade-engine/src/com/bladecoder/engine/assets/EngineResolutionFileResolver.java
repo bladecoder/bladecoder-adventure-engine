@@ -9,123 +9,117 @@ import com.bladecoder.engine.util.FileUtils;
 
 public class EngineResolutionFileResolver implements FileHandleResolver {
 
-	private final FileHandleResolver baseResolver;
-	private Resolution[] descriptors;
-	
-	private Resolution bestDesc;
-	private String fixResolution;
+  private final FileHandleResolver baseResolver;
+  private Resolution[] descriptors;
 
-	public EngineResolutionFileResolver(FileHandleResolver baseResolver) {
-		this.baseResolver = baseResolver;
-	}
+  private Resolution bestDesc;
+  private String fixResolution;
 
-	@Override
-	public FileHandle resolve(String fileName) {		
-		FileHandle originalHandle = new FileHandle(fileName);
-		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
-		
-		if (!FileUtils.exists(handle))
-			handle = baseResolver.resolve(fileName);
-		
-		return handle;
-	}
+  public EngineResolutionFileResolver(FileHandleResolver baseResolver) {
+    this.baseResolver = baseResolver;
+  }
 
-	protected String resolve(FileHandle originalHandle, String suffix) {
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		stringBuilder.append(originalHandle.parent());
-		stringBuilder.append("/");
-		stringBuilder.append(suffix);
-		stringBuilder.append("/");
-		stringBuilder.append(originalHandle.name());
-		
-		return stringBuilder.toString();
-	}
-	
-	
-	public boolean exists(String fileName) {
-		FileHandle originalHandle = new FileHandle(fileName);
-		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
-		
-		if (FileUtils.exists(handle))
-			return true;
-		
-		handle = baseResolver.resolve(fileName);
-		
-		if (FileUtils.exists(handle))
-			return true;
-		
-		return false;
-	}
-	
-	public FileHandleResolver getBaseResolver() {
-		return baseResolver;
-	}
-	
-	/**
-	 * Skip the resolution resolver. In Android the exists() method is expensive, so this
-	 * method save a exists call.
-	 */
-	public FileHandle baseResolve(String fileName) {
-		return baseResolver.resolve(fileName);
-	}
-	
-	public Resolution[] getResolutions() {
-		return descriptors;
-	}
-	
-	public Resolution getResolution() {
-		return bestDesc;
-	}
-	
-	public void selectResolution() {
-		if(fixResolution != null)
-			selectFixedResolution();
-		else
-			selectBestResolution();
-	}
-	
-	private void selectBestResolution() {
-		bestDesc = descriptors[0];
-		
-		int width = Gdx.graphics.getWidth() > Gdx.graphics.getHeight() ?Gdx.graphics.getWidth():Gdx.graphics.getHeight();
-		
-		int bestDist = Math.abs(width - bestDesc.portraitWidth);
+  @Override
+  public FileHandle resolve(String fileName) {
+    FileHandle originalHandle = new FileHandle(fileName);
+    FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
 
-		for (int i = 1; i < descriptors.length; i++) {
-			Resolution other = descriptors[i];
-			int dist =  Math.abs(width - other.portraitWidth);
-			
-			if (dist < bestDist) {
-				bestDesc = descriptors[i];
-				bestDist = dist;
-			}
-		}
-	}
-	
-	public void setResolutions(Resolution[] resolutions) {
-		this.descriptors = resolutions;
-	}
-	
-	/**
-	 * Sets a fixed prefix, disabling choosing the best resolution.
-	 */
-	private void selectFixedResolution() {
-		for (int i = 0; i < descriptors.length; i++) {
-			if(descriptors[i].folder.equals(fixResolution)) {
-				bestDesc = descriptors[i];
-				return;
-			}
-		}
-		
-		if(bestDesc == null) {
-			EngineLogger.error("Requested resolution not found: " + fixResolution);
-			selectBestResolution();
-		}
-	}
-	
-	public void setFixedResolution(String suffix) {
-		fixResolution = suffix;
-	}
+    if (!FileUtils.exists(handle)) handle = baseResolver.resolve(fileName);
 
+    return handle;
+  }
+
+  protected String resolve(FileHandle originalHandle, String suffix) {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append(originalHandle.parent());
+    stringBuilder.append("/");
+    stringBuilder.append(suffix);
+    stringBuilder.append("/");
+    stringBuilder.append(originalHandle.name());
+
+    return stringBuilder.toString();
+  }
+
+  public boolean exists(String fileName) {
+    FileHandle originalHandle = new FileHandle(fileName);
+    FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
+
+    if (FileUtils.exists(handle)) return true;
+
+    handle = baseResolver.resolve(fileName);
+
+    if (FileUtils.exists(handle)) return true;
+
+    return false;
+  }
+
+  public FileHandleResolver getBaseResolver() {
+    return baseResolver;
+  }
+
+  /**
+   * Skip the resolution resolver. In Android the exists() method is expensive, so this method save
+   * a exists call.
+   */
+  public FileHandle baseResolve(String fileName) {
+    return baseResolver.resolve(fileName);
+  }
+
+  public Resolution[] getResolutions() {
+    return descriptors;
+  }
+
+  public Resolution getResolution() {
+    return bestDesc;
+  }
+
+  public void selectResolution() {
+    if (fixResolution != null) selectFixedResolution();
+    else selectBestResolution();
+  }
+
+  private void selectBestResolution() {
+    bestDesc = descriptors[0];
+
+    int width =
+        Gdx.graphics.getWidth() > Gdx.graphics.getHeight()
+            ? Gdx.graphics.getWidth()
+            : Gdx.graphics.getHeight();
+
+    int bestDist = Math.abs(width - bestDesc.portraitWidth);
+
+    for (int i = 1; i < descriptors.length; i++) {
+      Resolution other = descriptors[i];
+      int dist = Math.abs(width - other.portraitWidth);
+
+      if (dist < bestDist) {
+        bestDesc = descriptors[i];
+        bestDist = dist;
+      }
+    }
+  }
+
+  public void setResolutions(Resolution[] resolutions) {
+    this.descriptors = resolutions;
+  }
+
+  /** Sets a fixed prefix, disabling choosing the best resolution. */
+  private void selectFixedResolution() {
+    for (int i = 0; i < descriptors.length; i++) {
+      if (descriptors[i].folder.equals(fixResolution)) {
+        bestDesc = descriptors[i];
+        return;
+      }
+    }
+
+    if (bestDesc == null) {
+      EngineLogger.error("Requested resolution not found: " + fixResolution);
+      selectBestResolution();
+    }
+  }
+
+  public void setFixedResolution(String suffix) {
+    fixResolution = suffix;
+  }
 }

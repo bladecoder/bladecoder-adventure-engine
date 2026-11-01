@@ -17,184 +17,185 @@ import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.InventoryUI;
 import com.bladecoder.engine.ui.SceneScreen.ActionButton;
 import com.bladecoder.engine.util.EngineLogger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class SceneControllerHandler extends ScreenControllerHandler {
 
-    private DefaultSceneScreen dsc;
+  private DefaultSceneScreen dsc;
 
-    public SceneControllerHandler(DefaultSceneScreen dsc) {
-        super(dsc.getUI(), dsc.getStage(), dsc.getViewport());
-        this.dsc = dsc;
+  public SceneControllerHandler(DefaultSceneScreen dsc) {
+    super(dsc.getUI(), dsc.getStage(), dsc.getViewport());
+    this.dsc = dsc;
+  }
+
+  @Override
+  protected boolean buttonUp(Controller controller, int buttonCode) {
+
+    int x = Gdx.input.getX();
+    int y = Gdx.input.getY();
+
+    if (dsc.getInventoryUI().isDragging()
+        && (buttonCode == controller.getMapping().buttonA
+            || buttonCode == controller.getMapping().buttonB)) {
+      dsc.getInventoryUI().touchedUp(x, y, ActionButton.LOOKAT);
+      return true;
     }
 
-    @Override
-    protected boolean buttonUp(Controller controller, int buttonCode) {
-
-        int x = Gdx.input.getX();
-        int y = Gdx.input.getY();
-
-        if (dsc.getInventoryUI().isDragging()
-                && (buttonCode == controller.getMapping().buttonA || buttonCode == controller.getMapping().buttonB)) {
-            dsc.getInventoryUI().touchedUp(x, y, ActionButton.LOOKAT);
-            return true;
-        }
-
-        if (super.buttonUp(controller, buttonCode)) {
-            EngineLogger.debug("> Controller button handled by Stage.");
-            return true;
-        }
-
-        if (buttonCode == controller.getMapping().buttonA) {
-            dsc.tap(ActionButton.LOOKAT, 1);
-        } else if (buttonCode == controller.getMapping().buttonB) {
-            dsc.tap(ActionButton.ACTION, 1);
-        } else if (buttonCode == controller.getMapping().buttonY) {
-            dsc.tap(ActionButton.INVENTORY, 1);
-        } else if (buttonCode == controller.getMapping().buttonX) {
-            if (dsc.getInventoryUI().isVisible()) {
-                dsc.getInventoryUI().hide();
-            } else if (dsc.getInventoryUI().isDragging()) {
-                dsc.getInventoryUI().cancelDragging();
-            }
-        }
-
-        return false;
+    if (super.buttonUp(controller, buttonCode)) {
+      EngineLogger.debug("> Controller button handled by Stage.");
+      return true;
     }
 
-    @Override
-    public void focusNext(PointerToNextType type) {
-        if (dsc.getDialogUI().isVisible()) {
-            pointerToDialog(type);
-        } else if (dsc.getInventoryUI().isVisible()) {
-            pointerToInventory(type);
-        } else if (dsc.getPie().isVisible()) {
-            pointerToPie();
+    if (buttonCode == controller.getMapping().buttonA) {
+      dsc.tap(ActionButton.LOOKAT, 1);
+    } else if (buttonCode == controller.getMapping().buttonB) {
+      dsc.tap(ActionButton.ACTION, 1);
+    } else if (buttonCode == controller.getMapping().buttonY) {
+      dsc.tap(ActionButton.INVENTORY, 1);
+    } else if (buttonCode == controller.getMapping().buttonX) {
+      if (dsc.getInventoryUI().isVisible()) {
+        dsc.getInventoryUI().hide();
+      } else if (dsc.getInventoryUI().isDragging()) {
+        dsc.getInventoryUI().cancelDragging();
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public void focusNext(PointerToNextType type) {
+    if (dsc.getDialogUI().isVisible()) {
+      pointerToDialog(type);
+    } else if (dsc.getInventoryUI().isVisible()) {
+      pointerToInventory(type);
+    } else if (dsc.getPie().isVisible()) {
+      pointerToPie();
+    } else {
+      pointerToSceneActor(dsc.getWorld(), type, dsc.getViewport());
+    }
+  }
+
+  private void pointerToInventory(PointerToNextType type) {
+    InventoryUI inv = dsc.getInventoryUI();
+    int i = inv.getIndexUnderCursor();
+
+    if (i == -1) {
+      inv.cursorToInventoryActor(0);
+    } else if (type == PointerToNextType.RIGHT)
+      inv.cursorToInventoryActor(++i == dsc.getWorld().getInventory().getNumItems() ? 0 : i);
+    else
+      inv.cursorToInventoryActor(--i == -1 ? dsc.getWorld().getInventory().getNumItems() - 1 : i);
+  }
+
+  private void pointerToDialog(PointerToNextType type) {
+
+    Button hit = getButtonUnderCursor(dsc.getStage());
+
+    DialogUI dialogUI = (DialogUI) dsc.getDialogUI();
+    Array<Actor> actors = ((Table) dialogUI.getChildren().get(0)).getChildren();
+
+    int idx = 0;
+
+    if (hit != null) {
+      idx = actors.indexOf(hit, true);
+
+      if (idx > 0 && type == PointerToNextType.LEFT) {
+        idx--;
+      } else if (idx < actors.size - 1 && type == PointerToNextType.RIGHT) {
+        idx++;
+      }
+    }
+
+    final Button target = (Button) actors.get(idx);
+
+    EngineLogger.debug("Final IDX: " + idx + " Button: " + target);
+
+    if (idx == 0 && hit != null && dialogUI.getScrollPercentY() != 0) {
+      dialogUI.setScrollPercentY(0);
+    } else if (idx == actors.size - 1 && dialogUI.getScrollPercentY() != 1) {
+      dialogUI.setScrollPercentY(1);
+    } else {
+      dialogUI.scrollTo(target.getX(), target.getY(), target.getWidth(), target.getHeight());
+    }
+
+    dialogUI.updateVisualScroll();
+    dialogUI.invalidate();
+    dialogUI.layout();
+    cursorToActor(target);
+
+    dialogUI.setUpDownVisibility();
+  }
+
+  private void pointerToPie() {
+
+    Button hit = getButtonUnderCursor(dsc.getStage());
+
+    Array<Actor> actors = dsc.getPie().getChildren();
+
+    int idx = 0;
+
+    if (hit != null) {
+      if (hit != actors.get(1) && hit != actors.get(2)) {
+        if (actors.get(1).isVisible()) {
+          idx = 1;
         } else {
-            pointerToSceneActor(dsc.getWorld(), type, dsc.getViewport());
+          idx = 2;
         }
+      }
     }
 
-    private void pointerToInventory(PointerToNextType type) {
-        InventoryUI inv = dsc.getInventoryUI();
-        int i = inv.getIndexUnderCursor();
+    Button target = (Button) actors.get(idx);
 
-        if (i == -1) {
-            inv.cursorToInventoryActor(0);
-        } else if (type == PointerToNextType.RIGHT)
-            inv.cursorToInventoryActor(++i == dsc.getWorld().getInventory().getNumItems() ? 0 : i);
-        else
-            inv.cursorToInventoryActor(--i == -1 ? dsc.getWorld().getInventory().getNumItems() - 1 : i);
+    cursorToActor(target);
+  }
+
+  private void pointerToSceneActor(World w, PointerToNextType type, Viewport viewport) {
+
+    List<Vector2> positions = new ArrayList<>();
+
+    Vector3 unprojectV = new Vector3();
+    float scale = EngineAssetManager.getInstance().getScale();
+
+    InteractiveActor actorUnderCursor = w.getInteractiveActorAtInput(viewport, 0f);
+
+    for (InteractiveActor a : w.getUIActors().getActors()) {
+      if (!a.canInteract() || actorUnderCursor == a) continue;
+
+      Vector2 pos = new Vector2();
+      a.getBBox().getBoundingRectangle().getCenter(pos);
+
+      if (w.getUIActors().getActorAt(pos.x, pos.y) == a) {
+        unprojectV.set(pos.x * scale, pos.y * scale, 0);
+        w.getUIActors()
+            .getCamera()
+            .project(unprojectV, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+        positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
+      }
     }
 
-    private void pointerToDialog(PointerToNextType type) {
+    for (BaseActor a : w.getCurrentScene().getActors().values()) {
+      if (!(a instanceof InteractiveActor)
+          || !((InteractiveActor) a).canInteract()
+          || actorUnderCursor == a) continue;
 
-        Button hit = getButtonUnderCursor(dsc.getStage());
+      Vector2 pos = new Vector2();
+      a.getBBox().getBoundingRectangle().getCenter(pos);
 
-        DialogUI dialogUI = (DialogUI) dsc.getDialogUI();
-        Array<Actor> actors = ((Table) dialogUI.getChildren().get(0)).getChildren();
-
-        int idx = 0;
-
-        if (hit != null) {
-            idx = actors.indexOf(hit, true);
-
-            if (idx > 0 && type == PointerToNextType.LEFT) {
-                idx--;
-            } else if (idx < actors.size - 1 && type == PointerToNextType.RIGHT) {
-                idx++;
-            }
-
-        }
-
-        final Button target = (Button) actors.get(idx);
-
-        EngineLogger.debug("Final IDX: " + idx + " Button: " + target);
-
-        if (idx == 0 && hit != null && dialogUI.getScrollPercentY() != 0) {
-            dialogUI.setScrollPercentY(0);
-        } else if (idx == actors.size - 1 && dialogUI.getScrollPercentY() != 1) {
-            dialogUI.setScrollPercentY(1);
-        } else {
-            dialogUI.scrollTo(target.getX(), target.getY(), target.getWidth(), target.getHeight());
-
-        }
-
-        dialogUI.updateVisualScroll();
-        dialogUI.invalidate();
-        dialogUI.layout();
-        cursorToActor(target);
-
-        dialogUI.setUpDownVisibility();
+      if (w.getUIActors().getActorAt(pos.x, pos.y) == null
+          && w.getCurrentScene().getInteractiveActorAt(pos.x, pos.y) == a) {
+        unprojectV.set(pos.x * scale, pos.y * scale, 0);
+        w.getCurrentScene()
+            .getCamera()
+            .project(unprojectV, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+        positions.add(
+            pos.set(
+                viewport.getScreenX() + unprojectV.x,
+                viewport.getScreenY() + viewport.getScreenHeight() - unprojectV.y));
+      }
     }
 
-    private void pointerToPie() {
-
-        Button hit = getButtonUnderCursor(dsc.getStage());
-
-        Array<Actor> actors = dsc.getPie().getChildren();
-
-        int idx = 0;
-
-        if (hit != null) {
-            if (hit != actors.get(1) && hit != actors.get(2)) {
-                if (actors.get(1).isVisible()) {
-                    idx = 1;
-                } else {
-                    idx = 2;
-                }
-            }
-
-        }
-
-        Button target = (Button) actors.get(idx);
-
-        cursorToActor(target);
-    }
-
-    private void pointerToSceneActor(World w, PointerToNextType type, Viewport viewport) {
-
-        List<Vector2> positions = new ArrayList<>();
-
-        Vector3 unprojectV = new Vector3();
-        float scale = EngineAssetManager.getInstance().getScale();
-
-        InteractiveActor actorUnderCursor = w.getInteractiveActorAtInput(viewport, 0f);
-
-        for (InteractiveActor a : w.getUIActors().getActors()) {
-            if (!a.canInteract() || actorUnderCursor == a)
-                continue;
-
-            Vector2 pos = new Vector2();
-            a.getBBox().getBoundingRectangle().getCenter(pos);
-
-            if (w.getUIActors().getActorAt(pos.x, pos.y) == a) {
-                unprojectV.set(pos.x * scale, pos.y * scale, 0);
-                w.getUIActors().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
-                        viewport.getScreenHeight());
-                positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
-            }
-        }
-
-        for (BaseActor a : w.getCurrentScene().getActors().values()) {
-            if (!(a instanceof InteractiveActor) || !((InteractiveActor) a).canInteract() || actorUnderCursor == a)
-                continue;
-
-            Vector2 pos = new Vector2();
-            a.getBBox().getBoundingRectangle().getCenter(pos);
-
-            if (w.getUIActors().getActorAt(pos.x, pos.y) == null
-                    && w.getCurrentScene().getInteractiveActorAt(pos.x, pos.y) == a) {
-                unprojectV.set(pos.x * scale, pos.y * scale, 0);
-                w.getCurrentScene().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
-                        viewport.getScreenHeight());
-                positions.add(pos.set(viewport.getScreenX() + unprojectV.x,
-                        viewport.getScreenY() + viewport.getScreenHeight() - unprojectV.y));
-            }
-        }
-
-        setNextCursorPosition(positions, type);
-    }
+    setNextCursorPosition(positions, type);
+  }
 }

@@ -5,19 +5,18 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 
-
 public class UndoPosition implements UndoOp {
-	private BaseActor a;
-	private Vector2 pos;
-	
-	public UndoPosition(BaseActor a, Vector2 pos) {
-		this.pos = pos;
-		this.a = a;
-	}
-	
-	@Override
-	public void undo() {
-		a.setPosition(pos.x, pos.y);
-		Ctx.project.setModified(this, Project.POSITION_PROPERTY, null, a);
-	}
+  private BaseActor a;
+  private Vector2 pos;
+
+  public UndoPosition(BaseActor a, Vector2 pos) {
+    this.pos = pos;
+    this.a = a;
+  }
+
+  @Override
+  public void undo() {
+    a.setPosition(pos.x, pos.y);
+    Ctx.project.setModified(this, Project.POSITION_PROPERTY, null, a);
+  }
 }

@@ -18,93 +18,94 @@ import com.bladecoder.engine.util.RectangleRenderer;
  * @author rgarcia
  */
 public class Transition implements Serializable {
-    public enum Type {
-        NONE, FADE_IN, FADE_OUT
-    }
+  public enum Type {
+    NONE,
+    FADE_IN,
+    FADE_OUT
+  }
 
-    private float time;
-    private float currentTime;
-    private ActionCallback cb;
-    private Color c;
-    private Type type = Type.NONE;
+  private float time;
+  private float currentTime;
+  private ActionCallback cb;
+  private Color c;
+  private Type type = Type.NONE;
 
-    public void update(float delta) {
+  public void update(float delta) {
 
-        if (isFinish()) {
-            ActionCallback tmpcb = cb;
+    if (isFinish()) {
+      ActionCallback tmpcb = cb;
 
-            // reset the transition when finish. Only in 'fade in' case, 'fade out'
-            // must stay in screen even when finished
-            if (type == Type.FADE_IN)
-                reset();
+      // reset the transition when finish. Only in 'fade in' case, 'fade out'
+      // must stay in screen even when finished
+      if (type == Type.FADE_IN) reset();
 
-            if (tmpcb != null) {
-                cb = null;
-                tmpcb.resume();
-            }
-        } else {
-            currentTime += delta;
-        }
-    }
-
-    public void reset() {
-        type = Type.NONE;
+      if (tmpcb != null) {
         cb = null;
+        tmpcb.resume();
+      }
+    } else {
+      currentTime += delta;
+    }
+  }
+
+  public void reset() {
+    type = Type.NONE;
+    cb = null;
+  }
+
+  public void draw(SpriteBatch batch, float width, float height) {
+
+    if (type == Type.NONE) return;
+
+    switch (type) {
+      case FADE_IN:
+        c.a = MathUtils.clamp(Interpolation.fade.apply(1 - currentTime / time), 0, 1);
+        break;
+      case FADE_OUT:
+        c.a = MathUtils.clamp(Interpolation.fade.apply(currentTime / time), 0, 1);
+        break;
+      default:
+        break;
     }
 
-    public void draw(SpriteBatch batch, float width, float height) {
+    RectangleRenderer.draw(batch, 0, 0, width, height, c);
+  }
 
-        if (type == Type.NONE)
-            return;
+  public void create(float time, Color color, Type type, ActionCallback cb) {
+    this.currentTime = 0f;
+    this.c = color.cpy();
+    this.type = type;
+    this.time = time;
+    this.cb = cb;
+  }
 
-        switch (type) {
-            case FADE_IN:
-                c.a = MathUtils.clamp(Interpolation.fade.apply(1 - currentTime / time), 0, 1);
-                break;
-            case FADE_OUT:
-                c.a = MathUtils.clamp(Interpolation.fade.apply(currentTime / time), 0, 1);
-                break;
-            default:
-                break;
-        }
+  public boolean isFinish() {
+    return (currentTime > time || type == Type.NONE);
+  }
 
-        RectangleRenderer.draw(batch, 0, 0, width, height, c);
+  @Override
+  public void write(Json json) {
+    json.writeValue("currentTime", currentTime);
+    json.writeValue("time", time);
+    json.writeValue("color", c);
+    json.writeValue("type", type);
+
+    if (cb != null) {
+      World w = ((BladeJson) json).getWorld();
+      Scene s = ((BladeJson) json).getScene();
+      json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, cb));
     }
+  }
 
-    public void create(float time, Color color, Type type, ActionCallback cb) {
-        this.currentTime = 0f;
-        this.c = color.cpy();
-        this.type = type;
-        this.time = time;
-        this.cb = cb;
-    }
-
-    public boolean isFinish() {
-        return (currentTime > time || type == Type.NONE);
-    }
-
-    @Override
-    public void write(Json json) {
-        json.writeValue("currentTime", currentTime);
-        json.writeValue("time", time);
-        json.writeValue("color", c);
-        json.writeValue("type", type);
-
-        if (cb != null) {
-            World w = ((BladeJson) json).getWorld();
-            Scene s = ((BladeJson) json).getScene();
-            json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, cb));
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        currentTime = json.readValue("currentTime", Float.class, jsonData);
-        time = json.readValue("time", Float.class, jsonData);
-        c = json.readValue("color", Color.class, jsonData);
-        type = json.readValue("type", Type.class, jsonData);
-        BladeJson bjson = (BladeJson) json;
-        cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
-                json.readValue("cb", String.class, jsonData));
-    }
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    currentTime = json.readValue("currentTime", Float.class, jsonData);
+    time = json.readValue("time", Float.class, jsonData);
+    c = json.readValue("color", Color.class, jsonData);
+    type = json.readValue("type", Type.class, jsonData);
+    BladeJson bjson = (BladeJson) json;
+    cb =
+        ActionCallbackSerializer.find(
+            bjson.getWorld(), bjson.getScene(), json.readValue("cb", String.class, jsonData));
+  }
 }

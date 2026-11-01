@@ -19,91 +19,91 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 
 public class UIUtils {
-	private final static Vector3 unprojectTmp = new Vector3();
-	private final static Vector2 unproject2Tmp = new Vector2();
+  private static final Vector3 unprojectTmp = new Vector3();
+  private static final Vector2 unproject2Tmp = new Vector2();
 
-	public static void showUIText(Stage stage, Skin skin, World w, Text t) {
-		// Type UI texts will show at the same time that TextManagerUI texts.
+  public static void showUIText(Stage stage, Skin skin, World w, Text t) {
+    // Type UI texts will show at the same time that TextManagerUI texts.
 
-		String style = t.style == null ? "ui-text" : t.style;
-		Label msg = new Label(t.str, skin, style);
+    String style = t.style == null ? "ui-text" : t.style;
+    Label msg = new Label(t.str, skin, style);
 
-		msg.setWrap(true);
-		msg.setAlignment(Align.center, Align.center);
+    msg.setWrap(true);
+    msg.setAlignment(Align.center, Align.center);
 
-		if (t.color != null)
-			msg.setColor(t.color);
+    if (t.color != null) msg.setColor(t.color);
 
-		msg.setSize(msg.getWidth() + DPIUtils.getMarginSize() * 2, msg.getHeight() + DPIUtils.getMarginSize() * 2);
+    msg.setSize(
+        msg.getWidth() + DPIUtils.getMarginSize() * 2,
+        msg.getHeight() + DPIUtils.getMarginSize() * 2);
 
-		stage.addActor(msg);
-		unprojectTmp.set(t.x, t.y, 0);
-		w.getSceneCamera().scene2screen(stage.getViewport(), unprojectTmp);
+    stage.addActor(msg);
+    unprojectTmp.set(t.x, t.y, 0);
+    w.getSceneCamera().scene2screen(stage.getViewport(), unprojectTmp);
 
-		float posx, posy;
+    float posx, posy;
 
-		if (t.x == TextManager.POS_CENTER) {
-			posx = (stage.getViewport().getScreenWidth() - msg.getWidth()) / 2;
-		} else if (t.x == TextManager.POS_SUBTITLE) {
-			posx = DPIUtils.getMarginSize();
-		} else {
-			posx = unprojectTmp.x;
-		}
-
-		if (t.y == TextManager.POS_CENTER) {
-			posy = (stage.getViewport().getScreenHeight() - msg.getHeight()) / 2;
-		} else if (t.y == TextManager.POS_SUBTITLE) {
-			posy = stage.getViewport().getScreenHeight() - msg.getHeight() - DPIUtils.getMarginSize() * 3;
-		} else {
-			posy = unprojectTmp.y;
-		}
-
-		msg.setPosition(posx, posy);
-		msg.getColor().a = 0;
-		msg.addAction(sequence(Actions.fadeIn(0.4f, Interpolation.fade),
-				Actions.delay(t.time, sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
-	}
-
-	/**
-	 * Calcs the rotation based in the actor screen position
-	 */
-	public static float calcLeaveArrowRotation(Viewport viewport, InteractiveActor actor) {
-		Verb verb = actor.getVerb(Verb.LEAVE_VERB);
-
-        // UP
-        if (verb == null || verb.getIcon() == null) {
-
-			actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
-
-			if (unproject2Tmp.x < viewport.getWorldWidth() / 3f) {
-				return 180; // LEFT
-			}
-
-			if (unproject2Tmp.x > viewport.getWorldWidth() / 3f * 2f) {
-				return 0; // RIGHT
-			}
-
-			if (unproject2Tmp.y < viewport.getWorldHeight() / 5f) {
-				return -90; // DOWN
-			}
-
-        } else {
-			String dir = verb.getIcon();
-
-			if (dir.equals("left")) {
-				return 180; // LEFT
-			}
-
-			if (dir.equals("right")) {
-				return 0; // RIGHT
-			}
-
-			if (dir.equals("down")) {
-				return -90; // DOWN
-			}
-
-        }
-        return 90; // UP
+    if (t.x == TextManager.POS_CENTER) {
+      posx = (stage.getViewport().getScreenWidth() - msg.getWidth()) / 2;
+    } else if (t.x == TextManager.POS_SUBTITLE) {
+      posx = DPIUtils.getMarginSize();
+    } else {
+      posx = unprojectTmp.x;
     }
 
+    if (t.y == TextManager.POS_CENTER) {
+      posy = (stage.getViewport().getScreenHeight() - msg.getHeight()) / 2;
+    } else if (t.y == TextManager.POS_SUBTITLE) {
+      posy = stage.getViewport().getScreenHeight() - msg.getHeight() - DPIUtils.getMarginSize() * 3;
+    } else {
+      posy = unprojectTmp.y;
+    }
+
+    msg.setPosition(posx, posy);
+    msg.getColor().a = 0;
+    msg.addAction(
+        sequence(
+            Actions.fadeIn(0.4f, Interpolation.fade),
+            Actions.delay(
+                t.time, sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
+  }
+
+  /** Calcs the rotation based in the actor screen position */
+  public static float calcLeaveArrowRotation(Viewport viewport, InteractiveActor actor) {
+    Verb verb = actor.getVerb(Verb.LEAVE_VERB);
+
+    // UP
+    if (verb == null || verb.getIcon() == null) {
+
+      actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
+
+      if (unproject2Tmp.x < viewport.getWorldWidth() / 3f) {
+        return 180; // LEFT
+      }
+
+      if (unproject2Tmp.x > viewport.getWorldWidth() / 3f * 2f) {
+        return 0; // RIGHT
+      }
+
+      if (unproject2Tmp.y < viewport.getWorldHeight() / 5f) {
+        return -90; // DOWN
+      }
+
+    } else {
+      String dir = verb.getIcon();
+
+      if (dir.equals("left")) {
+        return 180; // LEFT
+      }
+
+      if (dir.equals("right")) {
+        return 0; // RIGHT
+      }
+
+      if (dir.equals("down")) {
+        return -90; // DOWN
+      }
+    }
+    return 90; // UP
+  }
 }

@@ -1,257 +1,242 @@
 package com.bladecoder.engine.model;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
- * An InteractiveActor is any object in a scene or in the inventory that has
- * user interaction.
- * 
+ * An InteractiveActor is any object in a scene or in the inventory that has user interaction.
+ *
  * @author rgarcia
  */
 public class InteractiveActor extends BaseActor implements Comparable<InteractiveActor> {
-	protected String desc;
-	protected float zIndex;
-	protected boolean interaction = true;
+  protected String desc;
+  protected float zIndex;
+  protected boolean interaction = true;
 
-	/** internal state. Can be used for actions to maintain a state machine */
-	protected String state;
+  /** internal state. Can be used for actions to maintain a state machine */
+  protected String state;
 
-	protected final VerbManager verbs = new VerbManager();
+  protected final VerbManager verbs = new VerbManager();
 
-	/**
-	 * State to know when the player is inside this actor to trigger the enter/exit
-	 * verbs
-	 */
-	private boolean playerInside = false;
+  /** State to know when the player is inside this actor to trigger the enter/exit verbs */
+  private boolean playerInside = false;
 
-	protected String layer;
+  protected String layer;
 
-	/**
-	 * Characters use this point to walk to the actor.
-	 */
-	private final Vector2 refPoint = new Vector2();
+  /** Characters use this point to walk to the actor. */
+  private final Vector2 refPoint = new Vector2();
 
-	public void setLayer(String layer) {
-		this.layer = layer;
+  public void setLayer(String layer) {
+    this.layer = layer;
 
-		setDirtyProp(DirtyProps.LAYER);
-	}
+    setDirtyProp(DirtyProps.LAYER);
+  }
 
-	public String getLayer() {
-		return layer;
-	}
+  public String getLayer() {
+    return layer;
+  }
 
-	/**
-	 * @return Is visible and has interaction
-	 */
-	public boolean canInteract() {
-		return interaction && isVisible();
-	}
+  /**
+   * @return Is visible and has interaction
+   */
+  public boolean canInteract() {
+    return interaction && isVisible();
+  }
 
-	public boolean getInteraction() {
-		return interaction;
-	}
+  public boolean getInteraction() {
+    return interaction;
+  }
 
-	public void setInteraction(boolean interaction) {
-		this.interaction = interaction;
-		setDirtyProp(DirtyProps.INTERACTION);
-	}
+  public void setInteraction(boolean interaction) {
+    this.interaction = interaction;
+    setDirtyProp(DirtyProps.INTERACTION);
+  }
 
-	public String getDesc() {
-		return desc;
-	}
+  public String getDesc() {
+    return desc;
+  }
 
-	public void setDesc(String desc) {
-		this.desc = desc;
-		setDirtyProp(DirtyProps.DESC);
-	}
+  public void setDesc(String desc) {
+    this.desc = desc;
+    setDirtyProp(DirtyProps.DESC);
+  }
 
-	public Vector2 getRefPoint() {
-		return refPoint;
-	}
+  public Vector2 getRefPoint() {
+    return refPoint;
+  }
 
-	public void setRefPoint(float x, float y) {
-		refPoint.set(x, y);
-	}
+  public void setRefPoint(float x, float y) {
+    refPoint.set(x, y);
+  }
 
-	public VerbManager getVerbManager() {
-		return verbs;
-	}
+  public VerbManager getVerbManager() {
+    return verbs;
+  }
 
-	@Override
-	public void update(float delta) {
-		InteractiveActor player = null;
+  @Override
+  public void update(float delta) {
+    InteractiveActor player = null;
 
-		if (scene != null)
-			player = scene.getPlayer();
+    if (scene != null) player = scene.getPlayer();
 
-		if (isVisible() && player != null) {
-			boolean hit = hit(player.getX(), player.getY());
-			if (!hit && playerInside) {
-				// the player leaves
-				playerInside = false;
+    if (isVisible() && player != null) {
+      boolean hit = hit(player.getX(), player.getY());
+      if (!hit && playerInside) {
+        // the player leaves
+        playerInside = false;
 
-				Verb v = getVerb("exit");
-				if (v != null)
-					v.run(null, null);
-			} else if (hit && !playerInside) {
-				// the player enters
-				playerInside = true;
+        Verb v = getVerb("exit");
+        if (v != null) v.run(null, null);
+      } else if (hit && !playerInside) {
+        // the player enters
+        playerInside = true;
 
-				Verb v = getVerb("enter");
-				if (v != null)
-					v.run(null, null);
-			}
-		}
-	}
+        Verb v = getVerb("enter");
+        if (v != null) v.run(null, null);
+      }
+    }
+  }
 
-	public Verb getVerb(String id) {
-		return verbs.getVerb(id, state, null);
-	}
+  public Verb getVerb(String id) {
+    return verbs.getVerb(id, state, null);
+  }
 
-	public Verb getVerb(String id, String target) {
-		return verbs.getVerb(id, state, target);
-	}
+  public Verb getVerb(String id, String target) {
+    return verbs.getVerb(id, state, target);
+  }
 
-	public void runVerb(String id) {
-		verbs.runVerb(id, state, null, null);
-	}
+  public void runVerb(String id) {
+    verbs.runVerb(id, state, null, null);
+  }
 
-	public void runVerb(String id, String target) {
-		verbs.runVerb(id, state, target, null);
-	}
+  public void runVerb(String id, String target) {
+    verbs.runVerb(id, state, target, null);
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
 
-		sb.append(super.toString());
-		sb.append("  State: ").append(state);
-		sb.append("\n  Desc: ").append(desc);
-		sb.append("\n  Verbs:");
+    sb.append(super.toString());
+    sb.append("  State: ").append(state);
+    sb.append("\n  Desc: ").append(desc);
+    sb.append("\n  Verbs:");
 
-		for (String v : verbs.getVerbs().keySet()) {
-			sb.append(" ").append(v);
-		}
+    for (String v : verbs.getVerbs().keySet()) {
+      sb.append(" ").append(v);
+    }
 
-		sb.append("\n");
+    sb.append("\n");
 
-		return sb.toString();
-	}
+    return sb.toString();
+  }
 
-	public float getZIndex() {
-		return zIndex;
-	}
+  public float getZIndex() {
+    return zIndex;
+  }
 
-	public void setZIndex(float z) {
-		zIndex = z;
+  public void setZIndex(float z) {
+    zIndex = z;
 
-		setDirtyProp(DirtyProps.ZINDEX);
-	}
+    setDirtyProp(DirtyProps.ZINDEX);
+  }
 
-	public String getState() {
-		return state;
-	}
+  public String getState() {
+    return state;
+  }
 
-	public void setState(String state) {
-		this.state = state;
-		setDirtyProp(DirtyProps.STATE);
-	}
+  public void setState(String state) {
+    this.state = state;
+    setDirtyProp(DirtyProps.STATE);
+  }
 
-	@Override
-	public int compareTo(InteractiveActor o) {
-		return (int) (o.getBBox().getY() - this.getBBox().getY());
-	}
+  @Override
+  public int compareTo(InteractiveActor o) {
+    return (int) (o.getBBox().getY() - this.getBBox().getY());
+  }
 
-	@Override
-	public void write(Json json) {
-		super.write(json);
+  @Override
+  public void write(Json json) {
+    super.write(json);
 
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			if (desc != null)
-				json.writeValue("desc", desc);
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      if (desc != null) json.writeValue("desc", desc);
 
-			if (state != null)
-				json.writeValue("state", state);
+      if (state != null) json.writeValue("state", state);
 
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
-		} else {
-			json.writeValue("playerInside", playerInside);
+      float worldScale = EngineAssetManager.getInstance().getScale();
+      json.writeValue(
+          "refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
+    } else {
+      json.writeValue("playerInside", playerInside);
 
-			if (isDirty(DirtyProps.DESC))
-				json.writeValue("desc", desc);
+      if (isDirty(DirtyProps.DESC)) json.writeValue("desc", desc);
 
-			if (isDirty(DirtyProps.STATE))
-				json.writeValue("state", state);
-		}
+      if (isDirty(DirtyProps.STATE)) json.writeValue("state", state);
+    }
 
-		verbs.write(json);
+    verbs.write(json);
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.INTERACTION))
-			json.writeValue("interaction", interaction);
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.INTERACTION))
+      json.writeValue("interaction", interaction);
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ZINDEX))
-			json.writeValue("zIndex", zIndex);
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ZINDEX))
+      json.writeValue("zIndex", zIndex);
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.LAYER))
-			json.writeValue("layer", layer);
-	}
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.LAYER)) json.writeValue("layer", layer);
+  }
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
 
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			layer = json.readValue("layer", String.class, jsonData);
-			Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      layer = json.readValue("layer", String.class, jsonData);
+      Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
 
-			if (r != null) {
-				float worldScale = EngineAssetManager.getInstance().getScale();
-				getRefPoint().set(r.x * worldScale, r.y * worldScale);
-			}
+      if (r != null) {
+        float worldScale = EngineAssetManager.getInstance().getScale();
+        getRefPoint().set(r.x * worldScale, r.y * worldScale);
+      }
 
-			// Load actor sounds for backwards compatibility.
-			@SuppressWarnings("unchecked")
-			HashMap<String, SoundDesc> sounds = json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
+      // Load actor sounds for backwards compatibility.
+      @SuppressWarnings("unchecked")
+      HashMap<String, SoundDesc> sounds =
+          json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
 
-			if (sounds != null) {
-				for (Entry<String, SoundDesc> e : sounds.entrySet()) {
-					e.getValue().setId(id + "_" + e.getKey());
-					bjson.getWorld().getSounds().put(id + "_" + e.getKey(), e.getValue());
-				}
-			}
+      if (sounds != null) {
+        for (Entry<String, SoundDesc> e : sounds.entrySet()) {
+          e.getValue().setId(id + "_" + e.getKey());
+          bjson.getWorld().getSounds().put(id + "_" + e.getKey(), e.getValue());
+        }
+      }
 
-		} else {
+    } else {
 
-			playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
-			String newLayer = json.readValue("layer", String.class, jsonData);
+      playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
+      String newLayer = json.readValue("layer", String.class, jsonData);
 
-			if (newLayer != null && !newLayer.equals(layer)) {
-				if (scene != null) {
-					if (scene.getLayer(layer).remove(this))
-						scene.getLayer(newLayer).add(this);
-				}
+      if (newLayer != null && !newLayer.equals(layer)) {
+        if (scene != null) {
+          if (scene.getLayer(layer).remove(this)) scene.getLayer(newLayer).add(this);
+        }
 
-				layer = newLayer;
-			}
-		}
+        layer = newLayer;
+      }
+    }
 
-		verbs.read(json, jsonData);
-		interaction = json.readValue("interaction", boolean.class, interaction, jsonData);
-		state = json.readValue("state", String.class, state, jsonData);
-		zIndex = json.readValue("zIndex", float.class, zIndex, jsonData);
-		desc = json.readValue("desc", String.class, desc, jsonData);
-	}
-
+    verbs.read(json, jsonData);
+    interaction = json.readValue("interaction", boolean.class, interaction, jsonData);
+    state = json.readValue("state", String.class, state, jsonData);
+    zIndex = json.readValue("zIndex", float.class, zIndex, jsonData);
+    desc = json.readValue("desc", String.class, desc, jsonData);
+  }
 }

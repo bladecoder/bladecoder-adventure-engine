@@ -5,19 +5,19 @@ import com.bladecoder.engine.model.World;
 
 @ActionDescription("Ends the game.")
 public class EndGameAction implements Action {
-	
-	private World w;
-	
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
 
-	@Override
-	public boolean run(VerbRunner cb) {
+  private World w;
 
-		w.endGame();
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-		return true;
-	}
+  @Override
+  public boolean run(VerbRunner cb) {
+
+    w.endGame();
+
+    return true;
+  }
 }

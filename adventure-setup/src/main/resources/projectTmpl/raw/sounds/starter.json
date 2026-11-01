@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "provenance": "Original seeded procedural DSP; no sampled recording. 48 kHz PCM16, per-effect channel count.",
+  "sounds": {
+    "starter-pickup": {
+      "seconds": 0.22,
+      "frequency": 620,
+      "sweep": -0.35,
+      "decay": 6,
+      "noise": 0.04,
+      "seed": 1701,
+      "peak_dbfs": -12,
+      "channels": 1
+    },
+    "starter-signal": {
+      "seconds": 0.32,
+      "frequency": 840,
+      "sweep": 0.2,
+      "decay": 4,
+      "noise": 0.02,
+      "seed": 1702,
+      "peak_dbfs": -12,
+      "channels": 2,
+      "stereo_pan": [
+        -0.7,
+        0.7
+      ]
+    }
+  }
+}

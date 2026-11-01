@@ -1,13 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
@@ -18,116 +10,120 @@ import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import java.io.IOException;
+import java.text.MessageFormat;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 
 public class EditChapterDialog extends EditDialog {
 
-	private Chapter doc;
-	private InputPanel inputId;
+  private Chapter doc;
+  private InputPanel inputId;
 
-	private String previousId = null;
-	private String newId = null;
-	
-    private ChangeListener listener;
+  private String previousId = null;
+  private String newId = null;
 
-	public EditChapterDialog(Skin skin, Chapter doc, String chapter) {
-		super("", skin);
-		
-		this.doc = doc;
+  private ChangeListener listener;
 
-		inputId = InputPanelFactory.createInputPanel(skin, "Chapter ID", "The id of the chapter",
-				true);
+  public EditChapterDialog(Skin skin, Chapter doc, String chapter) {
+    super("", skin);
 
-		setInfo("An adventure game is composed of chapters. Chapters contains scenes.");
-		
-		addInputPanel(inputId);
-		
-		if (chapter == null) {
-			setTitle("CREATE CHAPTER");
-		} else {
-			setTitle(MessageFormat.format("EDIT CHAPTER ''{0}''", chapter));
-			
-			inputId.setText(chapter);
-		}
+    this.doc = doc;
 
-		previousId = chapter;
-		
-	}
-	
+    inputId = InputPanelFactory.createInputPanel(skin, "Chapter ID", "The id of the chapter", true);
 
-	private void create() {
-		try {	
-			newId = doc.createChapter(inputId.getText());
-		} catch (TransformerException
-				| ParserConfigurationException | IOException e) {
-			String msg = "Something went wrong while creating the chapter.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Message.showMsg(getStage(), msg, 2);
+    setInfo("An adventure game is composed of chapters. Chapters contains scenes.");
 
-			EditorLogger.printStackTrace(e);
-		}
-	}
+    addInputPanel(inputId);
 
-	private void renameChapter() {
-		
-		if (previousId != null && !previousId.equals(newId)) {
+    if (chapter == null) {
+      setTitle("CREATE CHAPTER");
+    } else {
+      setTitle(MessageFormat.format("EDIT CHAPTER ''{0}''", chapter));
 
-			try {
-				// save selected chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getChapter().getId())) {
-					Ctx.project.getChapter().save();
-				}
-				
-				doc.renameChapter(previousId, newId);
-				
-				// Reload chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getChapter().getId())) {
-					Ctx.project.loadChapter(newId);
-				}
-				
-				// sets the init chapter
-				if(previousId.equals(doc.getInitChapter())) {
-					Ctx.project.getWorld().setInitChapter(newId);
-				}
-				
-				Ctx.project.saveProject();
-			} catch (TransformerException | ParserConfigurationException
-					| SAXException | IOException e1) {
-				String msg = "Something went wrong while renaming the chapter.\n\n"
-						+ e1.getClass().getSimpleName()
-						+ " - "
-						+ e1.getMessage();
-				Message.showMsg(getStage(), msg, 3);
+      inputId.setText(chapter);
+    }
 
-				EditorLogger.printStackTrace(e1);
-			}
-		}
-	}
+    previousId = chapter;
+  }
 
+  private void create() {
+    try {
+      newId = doc.createChapter(inputId.getText());
+    } catch (TransformerException | ParserConfigurationException | IOException e) {
+      String msg =
+          "Something went wrong while creating the chapter.\n\n"
+              + e.getClass().getSimpleName()
+              + " - "
+              + e.getMessage();
+      Message.showMsg(getStage(), msg, 2);
 
-	@Override
-	protected boolean validateFields() {
-		return inputId.validateField();
-	}
+      EditorLogger.printStackTrace(e);
+    }
+  }
 
+  private void renameChapter() {
 
-	@Override
-	protected void ok() {
-		if (previousId == null) {
-			create();
-		} else {
-			newId = inputId.getText();
-			renameChapter();
-		}
-		
-		if(listener != null)
-			listener.changed(new ChangeEvent(), this);
-	}
-	
-	public void setListener(ChangeListener l) {
-		listener = l;
-	}
+    if (previousId != null && !previousId.equals(newId)) {
 
-	String getNewId() {
-		return newId;
-	}
+      try {
+        // save selected chapter if renamed chapter is the selected chapter
+        if (previousId.equals(Ctx.project.getChapter().getId())) {
+          Ctx.project.getChapter().save();
+        }
+
+        doc.renameChapter(previousId, newId);
+
+        // Reload chapter if renamed chapter is the selected chapter
+        if (previousId.equals(Ctx.project.getChapter().getId())) {
+          Ctx.project.loadChapter(newId);
+        }
+
+        // sets the init chapter
+        if (previousId.equals(doc.getInitChapter())) {
+          Ctx.project.getWorld().setInitChapter(newId);
+        }
+
+        Ctx.project.saveProject();
+      } catch (TransformerException
+          | ParserConfigurationException
+          | SAXException
+          | IOException e1) {
+        String msg =
+            "Something went wrong while renaming the chapter.\n\n"
+                + e1.getClass().getSimpleName()
+                + " - "
+                + e1.getMessage();
+        Message.showMsg(getStage(), msg, 3);
+
+        EditorLogger.printStackTrace(e1);
+      }
+    }
+  }
+
+  @Override
+  protected boolean validateFields() {
+    return inputId.validateField();
+  }
+
+  @Override
+  protected void ok() {
+    if (previousId == null) {
+      create();
+    } else {
+      newId = inputId.getText();
+      renameChapter();
+    }
+
+    if (listener != null) listener.changed(new ChangeEvent(), this);
+  }
+
+  public void setListener(ChangeListener l) {
+    listener = l;
+  }
+
+  String getNewId() {
+    return newId;
+  }
 }

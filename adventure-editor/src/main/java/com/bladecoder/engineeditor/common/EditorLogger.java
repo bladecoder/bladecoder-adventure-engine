@@ -1,10 +1,5 @@
 package com.bladecoder.engineeditor.common;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,111 +8,114 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.bladecoder.engine.util.EngineLogger;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditorLogger {
-	public enum Levels {
-		DEBUG, ERROR
-	}
+  public enum Levels {
+    DEBUG,
+    ERROR
+  }
 
-    public static Levels level = Levels.ERROR;
+  public static Levels level = Levels.ERROR;
 
-	public static Console console;
+  public static Console console;
 
-	private final static List<String> threadedMessages = new ArrayList<>();
+  private static final List<String> threadedMessages = new ArrayList<>();
 
-	public static void debug(String message) {
-		if (level == Levels.DEBUG) {
-			console.log(message, LogLevel.DEFAULT);
-		}
-	}
+  public static void debug(String message) {
+    if (level == Levels.DEBUG) {
+      console.log(message, LogLevel.DEFAULT);
+    }
+  }
 
-	public static void msg(String message) {
-		console.log(message, LogLevel.SUCCESS);
-	}
+  public static void msg(String message) {
+    console.log(message, LogLevel.SUCCESS);
+  }
 
-	public static synchronized void msgThreaded(String message) {
-		threadedMessages.add(message);
-	}
+  public static synchronized void msgThreaded(String message) {
+    threadedMessages.add(message);
+  }
 
-	public static synchronized void drawConsole() {
+  public static synchronized void drawConsole() {
 
-		if (!threadedMessages.isEmpty()) {
-			for (String msg : threadedMessages)
-				msg(msg);
+    if (!threadedMessages.isEmpty()) {
+      for (String msg : threadedMessages) msg(msg);
 
-			threadedMessages.clear();
-		}
+      threadedMessages.clear();
+    }
 
-		console.draw();
+    console.draw();
+  }
 
-	}
+  public static void error(String message) {
+    console.log(message, LogLevel.ERROR);
+  }
 
-	public static void error(String message) {
-		console.log(message, LogLevel.ERROR);
-	}
+  public static void error(String message, Exception e) {
+    console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
 
-	public static void error(String message, Exception e) {
-		console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
+    printStackTrace(e);
+  }
 
-		printStackTrace(e);
-	}
+  public static void printStackTrace(Exception e) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    e.printStackTrace(pw);
+    console.log(sw.toString(), LogLevel.ERROR);
+    e.printStackTrace();
+  }
 
-	public static void printStackTrace(Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		e.printStackTrace(pw);
-		console.log(sw.toString(), LogLevel.ERROR);
-		e.printStackTrace();
-	}
+  public static void toggle() {
+    if (level == Levels.DEBUG) {
+      level = Levels.ERROR;
+      console.setLoggingToSystem(false);
+    } else {
+      level = Levels.DEBUG;
+      console.setLoggingToSystem(true);
+    }
+  }
 
-	public static void toggle() {
-		if (level == Levels.DEBUG) {
-			level = Levels.ERROR;
-			console.setLoggingToSystem(false);
-		} else {
-			level = Levels.DEBUG;
-			console.setLoggingToSystem(true);
-		}
-	}
+  public static boolean debugMode() {
+    if (level == Levels.DEBUG) return true;
 
-	public static boolean debugMode() {
-		if (level == Levels.DEBUG)
-			return true;
+    return false;
+  }
 
-		return false;
-	}
+  public static Levels getDebugLevel() {
+    return level;
+  }
 
-	public static Levels getDebugLevel() {
-		return level;
-	}
+  public static void setDebugLevel(Levels l) {
+    level = l;
+  }
 
-	public static void setDebugLevel(Levels l) {
-		level = l;
-	}
+  public static void setDebug() {
+    level = Levels.DEBUG;
+    EngineLogger.setDebug();
+    console.setLoggingToSystem(true);
+  }
 
-	public static void setDebug() {
-		level = Levels.DEBUG;
-		EngineLogger.setDebug();
-		console.setLoggingToSystem(true);
-	}
+  public static void setConsole(Console console) {
+    EditorLogger.console = console;
+    EditorLogger.console.setDisplayKeyID(Keys.F1);
+    console.setMaxEntries(1000);
 
-	public static void setConsole(Console console) {
-		EditorLogger.console = console;
-		EditorLogger.console.setDisplayKeyID(Keys.F1);
-		console.setMaxEntries(1000);
+    final Stage s = (Stage) console.getInputProcessor();
+    final Actor actor = s.getActors().items[0];
+    actor.addListener(
+        new InputListener() {
+          @Override
+          public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
 
-		final Stage s = (Stage) console.getInputProcessor();
-		final Actor actor = s.getActors().items[0];
-		actor.addListener(new InputListener() {
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+            if (toActor == null) {
+              s.setScrollFocus(null);
+            }
+          }
+        });
 
-				if (toActor == null) {
-					s.setScrollFocus(null);
-				}
-			}
-		});
-
-		console.setCommandExecutor(new EditorCommandExecutor());
-	}
+    console.setCommandExecutor(new EditorCommandExecutor());
+  }
 }

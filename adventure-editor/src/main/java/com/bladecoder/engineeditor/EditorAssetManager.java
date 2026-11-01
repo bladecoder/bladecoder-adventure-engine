@@ -7,25 +7,25 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class EditorAssetManager extends AssetManager {
-	public static final String ICON_ATLAS = "images/icons.atlas";
-	
-	public EditorAssetManager() {
-		super();
-		
-		/*** LOAD ICON ATLAS ***/
-		load(ICON_ATLAS, TextureAtlas.class);
-		finishLoading();
-	}
+  public static final String ICON_ATLAS = "images/icons.atlas";
 
-	public TextureRegion getIcon(String name) {
-		TextureAtlas a = get(ICON_ATLAS, TextureAtlas.class);
+  public EditorAssetManager() {
+    super();
 
-		AtlasRegion region = a.findRegion(name);
+    /*** LOAD ICON ATLAS ***/
+    load(ICON_ATLAS, TextureAtlas.class);
+    finishLoading();
+  }
 
-		if (region == null) {
-			EditorLogger.error("Region " + name + " not found in icon atlas ");
-		}
+  public TextureRegion getIcon(String name) {
+    TextureAtlas a = get(ICON_ATLAS, TextureAtlas.class);
 
-		return region;
-	}
+    AtlasRegion region = a.findRegion(name);
+
+    if (region == null) {
+      EditorLogger.error("Region " + name + " not found in icon atlas ");
+    }
+
+    return region;
+  }
 }

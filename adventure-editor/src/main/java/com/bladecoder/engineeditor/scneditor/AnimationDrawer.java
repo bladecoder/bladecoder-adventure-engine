@@ -16,96 +16,98 @@ import com.bladecoder.engine.util.RectangleRenderer;
  */
 public class AnimationDrawer {
 
-    public static final Color BG_COLOR = Color.MAGENTA;
-    private static final float HEIGHT = 200;
+  public static final Color BG_COLOR = Color.MAGENTA;
+  private static final float HEIGHT = 200;
 
-    AnimationDesc currentAnimation;
-    private AnimationRenderer renderer;
-    private float viewportW, viewportH;
+  AnimationDesc currentAnimation;
+  private AnimationRenderer renderer;
+  private float viewportW, viewportH;
 
-    public void setViewport(float w, float h) {
-        viewportW = w;
-        viewportH = h;
+  public void setViewport(float w, float h) {
+    viewportW = w;
+    viewportH = h;
+  }
+
+  public void setActor(BaseActor a) {
+    if (renderer != null) {
+      renderer.dispose();
+      renderer = null;
     }
 
-    public void setActor(BaseActor a) {
-        if (renderer != null) {
-            renderer.dispose();
-            renderer = null;
-        }
+    if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
+      ActorRenderer r = ((SpriteActor) a).getRenderer();
 
-        if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
-            ActorRenderer r = ((SpriteActor) a).getRenderer();
+      if (r instanceof SpineRenderer) {
+        renderer = new SpineRenderer();
+        ((SpineRenderer) renderer).enableEvents(false);
+        ((SpineRenderer) renderer).setSkin(((SpineRenderer) r).getSkin());
+      } else if (r instanceof ImageRenderer) {
+        renderer = new ImageRenderer();
+      } else if (r instanceof AtlasRenderer) {
+        renderer = new AtlasRenderer();
+      }
 
-            if (r instanceof SpineRenderer) {
-                renderer = new SpineRenderer();
-                ((SpineRenderer) renderer).enableEvents(false);
-                ((SpineRenderer) renderer).setSkin(((SpineRenderer) r).getSkin());
-            } else if (r instanceof ImageRenderer) {
-                renderer = new ImageRenderer();
-            } else if (r instanceof AtlasRenderer) {
-                renderer = new AtlasRenderer();
-            }
-
-            renderer.setOrgAlign(Align.bottom);
-        }
+      renderer.setOrgAlign(Align.bottom);
     }
+  }
 
-    public void setAnimation(AnimationDesc fa) {
-        currentAnimation = fa;
+  public void setAnimation(AnimationDesc fa) {
+    currentAnimation = fa;
 
-        if (renderer != null) {
+    if (renderer != null) {
 
-            renderer.getAnimations().clear();
+      renderer.getAnimations().clear();
 
-            if (fa != null) {
+      if (fa != null) {
 
-                renderer.addAnimation(fa);
+        renderer.addAnimation(fa);
 
-                renderer.retrieveAssets();
+        renderer.retrieveAssets();
 
-                renderer.startAnimation(fa.id, Tween.Type.REPEAT, Tween.INFINITY, null);
-            }
-        }
+        renderer.startAnimation(fa.id, Tween.Type.REPEAT, Tween.INFINITY, null);
+      }
     }
+  }
 
-    public void draw(SpriteBatch batch) {
-        if (renderer != null && currentAnimation != null) {
+  public void draw(SpriteBatch batch) {
+    if (renderer != null && currentAnimation != null) {
 
-            float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
-            float height = HEIGHT;
-            float scaleh = width / renderer.getWidth();
+      float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
+      float height = HEIGHT;
+      float scaleh = width / renderer.getWidth();
 
-            if (renderer.getWidth() > renderer.getHeight()) {
-                scaleh = HEIGHT / renderer.getWidth();
-                width = HEIGHT;
-                height = renderer.getHeight() * scaleh;
-            }
+      if (renderer.getWidth() > renderer.getHeight()) {
+        scaleh = HEIGHT / renderer.getWidth();
+        width = HEIGHT;
+        height = renderer.getHeight() * scaleh;
+      }
 
-            RectangleRenderer.draw(batch, viewportW - width - 5, viewportH
-                    - height - 55, width + 10, height + 10, Color.BLACK);
-            RectangleRenderer.draw(batch, viewportW - width, viewportH - height
-                    - 50, width, height, BG_COLOR);
+      RectangleRenderer.draw(
+          batch,
+          viewportW - width - 5,
+          viewportH - height - 55,
+          width + 10,
+          height + 10,
+          Color.BLACK);
+      RectangleRenderer.draw(
+          batch, viewportW - width, viewportH - height - 50, width, height, BG_COLOR);
 
-            renderer.draw(batch, viewportW - width / 2,
-                    viewportH - height - 50, scaleh, scaleh, 0f, null);
-
-        }
+      renderer.draw(
+          batch, viewportW - width / 2, viewportH - height - 50, scaleh, scaleh, 0f, null);
     }
+  }
 
-    public void update(float delta) {
-        if (renderer != null && currentAnimation != null) {
-            try {
-                renderer.update(delta);
-            } catch (Exception e) {
+  public void update(float delta) {
+    if (renderer != null && currentAnimation != null) {
+      try {
+        renderer.update(delta);
+      } catch (Exception e) {
 
-            }
-        }
+      }
     }
+  }
 
-    public void dispose() {
-        if (renderer != null)
-            renderer.dispose();
-    }
-
+  public void dispose() {
+    if (renderer != null) renderer.dispose();
+  }
 }

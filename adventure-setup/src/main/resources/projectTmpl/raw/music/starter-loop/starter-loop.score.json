@@ -1,0 +1,129 @@
+{
+  "title": "Neutral starter loop",
+  "meter": "4/4",
+  "loopBars": 2,
+  "bpm": 120,
+  "sampleRate": 44100,
+  "seconds": 4.0,
+  "loopFrames": 176400,
+  "tracks": [
+    {
+      "name": "soft harmony",
+      "channel": 0,
+      "program": 88,
+      "volume": 50,
+      "pan": 42,
+      "role": "quiet continuous harmony",
+      "notes": [
+        {
+          "bar": 1,
+          "beat": 1,
+          "dur": 4,
+          "note": "C4",
+          "vel": 0.3937007874015748
+        },
+        {
+          "bar": 1,
+          "beat": 1,
+          "dur": 4,
+          "note": "E4",
+          "vel": 0.3937007874015748
+        },
+        {
+          "bar": 1,
+          "beat": 1,
+          "dur": 4,
+          "note": "G4",
+          "vel": 0.3937007874015748
+        },
+        {
+          "bar": 2,
+          "beat": 1,
+          "dur": 4,
+          "note": "A3",
+          "vel": 0.3937007874015748
+        },
+        {
+          "bar": 2,
+          "beat": 1,
+          "dur": 4,
+          "note": "C4",
+          "vel": 0.3937007874015748
+        },
+        {
+          "bar": 2,
+          "beat": 1,
+          "dur": 4,
+          "note": "E4",
+          "vel": 0.3937007874015748
+        }
+      ]
+    },
+    {
+      "name": "small motif",
+      "channel": 1,
+      "program": 10,
+      "volume": 55,
+      "pan": 88,
+      "role": "short neutral example",
+      "notes": [
+        {
+          "bar": 1,
+          "beat": 1,
+          "dur": 0.8,
+          "note": "G5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 1,
+          "beat": 2,
+          "dur": 0.8,
+          "note": "E5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 1,
+          "beat": 3,
+          "dur": 0.8,
+          "note": "D5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 1,
+          "beat": 4,
+          "dur": 0.8,
+          "note": "E5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 2,
+          "beat": 1,
+          "dur": 0.8,
+          "note": "C5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 2,
+          "beat": 2,
+          "dur": 0.8,
+          "note": "E5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 2,
+          "beat": 3,
+          "dur": 0.8,
+          "note": "A5",
+          "vel": 0.47244094488188976
+        },
+        {
+          "bar": 2,
+          "beat": 4,
+          "dur": 0.8,
+          "note": "G5",
+          "vel": 0.47244094488188976
+        }
+      ]
+    }
+  ]
+}

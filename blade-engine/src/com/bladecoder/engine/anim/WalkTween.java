@@ -14,146 +14,159 @@ import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.InterpolationMode;
-
 import java.util.ArrayList;
 
-/**
- * Tween for frame animation
- */
+/** Tween for frame animation */
 public class WalkTween extends SpritePosTween implements Serializable {
 
-    private ArrayList<Vector2> walkingPath;
-    private int currentStep = 0;
-    private float speed = 0;
+  private ArrayList<Vector2> walkingPath;
+  private int currentStep = 0;
+  private float speed = 0;
 
-    private ActionCallback walkCb;
+  private ActionCallback walkCb;
 
-    public WalkTween() {
+  public WalkTween() {}
+
+  public void start(
+      CharacterActor target, ArrayList<Vector2> walkingPath, float speed, ActionCallback cb) {
+    this.target = target;
+    this.walkingPath = walkingPath;
+    this.speed = speed;
+    this.currentStep = 0;
+
+    if (cb != null) {
+      walkCb = cb;
     }
 
-    public void start(CharacterActor target, ArrayList<Vector2> walkingPath, float speed, ActionCallback cb) {
-        this.target = target;
-        this.walkingPath = walkingPath;
-        this.speed = speed;
-        this.currentStep = 0;
+    restart();
+    walkToNextStep(target);
+  }
 
-        if (cb != null) {
-            walkCb = cb;
-        }
+  private void walkToNextStep(CharacterActor target) {
+    Vector2 p0 = walkingPath.get(currentStep);
+    Vector2 pf = walkingPath.get(currentStep + 1);
 
-        restart();
-        walkToNextStep(target);
+    float s0 = 1.0f;
+    float sf = 1.0f;
+
+    if (target.getFakeDepth()) {
+      s0 = target.getScene().getFakeDepthScale(p0.y);
+      sf = target.getScene().getFakeDepthScale(pf.y);
     }
 
-    private void walkToNextStep(CharacterActor target) {
-        Vector2 p0 = walkingPath.get(currentStep);
-        Vector2 pf = walkingPath.get(currentStep + 1);
+    float sdiff = Math.abs(s0 - sf);
+    if (sdiff > .05f) {
+      // cut the path in two parts if the difference in scale is big
+      Vector2 pi = new Vector2((pf.x + p0.x) / 2, (pf.y + p0.y) / 2);
 
-        float s0 = 1.0f;
-        float sf = 1.0f;
+      if (EngineLogger.debugMode()) {
+        String debugText =
+            String.format(
+                "WalkTween insert point: sdiff=%.2f, p0=(%.0f,%.0f), pf=(%.0f,%.0f), pi=(%.0f,%.0f)",
+                sdiff, p0.x, p0.y, pf.x, pf.y, pi.x, pi.y);
 
-        if (target.getFakeDepth()) {
-            s0 = target.getScene().getFakeDepthScale(p0.y);
-            sf = target.getScene().getFakeDepthScale(pf.y);
-        }
+        EngineLogger.debug(debugText);
+      }
 
-        float sdiff = Math.abs(s0 - sf);
-        if (sdiff > .05f) {
-            // cut the path in two parts if the difference in scale is big
-            Vector2 pi = new Vector2((pf.x + p0.x) / 2, (pf.y + p0.y) / 2);
+      walkingPath.add(currentStep + 1, pi);
 
-            if (EngineLogger.debugMode()) {
-                String debugText = String.format(
-                        "WalkTween insert point: sdiff=%.2f, p0=(%.0f,%.0f), pf=(%.0f,%.0f), pi=(%.0f,%.0f)", sdiff,
-                        p0.x, p0.y, pf.x, pf.y, pi.x, pi.y);
-
-                EngineLogger.debug(debugText);
-            }
-
-            walkingPath.add(currentStep + 1, pi);
-
-            walkToNextStep(target);
-            return;
-        }
-
-        if (currentStep == 0 || ((AnimationRenderer) target.getRenderer()).changeDir(p0, pf)) {
-            target.startWalkAnim(p0, pf);
-        }
-
-        // t = dst/((vf+v0)/2)
-        float segmentDuration = p0.dst(pf) / (EngineAssetManager.getInstance().getScale() * speed * (s0 + sf) / 2);
-
-        start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, InterpolationMode.LINEAR,
-                InterpolationMode.LINEAR, currentStep == walkingPath.size() - 2 ? walkCb : null);
+      walkToNextStep(target);
+      return;
     }
 
-    private void segmentEnded(CharacterActor target) {
-
-        currentStep++;
-
-        if (currentStep < walkingPath.size() - 1) {
-            walkToNextStep(target);
-        } else { // WALK ENDED
-            target.stand();
-
-            // smooth animation to center camera when walking with UI/clicking (walkCb==null in that case)
-            if (walkCb == null && target == target.getScene().getCameraFollowActor()) {
-                target.getScene().getCamera()
-                        .startAnimation(target.getX(), target.getY(), target.getScene().getCamera().getZoom(), 1f,
-                                InterpolationMode.POW2OUT, null);
-            }
-        }
+    if (currentStep == 0 || ((AnimationRenderer) target.getRenderer()).changeDir(p0, pf)) {
+      target.startWalkAnim(p0, pf);
     }
 
-    public void completeNow(CharacterActor target) {
-        currentStep = walkingPath.size();
+    // t = dst/((vf+v0)/2)
+    float segmentDuration =
+        p0.dst(pf) / (EngineAssetManager.getInstance().getScale() * speed * (s0 + sf) / 2);
 
-        Vector2 p = walkingPath.get(currentStep - 1);
+    start(
+        target,
+        Type.NO_REPEAT,
+        1,
+        pf.x,
+        pf.y,
+        segmentDuration,
+        InterpolationMode.LINEAR,
+        InterpolationMode.LINEAR,
+        currentStep == walkingPath.size() - 2 ? walkCb : null);
+  }
 
-        target.setPosition(p.x, p.y);
-        target.stand();
+  private void segmentEnded(CharacterActor target) {
 
-        if (walkCb != null) {
-            ActionCallback tmpcb = walkCb;
-            walkCb = null;
-            tmpcb.resume();
-        }
+    currentStep++;
+
+    if (currentStep < walkingPath.size() - 1) {
+      walkToNextStep(target);
+    } else { // WALK ENDED
+      target.stand();
+
+      // smooth animation to center camera when walking with UI/clicking (walkCb==null in that case)
+      if (walkCb == null && target == target.getScene().getCameraFollowActor()) {
+        target
+            .getScene()
+            .getCamera()
+            .startAnimation(
+                target.getX(),
+                target.getY(),
+                target.getScene().getCamera().getZoom(),
+                1f,
+                InterpolationMode.POW2OUT,
+                null);
+      }
     }
+  }
 
-    @Override
-    public void updateTarget() {
-        super.updateTarget();
+  public void completeNow(CharacterActor target) {
+    currentStep = walkingPath.size();
 
-        if (isComplete())
-            segmentEnded((CharacterActor) target);
+    Vector2 p = walkingPath.get(currentStep - 1);
+
+    target.setPosition(p.x, p.y);
+    target.stand();
+
+    if (walkCb != null) {
+      ActionCallback tmpcb = walkCb;
+      walkCb = null;
+      tmpcb.resume();
     }
+  }
 
-    @Override
-    public void write(Json json) {
-        super.write(json);
+  @Override
+  public void updateTarget() {
+    super.updateTarget();
 
-        json.writeValue("path", walkingPath);
-        json.writeValue("currentStep", currentStep);
-        json.writeValue("speed", speed);
+    if (isComplete()) segmentEnded((CharacterActor) target);
+  }
 
-        if (walkCb != null) {
-            World w = ((BladeJson) json).getWorld();
-            Scene s = ((BladeJson) json).getScene();
-            json.writeValue("walkCb", ActionCallbackSerializer.serialize(w, s, walkCb));
-        }
+  @Override
+  public void write(Json json) {
+    super.write(json);
+
+    json.writeValue("path", walkingPath);
+    json.writeValue("currentStep", currentStep);
+    json.writeValue("speed", speed);
+
+    if (walkCb != null) {
+      World w = ((BladeJson) json).getWorld();
+      Scene s = ((BladeJson) json).getScene();
+      json.writeValue("walkCb", ActionCallbackSerializer.serialize(w, s, walkCb));
     }
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        super.read(json, jsonData);
+  @SuppressWarnings("unchecked")
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
 
-        walkingPath = json.readValue("path", ArrayList.class, Vector2.class, jsonData);
-        currentStep = json.readValue("currentStep", Integer.class, jsonData);
-        speed = json.readValue("speed", Float.class, jsonData);
+    walkingPath = json.readValue("path", ArrayList.class, Vector2.class, jsonData);
+    currentStep = json.readValue("currentStep", Integer.class, jsonData);
+    speed = json.readValue("speed", Float.class, jsonData);
 
-        World w = ((BladeJson) json).getWorld();
-        Scene s = ((BladeJson) json).getScene();
-        walkCb = ActionCallbackSerializer.find(w, s, json.readValue("walkCb", String.class, jsonData));
-    }
+    World w = ((BladeJson) json).getWorld();
+    Scene s = ((BladeJson) json).getScene();
+    walkCb = ActionCallbackSerializer.find(w, s, json.readValue("walkCb", String.class, jsonData));
+  }
 }

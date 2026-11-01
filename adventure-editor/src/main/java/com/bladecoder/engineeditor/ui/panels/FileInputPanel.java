@@ -1,7 +1,5 @@
 package com.bladecoder.engineeditor.ui.panels;
 
-import java.io.File;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -17,119 +15,137 @@ import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
 import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
+import java.io.File;
 
 public class FileInputPanel extends InputPanel {
-	public enum DialogType {
-		OPEN_FILE, SAVE_FILE, DIRECTORY
-	}
+  public enum DialogType {
+    OPEN_FILE,
+    SAVE_FILE,
+    DIRECTORY
+  }
 
-	private File cd;
-	private File selected;
-	private TextButton button;
+  private File cd;
+  private File selected;
+  private TextButton button;
 
-	private final static String FILE_TEXT = "Select file";
-	private final static String DIR_TEXT = "Select folder";
-	private FileChooser fileChooser;
+  private static final String FILE_TEXT = "Select file";
+  private static final String DIR_TEXT = "Select folder";
+  private FileChooser fileChooser;
 
-	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
-				dialogType, true);
-	}
+  public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType) {
+    this(
+        skin,
+        title,
+        desc,
+        Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
+        dialogType,
+        true);
+  }
 
-	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType, boolean mandatory) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
-				dialogType, mandatory);
-	}
+  public FileInputPanel(
+      Skin skin, String title, String desc, DialogType dialogType, boolean mandatory) {
+    this(
+        skin,
+        title,
+        desc,
+        Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
+        dialogType,
+        mandatory);
+  }
 
-	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType,
-			boolean mandatory) {
-		Table t = new Table();
-		button = new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin, "no-toggled");
-		
-		t.add(button);
-		
-		init(skin, title, desc, t,
-				mandatory, null);
+  public FileInputPanel(
+      Skin skin,
+      String title,
+      String desc,
+      File current,
+      final DialogType dialogType,
+      boolean mandatory) {
+    Table t = new Table();
+    button =
+        new TextButton(
+            dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin, "no-toggled");
 
-		switch (dialogType) {
-		case DIRECTORY: 
-			fileChooser = new FileChooser(Mode.OPEN);
-			fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
-			break;
-		case OPEN_FILE:
-			fileChooser = new FileChooser(Mode.OPEN);
-			fileChooser.setSelectionMode(SelectionMode.FILES);
-			break;
-		case SAVE_FILE:
-			fileChooser = new FileChooser(Mode.SAVE);
-			fileChooser.setSelectionMode(SelectionMode.FILES);
-			break;
-		default:
-			break;
-		}
-		
-		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
-		fileChooser.setViewMode(ViewMode.LIST);
+    t.add(button);
 
-		button.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				if(cd != null)
-					fileChooser.setDirectory(cd);
-					
-				getStage().addActor(fileChooser);
+    init(skin, title, desc, t, mandatory, null);
 
-				fileChooser.setListener(new FileChooserListener() {
+    switch (dialogType) {
+      case DIRECTORY:
+        fileChooser = new FileChooser(Mode.OPEN);
+        fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
+        break;
+      case OPEN_FILE:
+        fileChooser = new FileChooser(Mode.OPEN);
+        fileChooser.setSelectionMode(SelectionMode.FILES);
+        break;
+      case SAVE_FILE:
+        fileChooser = new FileChooser(Mode.SAVE);
+        fileChooser.setSelectionMode(SelectionMode.FILES);
+        break;
+      default:
+        break;
+    }
 
-					@Override
-					public void selected(Array<FileHandle> files) {
-						selected = files.get(0).file();
+    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setViewMode(ViewMode.LIST);
 
-						button.setText(selected.getAbsolutePath());
-					}
+    button.addListener(
+        new ClickListener() {
+          public void clicked(InputEvent event, float x, float y) {
+            if (cd != null) fileChooser.setDirectory(cd);
 
-					@Override
-					public void canceled() {
-					}
-				});
-			}
-		});
-		
-		// Adds clear button if not mandatory
-		if(!mandatory) {
-			TextButton clearButton = new TextButton("Clear", skin, "no-toggled");
-			
-			clearButton.addListener(new ClickListener() {
-				public void clicked(InputEvent event, float x, float y) {
-					button.setText(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT);
-					selected = null;
-				}
-			});
-			
-			t.add(clearButton);
-		}
-	}
+            getStage().addActor(fileChooser);
 
-	public File getFile() {
-		return selected;
-	}
+            fileChooser.setListener(
+                new FileChooserListener() {
 
-	@Override
-	public String getText() {
-		if (selected != null)
-			return selected.getAbsolutePath();
-		else
-			return "";
-	}
+                  @Override
+                  public void selected(Array<FileHandle> files) {
+                    selected = files.get(0).file();
 
-	@Override
-	public void setText(String text) {
-		button.setText(text);
-		selected = new File(text);
-		cd = new File(text);
-	}
-	
-	public void setFileTypeFilter(FileTypeFilter ftf) {
-		fileChooser.setFileTypeFilter(ftf);
-	}
+                    button.setText(selected.getAbsolutePath());
+                  }
 
+                  @Override
+                  public void canceled() {}
+                });
+          }
+        });
+
+    // Adds clear button if not mandatory
+    if (!mandatory) {
+      TextButton clearButton = new TextButton("Clear", skin, "no-toggled");
+
+      clearButton.addListener(
+          new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+              button.setText(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT);
+              selected = null;
+            }
+          });
+
+      t.add(clearButton);
+    }
+  }
+
+  public File getFile() {
+    return selected;
+  }
+
+  @Override
+  public String getText() {
+    if (selected != null) return selected.getAbsolutePath();
+    else return "";
+  }
+
+  @Override
+  public void setText(String text) {
+    button.setText(text);
+    selected = new File(text);
+    cd = new File(text);
+  }
+
+  public void setFileTypeFilter(FileTypeFilter ftf) {
+    fileChooser.setFileTypeFilter(ftf);
+  }
 }

@@ -1,7 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.io.File;
-
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Timer;
@@ -14,120 +12,146 @@ import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import java.io.File;
 
 public class CreateProjectDialog extends EditDialog {
 
-	public static final String INFO = "A project folder with the proper structure will be created in the selected location.";
+  public static final String INFO =
+      "A project folder with the proper structure will be created in the selected location.";
 
-	private static final String ANDROID_SDK_PROP = "package.SDK";
+  private static final String ANDROID_SDK_PROP = "package.SDK";
 
-	private InputPanel projectName;
-	private InputPanel pkg;
-	private InputPanel spinePlugin;
-	private FileInputPanel location;
-	private FileInputPanel androidSdk;
+  private InputPanel projectName;
+  private InputPanel pkg;
+  private InputPanel spinePlugin;
+  private FileInputPanel location;
+  private FileInputPanel androidSdk;
 
-	public CreateProjectDialog(Skin skin) {
-		super("CREATE PROJECT", skin);
+  public CreateProjectDialog(Skin skin) {
+    super("CREATE PROJECT", skin);
 
-		setInfo(INFO);
+    setInfo(INFO);
 
-		projectName = InputPanelFactory.createInputPanel(skin, "Project Name", "Set the name of the project", true);
+    projectName =
+        InputPanelFactory.createInputPanel(
+            skin, "Project Name", "Set the name of the project", true);
 
-		pkg = InputPanelFactory.createInputPanel(skin, "Package",
-				"The package will be used as package ID in Android and IOS. The launchers will be in this package too.",
-				Param.Type.STRING, true, "com.myadv.game");
+    pkg =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Package",
+            "The package will be used as package ID in Android and IOS. The launchers will be in this package too.",
+            Param.Type.STRING,
+            true,
+            "com.myadv.game");
 
-		spinePlugin = InputPanelFactory.createInputPanel(skin, "Spine animation support",
-				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.",
-				Param.Type.BOOLEAN, true, "false");
+    spinePlugin =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Spine animation support",
+            "The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.",
+            Param.Type.BOOLEAN,
+            true,
+            "false");
 
-		location = new FileInputPanel(skin, "Location", "Select the folder location for the project",
-				FileInputPanel.DialogType.DIRECTORY);
+    location =
+        new FileInputPanel(
+            skin,
+            "Location",
+            "Select the folder location for the project",
+            FileInputPanel.DialogType.DIRECTORY);
 
-		androidSdk = new FileInputPanel(skin, "Android SDK",
-				"Select the Android SDK folder to create the Android package. If empty, the ANDROID_HOME variable will be used.",
-				FileInputPanel.DialogType.DIRECTORY, false);
+    androidSdk =
+        new FileInputPanel(
+            skin,
+            "Android SDK",
+            "Select the Android SDK folder to create the Android package. If empty, the ANDROID_HOME variable will be used.",
+            FileInputPanel.DialogType.DIRECTORY,
+            false);
 
-		addInputPanel(projectName);
-		addInputPanel(pkg);
-		addInputPanel(location);
-		addInputPanel(spinePlugin);
-		addInputPanel(androidSdk);
+    addInputPanel(projectName);
+    addInputPanel(pkg);
+    addInputPanel(location);
+    addInputPanel(spinePlugin);
+    addInputPanel(androidSdk);
 
-		String sdkprop = Ctx.project.getEditorConfig().getProperty(ANDROID_SDK_PROP);
+    String sdkprop = Ctx.project.getEditorConfig().getProperty(ANDROID_SDK_PROP);
 
-		if (sdkprop != null && new File(sdkprop).exists()) {
-			androidSdk.setText(sdkprop);
-		}
+    if (sdkprop != null && new File(sdkprop).exists()) {
+      androidSdk.setText(sdkprop);
+    }
 
-		// getStage().setKeyboardFocus(projectName.getField());
-	}
+    // getStage().setKeyboardFocus(projectName.getField());
+  }
 
-	@Override
-	protected void ok() {
-		try {
-			Ctx.project.getEditorConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
-			Ctx.project.saveProject();
-		} catch (Exception ex) {
-			String msg = ex.getClass().getSimpleName()
-					+ " - " + ex.getMessage();
-			Message.showMsgDialog(getStage(), "Error saving project", msg);
-		}
-		
-		final Stage stage = getStage();
+  @Override
+  protected void ok() {
+    try {
+      Ctx.project.getEditorConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
+      Ctx.project.saveProject();
+    } catch (Exception ex) {
+      String msg = ex.getClass().getSimpleName() + " - " + ex.getMessage();
+      Message.showMsgDialog(getStage(), "Error saving project", msg);
+    }
 
-		Message.showMsg(getStage(), "Creating project...", true);
-		Timer.schedule(new Task() {
-			@Override
-			public void run() {
-				createProject(stage);
-			}
-		},1);
-	}
+    final Stage stage = getStage();
 
-	private void createProject(Stage stage) {
+    Message.showMsg(getStage(), "Creating project...", true);
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            createProject(stage);
+          }
+        },
+        1);
+  }
 
-		try {
-			Ctx.project.createProject(location.getText(), projectName.getText(), pkg.getText(), androidSdk.getText(),
-					Boolean.parseBoolean(spinePlugin.getText()));
+  private void createProject(Stage stage) {
 
-			Message.showMsg(stage, "Project successfully created", 3);
-		} catch (Exception e) {
-			String msg = e.getClass().getSimpleName() + " - "
-					+ e.getMessage();
-			Message.showMsgDialog(stage, "Error creating project", msg);
-			EditorLogger.error(msg, e);
-			return;
-		}
-	}
+    try {
+      Ctx.project.createProject(
+          location.getText(),
+          projectName.getText(),
+          pkg.getText(),
+          androidSdk.getText(),
+          Boolean.parseBoolean(spinePlugin.getText()));
 
-	@Override
-	protected boolean validateFields() {
-		boolean isOk = true;
+      Message.showMsg(stage, "Project successfully created", 3);
+    } catch (Exception e) {
+      String msg = e.getClass().getSimpleName() + " - " + e.getMessage();
+      Message.showMsgDialog(stage, "Error creating project", msg);
+      EditorLogger.error(msg, e);
+      return;
+    }
+  }
 
-		if (!projectName.validateField()) {
-			isOk = false;
-		}
+  @Override
+  protected boolean validateFields() {
+    boolean isOk = true;
 
-		if (!pkg.validateField()) {
-			isOk = false;
-		}
+    if (!projectName.validateField()) {
+      isOk = false;
+    }
 
-		if (location.getFile() != null) {
-			location.setError(false);
-		} else {
-			location.setError(true);
-			isOk = false;
-		}
+    if (!pkg.validateField()) {
+      isOk = false;
+    }
 
-//		if (System.getenv("ANDROID_HOME") == null && androidSdk.getFile() == null) {
-//			androidSdk.setError(true);
-//			isOk = false;
-//		} else {
-//			androidSdk.setError(false);
-//		}
+    if (location.getFile() != null) {
+      location.setError(false);
+    } else {
+      location.setError(true);
+      isOk = false;
+    }
 
-		return isOk;
-	}
+    //		if (System.getenv("ANDROID_HOME") == null && androidSdk.getFile() == null) {
+    //			androidSdk.setError(true);
+    //			isOk = false;
+    //		} else {
+    //			androidSdk.setError(false);
+    //		}
+
+    return isOk;
+  }
 }

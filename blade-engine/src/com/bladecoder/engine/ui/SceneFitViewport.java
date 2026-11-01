@@ -8,60 +8,58 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-
 /**
  * This is a Custom FitViewport with the next differences with the libgdx FitViewport
- * 
- *   - The camera uses screen coordinates. This is used to draw fonts and UI 1:1
- *   - The world dimensions is used only to calculate the dimensions of the viewport
- * 
+ *
+ * <p>- The camera uses screen coordinates. This is used to draw fonts and UI 1:1 - The world
+ * dimensions is used only to calculate the dimensions of the viewport
+ *
  * @author rgarcia
  */
 public class SceneFitViewport extends Viewport {
 
-	/** Creates a new viewport using a new {@link OrthographicCamera}. */
-	public SceneFitViewport () {
-		setCamera(new OrthographicCamera());
-	}
-	
-	@Override
-	public void update (int screenWidth, int screenHeight, boolean centerCamera) {		
-		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
-		setScreenSize(Math.round(scaled.x), Math.round(scaled.y));
-		// center the viewport in the middle of the screen
-		setScreenPosition((screenWidth - getScreenWidth()) / 2,
-				(screenHeight - getScreenHeight()) / 2);
-		
-		apply(centerCamera);
-	}
-	
-	@Override
-	public void apply (boolean centerCamera) {
-		HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
-		getCamera().viewportWidth = getScreenWidth();
-		getCamera().viewportHeight = getScreenHeight();
-		if (centerCamera)
-			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
-		getCamera().update();
-	}
-	
-	@Override
-	public Vector2 unproject(Vector2 out) {
-		super.unproject(out);
-		
-		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
-		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+  /** Creates a new viewport using a new {@link OrthographicCamera}. */
+  public SceneFitViewport() {
+    setCamera(new OrthographicCamera());
+  }
 
-		return out;
-	}
+  @Override
+  public void update(int screenWidth, int screenHeight, boolean centerCamera) {
+    Vector2 scaled =
+        Scaling.fit.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
+    setScreenSize(Math.round(scaled.x), Math.round(scaled.y));
+    // center the viewport in the middle of the screen
+    setScreenPosition((screenWidth - getScreenWidth()) / 2, (screenHeight - getScreenHeight()) / 2);
 
-	@Override
-	public Vector3 unproject(Vector3 out) {
-		super.unproject(out);
+    apply(centerCamera);
+  }
 
-		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
-		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+  @Override
+  public void apply(boolean centerCamera) {
+    HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+    getCamera().viewportWidth = getScreenWidth();
+    getCamera().viewportHeight = getScreenHeight();
+    if (centerCamera) getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
+    getCamera().update();
+  }
 
-		return out;
-	}
+  @Override
+  public Vector2 unproject(Vector2 out) {
+    super.unproject(out);
+
+    out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+    out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+
+    return out;
+  }
+
+  @Override
+  public Vector3 unproject(Vector3 out) {
+    super.unproject(out);
+
+    out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+    out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+
+    return out;
+  }
 }

@@ -1,9 +1,5 @@
 package com.bladecoder.engine.ui;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,290 +11,288 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 
 /**
- * Singleton class for recording verbs calls. This class can record and play a
- * game session.
- * 
+ * Singleton class for recording verbs calls. This class can record and play a game session.
+ *
  * @author rgarcia
  */
 public class Recorder {
-	private static final String DEFAULT_RECORD_FILENAME = "record";
-	public static final String RECORD_EXT = ".verbs.rec";
-	public static final String GAMESTATE_REC_EXT = ".gamestate.rec";
-	private static final float WAITING_TIME = .5f;
+  private static final String DEFAULT_RECORD_FILENAME = "record";
+  public static final String RECORD_EXT = ".verbs.rec";
+  public static final String GAMESTATE_REC_EXT = ".gamestate.rec";
+  private static final float WAITING_TIME = .5f;
 
-	private ArrayList<TimeVerb> list = new ArrayList<>();
-	private boolean playing = false;
-	private boolean recording = false;
-	private float time;
-	private int pos;
-	private String fileName = DEFAULT_RECORD_FILENAME;
-	private final World w;
+  private ArrayList<TimeVerb> list = new ArrayList<>();
+  private boolean playing = false;
+  private boolean recording = false;
+  private float time;
+  private int pos;
+  private String fileName = DEFAULT_RECORD_FILENAME;
+  private final World w;
 
-	// TO TEST SAVEGAME FEATURE
-	private static final boolean TEST_SAVEGAME = false;
-	private static final int SAVE_EACH_SECONDS = 10;
-	private int oldt = 0;
+  // TO TEST SAVEGAME FEATURE
+  private static final boolean TEST_SAVEGAME = false;
+  private static final int SAVE_EACH_SECONDS = 10;
+  private int oldt = 0;
 
-	public Recorder(World w) {
-		this.w = w;
-	}
+  public Recorder(World w) {
+    this.w = w;
+  }
 
-	public void update(float delta) {
+  public void update(float delta) {
 
-		if (w.isPaused())
-			return;
+    if (w.isPaused()) return;
 
-		if (recording) {
-			time += delta;
-		} else if (playing) {
-			time += delta;
+    if (recording) {
+      time += delta;
+    } else if (playing) {
+      time += delta;
 
-			if (pos >= list.size()) {
-				setPlaying(false);
-				return;
-			}
+      if (pos >= list.size()) {
+        setPlaying(false);
+        return;
+      }
 
-			TimeVerb v = list.get(pos);
+      TimeVerb v = list.get(pos);
 
-			Scene s = w.getCurrentScene();
+      Scene s = w.getCurrentScene();
 
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("RECORDER (").append(pos).append(") - ");
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("RECORDER (").append(pos).append(") - ");
 
-			if (TEST_SAVEGAME) {
-				int t = (int) (w.getTimeOfGame() / 1000f);
-				// save and load game every 5 seconds
-				if (t % SAVE_EACH_SECONDS == 0 && oldt != t) {
-					oldt = t;
-					EngineLogger.debug(">> TESTING: SAVING AND LOADING GAMESTATE..." + t / SAVE_EACH_SECONDS);
-					try {
-						w.saveGameState();
-						w.loadGameState();
-						return;
-					} catch (Exception e) {
-						EngineLogger.error("PLAYING ERROR: Error saving/loading gamestate.", e);
-					}
-				}
-			}
+      if (TEST_SAVEGAME) {
+        int t = (int) (w.getTimeOfGame() / 1000f);
+        // save and load game every 5 seconds
+        if (t % SAVE_EACH_SECONDS == 0 && oldt != t) {
+          oldt = t;
+          EngineLogger.debug(">> TESTING: SAVING AND LOADING GAMESTATE..." + t / SAVE_EACH_SECONDS);
+          try {
+            w.saveGameState();
+            w.loadGameState();
+            return;
+          } catch (Exception e) {
+            EngineLogger.error("PLAYING ERROR: Error saving/loading gamestate.", e);
+          }
+        }
+      }
 
-			// check preconditions
-			if (!playing || v.time > time || w.inCutMode())
-				return;
+      // check preconditions
+      if (!playing || v.time > time || w.inCutMode()) return;
 
-			if (v.verb == null) {
-				if (v.pos == null) { // DIALOG OPTION
-					if (!w.hasDialogOptions() || w.getDialogOptions().size() <= v.dialogOption) {
-						EngineLogger.error("PLAYING ERROR: No dialog options to select. Size: "
-								+ (w.hasDialogOptions() ? w.getDialogOptions().size() : 0) + " select: "
-								+ v.dialogOption);
-					} else {
-						w.selectDialogOption(v.dialogOption);
+      if (v.verb == null) {
+        if (v.pos == null) { // DIALOG OPTION
+          if (!w.hasDialogOptions() || w.getDialogOptions().size() <= v.dialogOption) {
+            EngineLogger.error(
+                "PLAYING ERROR: No dialog options to select. Size: "
+                    + (w.hasDialogOptions() ? w.getDialogOptions().size() : 0)
+                    + " select: "
+                    + v.dialogOption);
+          } else {
+            w.selectDialogOption(v.dialogOption);
 
-						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
-					}
-				} else { // GOTO
-					s.getPlayer().goTo(v.pos, null, false);
+            stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
+          }
+        } else { // GOTO
+          s.getPlayer().goTo(v.pos, null, false);
 
-					stringBuilder.append(" GOTO ").append(v.pos.x).append(',').append(v.pos.y);
-				}
-			} else {
+          stringBuilder.append(" GOTO ").append(v.pos.x).append(',').append(v.pos.y);
+        }
+      } else {
 
-				stringBuilder.append(v.verb);
+        stringBuilder.append(v.verb);
 
-				if (v.verb.equals("SAVEGAME")) {
-					// SPECIAL VERB TO SAVE THE GAME
-					stringBuilder.append(v.target);
-					try {
-						w.getSerializer().saveGameState(v.target, true);
-					} catch (IOException e) {
-						EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
-					}
-				} else if(v.actorId == null) {
-					s.runVerb(v.verb);
-				} else {
-					InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
+        if (v.verb.equals("SAVEGAME")) {
+          // SPECIAL VERB TO SAVE THE GAME
+          stringBuilder.append(v.target);
+          try {
+            w.getSerializer().saveGameState(v.target, true);
+          } catch (IOException e) {
+            EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
+          }
+        } else if (v.actorId == null) {
+          s.runVerb(v.verb);
+        } else {
+          InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
 
-					if (a != null) {
-						stringBuilder.append(' ').append(v.actorId);
+          if (a != null) {
+            stringBuilder.append(' ').append(v.actorId);
 
-						if (v.target != null) {
-							stringBuilder.append(" with ").append(v.target);
-						}
+            if (v.target != null) {
+              stringBuilder.append(" with ").append(v.target);
+            }
 
-						a.runVerb(v.verb, v.target);
-					} else
-						EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
-				}
-			}
+            a.runVerb(v.verb, v.target);
+          } else EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
+        }
+      }
 
-			EngineLogger.debug(stringBuilder.toString());
+      EngineLogger.debug(stringBuilder.toString());
 
-			time = 0;
-			pos++;
-		}
-	}
+      time = 0;
+      pos++;
+    }
+  }
 
-	public void add(String actorId, String verb, String target) {
-		if (recording) {
+  public void add(String actorId, String verb, String target) {
+    if (recording) {
 
-			time += WAITING_TIME;
-			TimeVerb v = new TimeVerb();
-			v.time = time;
-			v.verb = verb;
-			v.target = target;
-			v.actorId = actorId;
+      time += WAITING_TIME;
+      TimeVerb v = new TimeVerb();
+      v.time = time;
+      v.verb = verb;
+      v.target = target;
+      v.actorId = actorId;
 
-			list.add(v);
-			time = 0;
-		}
-	}
+      list.add(v);
+      time = 0;
+    }
+  }
 
-	public void add(int dialogOption) {
-		if (recording) {
-			TimeVerb v = new TimeVerb();
-			time += WAITING_TIME;
-			v.time = time;
+  public void add(int dialogOption) {
+    if (recording) {
+      TimeVerb v = new TimeVerb();
+      time += WAITING_TIME;
+      v.time = time;
 
-			if (w.hasDialogOptions()) {
-				v.dialogOption = dialogOption;
-			}
+      if (w.hasDialogOptions()) {
+        v.dialogOption = dialogOption;
+      }
 
-			list.add(v);
-			time = 0;
-		}
-	}
+      list.add(v);
+      time = 0;
+    }
+  }
 
-	public void add(Vector2 pos) {
-		if (recording) {
-			TimeVerb v = new TimeVerb();
-			time += WAITING_TIME;
-			v.time = time;
+  public void add(Vector2 pos) {
+    if (recording) {
+      TimeVerb v = new TimeVerb();
+      time += WAITING_TIME;
+      v.time = time;
 
-			v.pos = pos;
+      v.pos = pos;
 
-			list.add(v);
-			time = 0;
-		}
-	}
+      list.add(v);
+      time = 0;
+    }
+  }
 
-	public boolean isRecording() {
-		return recording;
-	}
+  public boolean isRecording() {
+    return recording;
+  }
 
-	public void setRecording(boolean recording) {
-		this.recording = recording;
-		time = 0;
-		pos = 0;
+  public void setRecording(boolean recording) {
+    this.recording = recording;
+    time = 0;
+    pos = 0;
 
-		if (recording) {
-			EngineLogger.debug("RECORDING...");
-			try {
-				w.getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT, false);
-			} catch (IOException e) {
-				EngineLogger.error(e.getMessage());
-			}
-		} else
-			save();
-	}
+    if (recording) {
+      EngineLogger.debug("RECORDING...");
+      try {
+        w.getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT, false);
+      } catch (IOException e) {
+        EngineLogger.error(e.getMessage());
+      }
+    } else save();
+  }
 
-	public boolean isPlaying() {
-		return playing;
-	}
+  public boolean isPlaying() {
+    return playing;
+  }
 
-	public void setPlaying(boolean p) {
-		if (p)
-			EngineLogger.debug("PLAYING...");
-		else
-			EngineLogger.debug("STOP PLAYING...");
+  public void setPlaying(boolean p) {
+    if (p) EngineLogger.debug("PLAYING...");
+    else EngineLogger.debug("STOP PLAYING...");
 
-		this.playing = p;
-		this.recording = false;
-		time = 0;
-		pos = 0;
-	}
+    this.playing = p;
+    this.recording = false;
+    time = 0;
+    pos = 0;
+  }
 
-	public void draw(SpriteBatch batch) {
-		if (recording && ((int) time) % 2 == 0) {
-			// RectangleRenderer.draw(batch, 10,
-			// w.getCamera().getViewport().commandHeight - 30,
-			// 20, 20, Color.RED);
+  public void draw(SpriteBatch batch) {
+    if (recording && ((int) time) % 2 == 0) {
+      // RectangleRenderer.draw(batch, 10,
+      // w.getCamera().getViewport().commandHeight - 30,
+      // 20, 20, Color.RED);
 
-			// TODO: Provisional. Pass viewport to get height
-			RectangleRenderer.draw(batch, 10, 10, 20, 20, Color.RED);
-		}
-	}
+      // TODO: Provisional. Pass viewport to get height
+      RectangleRenderer.draw(batch, 10, 10, 20, 20, Color.RED);
+    }
+  }
 
-	static class TimeVerb {
-		float time;
-		String verb;
-		String target;
-		String actorId;
-		int dialogOption;
-		Vector2 pos;
-	}
+  static class TimeVerb {
+    float time;
+    String verb;
+    String target;
+    String actorId;
+    int dialogOption;
+    Vector2 pos;
+  }
 
-	public String getFileName() {
-		return fileName;
-	}
+  public String getFileName() {
+    return fileName;
+  }
 
-	public void setFilename(String name) {
-		if (name != null && !name.trim().isEmpty()) {
-			fileName = name;
-		} else {
-			fileName = DEFAULT_RECORD_FILENAME;
-		}
-	}
+  public void setFilename(String name) {
+    if (name != null && !name.trim().isEmpty()) {
+      fileName = name;
+    } else {
+      fileName = DEFAULT_RECORD_FILENAME;
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	public void load() {
-		String gameStateFileName = fileName + GAMESTATE_REC_EXT;
-		String recordFileName = fileName + RECORD_EXT;
+  @SuppressWarnings("unchecked")
+  public void load() {
+    String gameStateFileName = fileName + GAMESTATE_REC_EXT;
+    String recordFileName = fileName + RECORD_EXT;
 
-		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
+    FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
 
-		if (!verbsFile.exists())
-			verbsFile = EngineAssetManager.getInstance().getAsset("tests/" + recordFileName);
+    if (!verbsFile.exists())
+      verbsFile = EngineAssetManager.getInstance().getAsset("tests/" + recordFileName);
 
-		if (verbsFile.exists()) {
-			// LOAD GAME STATE IF EXISTS
-			FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(gameStateFileName);
+    if (verbsFile.exists()) {
+      // LOAD GAME STATE IF EXISTS
+      FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(gameStateFileName);
 
-			if (!gameStateFile.exists())
-				gameStateFile = EngineAssetManager.getInstance().getAsset("tests/" + gameStateFileName);
+      if (!gameStateFile.exists())
+        gameStateFile = EngineAssetManager.getInstance().getAsset("tests/" + gameStateFileName);
 
-			if (gameStateFile.exists())
-				try {
-					w.getSerializer().loadGameState(gameStateFile);
-				} catch (IOException e) {
-					EngineLogger.error(e.getMessage());
-				}
-			else
-				EngineLogger.debug("LOADING RECORD: no saved file exists");
+      if (gameStateFile.exists())
+        try {
+          w.getSerializer().loadGameState(gameStateFile);
+        } catch (IOException e) {
+          EngineLogger.error(e.getMessage());
+        }
+      else EngineLogger.debug("LOADING RECORD: no saved file exists");
 
-			// LOAD VERBS
-			list = new Json().fromJson(ArrayList.class, TimeVerb.class, verbsFile.reader("UTF-8"));
-		} else {
-			EngineLogger.error("LOADING RECORD: no record file exists");
-		}
-	}
+      // LOAD VERBS
+      list = new Json().fromJson(ArrayList.class, TimeVerb.class, verbsFile.reader("UTF-8"));
+    } else {
+      EngineLogger.error("LOADING RECORD: no record file exists");
+    }
+  }
 
-	public void save() {
+  public void save() {
 
-		Json json = new Json();
+    Json json = new Json();
 
-		// String s = json.prettyPrint(list);
-		String s = json.toJson(list, ArrayList.class, TimeVerb.class);
-		s = json.prettyPrint(s);
+    // String s = json.prettyPrint(list);
+    String s = json.toJson(list, ArrayList.class, TimeVerb.class);
+    s = json.prettyPrint(s);
 
-		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT).writer(false, "UTF-8");
+    Writer w =
+        EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT).writer(false, "UTF-8");
 
-		try {
-			w.write(s);
-			w.close();
-		} catch (IOException e) {
-			EngineLogger.error("ERROR SAVING RECORD", e);
-		}
-	}
+    try {
+      w.write(s);
+      w.close();
+    } catch (IOException e) {
+      EngineLogger.error("ERROR SAVING RECORD", e);
+    }
+  }
 }

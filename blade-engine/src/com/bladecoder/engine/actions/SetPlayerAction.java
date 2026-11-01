@@ -12,41 +12,41 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Sets the scene player")
 public class SetPlayerAction implements Action {
 
-	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR)
-	@ActionPropertyDescription("The scene player")
-	private SceneActorRef actor;
+  @ActionProperty(type = Type.SCENE_CHARACTER_ACTOR)
+  @ActionPropertyDescription("The scene player")
+  private SceneActorRef actor;
 
-	@ActionProperty
-	@ActionPropertyDescription("The inventory 'id' for the player. If empty, the inventory will not change.")
-	private String inventory;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The inventory 'id' for the player. If empty, the inventory will not change.")
+  private String inventory;
 
-	private World w;
+  private World w;
 
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-	@Override
-	public boolean run(VerbRunner cb) {
-		Scene s = actor == null ? w.getCurrentScene() : actor.getScene(w);
-		BaseActor a = actor == null || actor.getActorId() == null ? null : s.getActor(actor.getActorId(), true);
+  @Override
+  public boolean run(VerbRunner cb) {
+    Scene s = actor == null ? w.getCurrentScene() : actor.getScene(w);
+    BaseActor a =
+        actor == null || actor.getActorId() == null ? null : s.getActor(actor.getActorId(), true);
 
-		s.setPlayer((CharacterActor) a);
+    s.setPlayer((CharacterActor) a);
 
-		if (inventory != null && !inventory.equals(w.getCurrentInventory())) {
-			Inventory old = w.getInventory();
+    if (inventory != null && !inventory.equals(w.getCurrentInventory())) {
+      Inventory old = w.getInventory();
 
-			w.setInventory(inventory);
-			w.getInventory().loadAssets();
-			EngineAssetManager.getInstance().finishLoading();
-			w.getInventory().retrieveAssets();
+      w.setInventory(inventory);
+      w.getInventory().loadAssets();
+      EngineAssetManager.getInstance().finishLoading();
+      w.getInventory().retrieveAssets();
 
-			old.dispose();
+      old.dispose();
+    }
 
-		}
-
-		return false;
-	}
-
+    return false;
+  }
 }

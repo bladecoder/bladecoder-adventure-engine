@@ -16,201 +16,198 @@ import com.bladecoder.engine.util.RectangleRenderer;
 
 public class ParticleRenderer implements ActorRenderer {
 
-	private final static float DEFAULT_DIM = 100;
+  private static final float DEFAULT_DIM = 100;
 
-	private final ParticleEffect effect = new ParticleEffect();
+  private final ParticleEffect effect = new ParticleEffect();
 
-	private float lastAnimationTime = 0;
+  private float lastAnimationTime = 0;
 
-	private Polygon bbox;
+  private Polygon bbox;
 
-	private String particleName;
-	private String atlasName;
+  private String particleName;
+  private String atlasName;
 
-	private TextureAtlas atlasTex;
+  private TextureAtlas atlasTex;
 
-	private float tmpPosX = 0;
-	private float tmpPosY = 0;
-	private static final Matrix4 tmp = new Matrix4();
+  private float tmpPosX = 0;
+  private float tmpPosY = 0;
+  private static final Matrix4 tmp = new Matrix4();
 
-	private int orgAlign = Align.bottom;
+  private int orgAlign = Align.bottom;
 
-	public ParticleRenderer() {
+  public ParticleRenderer() {}
 
-	}
+  public void reset() {
+    tmpPosX = tmpPosY = 0;
+    effect.reset();
+  }
 
-	public void reset() {
-		tmpPosX = tmpPosY = 0;
-		effect.reset();
-	}
+  @Override
+  public int getOrgAlign() {
+    return orgAlign;
+  }
 
-	@Override
-	public int getOrgAlign() {
-		return orgAlign;
-	}
+  @Override
+  public void setOrgAlign(int align) {
+    orgAlign = align;
+  }
 
-	@Override
-	public void setOrgAlign(int align) {
-		orgAlign = align;
-	}
+  @Override
+  public void update(float delta) {
+    try {
+      effect.update(delta);
+    } catch (Exception e) {
+      // avoid crashing if atlas is not found
+    }
+  }
 
-	@Override
-	public void update(float delta) {
-		try {
-			effect.update(delta);
-		} catch (Exception e) {
-			// avoid crashing if atlas is not found
-		}
-	}
+  @Override
+  public void draw(
+      SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
-	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
+    float finalScaleX = EngineAssetManager.getInstance().getScale() * scaleX;
+    float finalScaleY = EngineAssetManager.getInstance().getScale() * scaleY;
 
-		float finalScaleX = EngineAssetManager.getInstance().getScale() * scaleX;
-		float finalScaleY = EngineAssetManager.getInstance().getScale() * scaleY;
+    if (effect.getEmitters().size > 0) {
 
-		if (effect.getEmitters().size > 0) {
+      Matrix4 tm = batch.getTransformMatrix();
+      tmp.set(tm);
 
-			Matrix4 tm = batch.getTransformMatrix();
-			tmp.set(tm);
+      if (tmpPosX != x / finalScaleX || tmpPosY != y / finalScaleY) {
+        tmpPosX = x / finalScaleX;
+        tmpPosY = y / finalScaleY;
 
-			if (tmpPosX != x / finalScaleX || tmpPosY != y / finalScaleY) {
-				tmpPosX = x / finalScaleX;
-				tmpPosY = y / finalScaleY;
+        effect.setPosition(tmpPosX, tmpPosY);
+      }
 
-				effect.setPosition(tmpPosX, tmpPosY);
-			}
+      tm.rotate(0, 0, 1, rotation).scale(finalScaleX, finalScaleY, 1);
 
-			tm.rotate(0, 0, 1, rotation).scale(finalScaleX, finalScaleY, 1);
+      batch.setTransformMatrix(tm);
 
-			batch.setTransformMatrix(tm);
+      if (tint != null) batch.setColor(tint);
 
-			if (tint != null)
-				batch.setColor(tint);
+      effect.draw(batch);
 
-			effect.draw(batch);
+      if (tint != null) batch.setColor(Color.WHITE);
 
-			if (tint != null)
-				batch.setColor(Color.WHITE);
+      batch.setTransformMatrix(tmp);
+    } else {
+      x = x - getWidth() / 2 * finalScaleX;
+      RectangleRenderer.draw(
+          batch, x, y, getWidth() * finalScaleX, getHeight() * finalScaleY, Color.RED);
+    }
+  }
 
-			batch.setTransformMatrix(tmp);
-		} else {
-			x = x - getWidth() / 2 * finalScaleX;
-			RectangleRenderer.draw(batch, x, y, getWidth() * finalScaleX, getHeight() * finalScaleY, Color.RED);
-		}
-	}
+  @Override
+  public float getWidth() {
+    return DEFAULT_DIM;
+  }
 
-	@Override
-	public float getWidth() {
-		return DEFAULT_DIM;
-	}
+  @Override
+  public float getHeight() {
+    return DEFAULT_DIM;
+  }
 
-	@Override
-	public float getHeight() {
-		return DEFAULT_DIM;
-	}
+  public String getParticleName() {
+    return particleName;
+  }
 
-	public String getParticleName() {
-		return particleName;
-	}
+  public void setParticleName(String particleName) {
+    this.particleName = particleName;
+  }
 
-	public void setParticleName(String particleName) {
-		this.particleName = particleName;
-	}
+  public String getAtlasName() {
+    return atlasName;
+  }
 
-	public String getAtlasName() {
-		return atlasName;
-	}
+  public void setAtlasName(String atlasName) {
+    this.atlasName = atlasName;
+  }
 
-	public void setAtlasName(String atlasName) {
-		this.atlasName = atlasName;
-	}
+  @Override
+  public void updateBboxFromRenderer(Polygon bbox) {
+    this.bbox = bbox;
 
-	@Override
-	public void updateBboxFromRenderer(Polygon bbox) {
-		this.bbox = bbox;
+    computeBbox();
+  }
 
-		computeBbox();
-	}
+  private void computeBbox() {
+    if (bbox == null) return;
 
-	private void computeBbox() {
-		if (bbox == null)
-			return;
+    if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
+      bbox.setVertices(new float[8]);
+    }
 
-		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
-			bbox.setVertices(new float[8]);
-		}
+    float[] verts = bbox.getVertices();
 
-		float[] verts = bbox.getVertices();
+    verts[0] = -getWidth() / 2;
+    verts[1] = 0f;
+    verts[2] = -getWidth() / 2;
+    verts[3] = getHeight();
+    verts[4] = getWidth() / 2;
+    verts[5] = getHeight();
+    verts[6] = getWidth() / 2;
+    verts[7] = 0f;
+    bbox.dirty();
+  }
 
-		verts[0] = -getWidth() / 2;
-		verts[1] = 0f;
-		verts[2] = -getWidth() / 2;
-		verts[3] = getHeight();
-		verts[4] = getWidth() / 2;
-		verts[5] = getHeight();
-		verts[6] = getWidth() / 2;
-		verts[7] = 0f;
-		bbox.dirty();
-	}
+  @Override
+  public void loadAssets() {
+    EngineAssetManager.getInstance().loadAtlas(getAtlasName());
+  }
 
-	@Override
-	public void loadAssets() {
-		EngineAssetManager.getInstance().loadAtlas(getAtlasName());
-	}
+  @Override
+  public void retrieveAssets() {
 
-	@Override
-	public void retrieveAssets() {
+    if (!EngineAssetManager.getInstance().isAtlasLoaded(atlasName)) {
+      loadAssets();
+      EngineAssetManager.getInstance().finishLoading();
+    }
 
-		if (!EngineAssetManager.getInstance().isAtlasLoaded(atlasName)) {
-			loadAssets();
-			EngineAssetManager.getInstance().finishLoading();
-		}
+    atlasTex = EngineAssetManager.getInstance().getTextureAtlas(getAtlasName());
 
-		atlasTex = EngineAssetManager.getInstance().getTextureAtlas(getAtlasName());
+    effect.load(EngineAssetManager.getInstance().getParticle(getParticleName()), atlasTex);
+    effect.start();
+    // reset tmp to force repositioning
+    tmpPosX = Float.MAX_VALUE;
+    effect.update(lastAnimationTime);
 
-		effect.load(EngineAssetManager.getInstance().getParticle(getParticleName()), atlasTex);
-		effect.start();
-		// reset tmp to force repositioning
-		tmpPosX = Float.MAX_VALUE;
-		effect.update(lastAnimationTime);
+    computeBbox();
+  }
 
-		computeBbox();
-	}
+  @Override
+  public void dispose() {
+    EngineAssetManager.getInstance().disposeAtlas(getAtlasName());
+  }
 
-	@Override
-	public void dispose() {
-		EngineAssetManager.getInstance().disposeAtlas(getAtlasName());
-	}
+  @Override
+  public void write(Json json) {
 
-	@Override
-	public void write(Json json) {
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      json.writeValue("atlasName", getAtlasName());
+      json.writeValue("particleName", getParticleName());
+      json.writeValue("orgAlign", orgAlign);
+    } else {
+      json.writeValue("lastAnimationTime", lastAnimationTime);
+    }
+  }
 
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("atlasName", getAtlasName());
-			json.writeValue("particleName", getParticleName());
-			json.writeValue("orgAlign", orgAlign);
-		} else {
-			json.writeValue("lastAnimationTime", lastAnimationTime);
-		}
-	}
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      setAtlasName(json.readValue("atlasName", String.class, jsonData));
+      setParticleName(json.readValue("particleName", String.class, jsonData));
+      orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
+    } else {
+      lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+    }
+  }
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			setAtlasName(json.readValue("atlasName", String.class, jsonData));
-			setParticleName(json.readValue("particleName", String.class, jsonData));
-			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
-		} else {
-			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
-		}
-	}
+  @Override
+  public void setWorld(World world) {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void setWorld(World world) {
-		// TODO Auto-generated method stub
-
-	}
+  }
 }

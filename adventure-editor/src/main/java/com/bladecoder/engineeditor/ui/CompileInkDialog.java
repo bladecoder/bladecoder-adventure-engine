@@ -15,137 +15,152 @@ import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.ink.compiler.Compiler;
 import com.bladecoder.ink.compiler.IFileHandler;
 import com.bladecoder.ink.runtime.Story;
-
 import java.io.IOException;
 
 public class CompileInkDialog extends EditDialog {
 
-    private static final String FILE_PROP = "compileink.file";
-    private static final String LANG_PROP = "compileink.lang";
-    private static final String EXTRACT_TEXTS_PROP = "compileink.extractTexts";
+  private static final String FILE_PROP = "compileink.file";
+  private static final String LANG_PROP = "compileink.lang";
+  private static final String EXTRACT_TEXTS_PROP = "compileink.extractTexts";
 
-    private static final String INFO = "Compile the Ink script.";
+  private static final String INFO = "Compile the Ink script.";
 
-    private final InputPanel file;
-    private final InputPanel extractTexts;
-    private final InputPanel lang;
+  private final InputPanel file;
+  private final InputPanel extractTexts;
+  private final InputPanel lang;
 
-    public CompileInkDialog(Skin skin) {
-        super("COMPILE INK SCRIPT", skin);
+  public CompileInkDialog(Skin skin) {
+    super("COMPILE INK SCRIPT", skin);
 
-        file = new FileInputPanel(skin, "Select the Ink script", "Select the Ink source script for your chapter",
-                FileInputPanel.DialogType.OPEN_FILE);
+    file =
+        new FileInputPanel(
+            skin,
+            "Select the Ink script",
+            "Select the Ink source script for your chapter",
+            FileInputPanel.DialogType.OPEN_FILE);
 
-        extractTexts = InputPanelFactory.createInputPanel(skin, "Extract texts",
-                "Extracts all texts in a .properties for I18N.", Param.Type.BOOLEAN, true, "true");
+    extractTexts =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Extract texts",
+            "Extracts all texts in a .properties for I18N.",
+            Param.Type.BOOLEAN,
+            true,
+            "true");
 
-        lang = InputPanelFactory.createInputPanel(skin, "Lang code",
-                "The languaje code (ex. 'fr') where the texts are extracted. Empty for default.", false);
+    lang =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Lang code",
+            "The languaje code (ex. 'fr') where the texts are extracted. Empty for default.",
+            false);
 
-        addInputPanel(file);
-        addInputPanel(extractTexts);
-        addInputPanel(lang);
+    addInputPanel(file);
+    addInputPanel(extractTexts);
+    addInputPanel(lang);
 
-        setInfo(INFO);
+    setInfo(INFO);
 
-        if (Ctx.project.getEditorConfig().getProperty(FILE_PROP) != null)
-            file.setText(Ctx.project.getEditorConfig().getProperty(FILE_PROP));
+    if (Ctx.project.getEditorConfig().getProperty(FILE_PROP) != null)
+      file.setText(Ctx.project.getEditorConfig().getProperty(FILE_PROP));
 
-        lang.setText(Ctx.project.getEditorConfig().getProperty(LANG_PROP));
+    lang.setText(Ctx.project.getEditorConfig().getProperty(LANG_PROP));
 
-        if (Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP) != null)
-            extractTexts.setText(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP));
+    if (Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP) != null)
+      extractTexts.setText(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP));
+  }
+
+  @Override
+  protected void ok() {
+    compileInk(file.getText(), lang.getText(), "true".equals(extractTexts.getText()), getStage());
+
+    Ctx.project.getEditorConfig().setProperty(FILE_PROP, file.getText());
+
+    if (lang.getText() != null)
+      Ctx.project.getEditorConfig().setProperty(LANG_PROP, lang.getText());
+
+    Ctx.project.getEditorConfig().setProperty(EXTRACT_TEXTS_PROP, extractTexts.getText());
+  }
+
+  @Override
+  protected boolean validateFields() {
+    boolean ok = file.validateField();
+
+    return ok;
+  }
+
+  public static void compileInkFromConfig(Stage stage, Skin skin) {
+    String filePath = Ctx.project.getEditorConfig().getProperty(FILE_PROP);
+
+    if (filePath == null || filePath.trim().isEmpty()) {
+      new CompileInkDialog(skin).show(stage);
+      return;
     }
 
-    @Override
-    protected void ok() {
-        compileInk(file.getText(), lang.getText(), "true".equals(extractTexts.getText()), getStage());
+    String lang = Ctx.project.getEditorConfig().getProperty(LANG_PROP, "");
+    boolean extractTexts =
+        Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP, "true"));
 
-        Ctx.project.getEditorConfig().setProperty(FILE_PROP, file.getText());
+    compileInk(filePath, lang, extractTexts, stage);
+  }
 
-        if (lang.getText() != null)
-            Ctx.project.getEditorConfig().setProperty(LANG_PROP, lang.getText());
+  private static void compileInk(String filePath, String lang, boolean extractTexts, Stage stage) {
+    FileHandle inFile = Gdx.files.absolute(filePath);
 
-        Ctx.project.getEditorConfig().setProperty(EXTRACT_TEXTS_PROP, extractTexts.getText());
+    if (!inFile.exists()) {
+      Message.showMsgDialog(stage, "Error", "Ink source file not found: " + filePath);
+      return;
     }
 
-    @Override
-    protected boolean validateFields() {
-        boolean ok = file.validateField();
+    String outfile = Ctx.project.getModelPath() + "/" + inFile.name() + ".json";
 
-        return ok;
-    }
+    // read inFile content as String
+    String inkContent;
+    try {
+      inkContent = inFile.readString("UTF-8");
 
-    public static void compileInkFromConfig(Stage stage, Skin skin) {
-        String filePath = Ctx.project.getEditorConfig().getProperty(FILE_PROP);
-
-        if (filePath == null || filePath.trim().isEmpty()) {
-            new CompileInkDialog(skin).show(stage);
-            return;
-        }
-
-        String lang = Ctx.project.getEditorConfig().getProperty(LANG_PROP, "");
-        boolean extractTexts = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP, "true"));
-
-        compileInk(filePath, lang, extractTexts, stage);
-    }
-
-    private static void compileInk(String filePath, String lang, boolean extractTexts, Stage stage) {
-        FileHandle inFile = Gdx.files.absolute(filePath);
-
-        if (!inFile.exists()) {
-            Message.showMsgDialog(stage, "Error", "Ink source file not found: " + filePath);
-            return;
-        }
-
-        String outfile = Ctx.project.getModelPath() + "/" + inFile.name() + ".json";
-
-        // read inFile content as String
-        String inkContent;
-        try {
-            inkContent = inFile.readString("UTF-8");
-
-            Compiler.Options options = new Compiler.Options();
-            options.sourceFilename = "main.ink";
-            options.fileHandler = new IFileHandler() {
-                @Override
-                public String resolveInkFilename(String includeName) {
-                    return inFile.parent() + "/" + includeName;
-                }
-
-                @Override
-                public String loadInkFileContents(String fullFilename) {
-                    return Gdx.files.absolute(fullFilename).readString("UTF-8");
-                }
-            };
-
-            Compiler compiler = new Compiler(inkContent, options);
-            Story story = compiler.compile();
-
-            if (story == null) {
-                Message.showMsgDialog(stage, "Error", "Error compiling Ink script.");
-                return;
+      Compiler.Options options = new Compiler.Options();
+      options.sourceFilename = "main.ink";
+      options.fileHandler =
+          new IFileHandler() {
+            @Override
+            public String resolveInkFilename(String includeName) {
+              return inFile.parent() + "/" + includeName;
             }
 
-            String outString = story.toJson();
-
-            FileHandle outFile = Gdx.files.absolute(outfile);
-            outFile.writeString(outString, false);
-
-        } catch (Exception e) {
-            Message.showMsgDialog(stage, "Error", "Error compiling Ink script: " + e.getMessage());
-            return;
-        }
-
-        if (extractTexts) {
-            try {
-                ModelTools.extractInkTexts(outfile, lang);
-            } catch (IOException e) {
-                Message.showMsgDialog(stage, "Error extracting Ink texts.", e.getMessage());
-                return;
+            @Override
+            public String loadInkFileContents(String fullFilename) {
+              return Gdx.files.absolute(fullFilename).readString("UTF-8");
             }
-        }
+          };
 
-        Message.showMsg(stage, "Ink script compiled successfully", 2);
+      Compiler compiler = new Compiler(inkContent, options);
+      Story story = compiler.compile();
+
+      if (story == null) {
+        Message.showMsgDialog(stage, "Error", "Error compiling Ink script.");
+        return;
+      }
+
+      String outString = story.toJson();
+
+      FileHandle outFile = Gdx.files.absolute(outfile);
+      outFile.writeString(outString, false);
+
+    } catch (Exception e) {
+      Message.showMsgDialog(stage, "Error", "Error compiling Ink script: " + e.getMessage());
+      return;
     }
+
+    if (extractTexts) {
+      try {
+        ModelTools.extractInkTexts(outfile, lang);
+      } catch (IOException e) {
+        Message.showMsgDialog(stage, "Error extracting Ink texts.", e.getMessage());
+        return;
+      }
+    }
+
+    Message.showMsg(stage, "Ink script compiled successfully", 2);
+  }
 }

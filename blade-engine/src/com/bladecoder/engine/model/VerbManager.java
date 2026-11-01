@@ -1,8 +1,5 @@
 package com.bladecoder.engine.model;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -10,138 +7,136 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
+import java.text.MessageFormat;
+import java.util.HashMap;
 
 public class VerbManager implements Serializable {
-	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
+  protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
 
-	private World w;
+  private World w;
 
-	public void addVerb(Verb v) {
-		verbs.put(v.getHashKey(), v);
-	}
+  public void addVerb(Verb v) {
+    verbs.put(v.getHashKey(), v);
+  }
 
-	// Used only in getVerb(). It is a class variable to avoid allocations
-	private StringBuilder tmpsb = new StringBuilder();
+  // Used only in getVerb(). It is a class variable to avoid allocations
+  private StringBuilder tmpsb = new StringBuilder();
 
-	/**
-	 * Returns an actor Verb.
-	 * 
-	 * Search order: - id.target.state - id.target - id.state - id
-	 * 
-	 * @param id
-	 *            Verb id
-	 * @param target
-	 *            When an object is used by other object.
-	 */
-	public Verb getVerb(String id, String state, String target) {
-		Verb v = null;
+  /**
+   * Returns an actor Verb.
+   *
+   * <p>Search order: - id.target.state - id.target - id.state - id
+   *
+   * @param id Verb id
+   * @param target When an object is used by other object.
+   */
+  public Verb getVerb(String id, String state, String target) {
+    Verb v = null;
 
-		if (target != null) {
-			tmpsb.setLength(0);
-			if (state != null) {
-				tmpsb.append(id).append(".").append(target).append(".").append(state);
-				v = verbs.get(tmpsb.toString()); // id.target.state
-			}
+    if (target != null) {
+      tmpsb.setLength(0);
+      if (state != null) {
+        tmpsb.append(id).append(".").append(target).append(".").append(state);
+        v = verbs.get(tmpsb.toString()); // id.target.state
+      }
 
-			if (v == null) {
-				tmpsb.setLength(0);
-				tmpsb.append(id).append(".").append(target);
-				v = verbs.get(tmpsb.toString()); // id.target
-			}
-		}
+      if (v == null) {
+        tmpsb.setLength(0);
+        tmpsb.append(id).append(".").append(target);
+        v = verbs.get(tmpsb.toString()); // id.target
+      }
+    }
 
-		if (v == null && state != null) {
-			tmpsb.setLength(0);
-			tmpsb.append(id).append(".").append(state);
+    if (v == null && state != null) {
+      tmpsb.setLength(0);
+      tmpsb.append(id).append(".").append(state);
 
-			v = verbs.get(tmpsb.toString()); // id.state
-		}
+      v = verbs.get(tmpsb.toString()); // id.state
+    }
 
-		if (v == null)
-			v = verbs.get(id); // id
+    if (v == null) v = verbs.get(id); // id
 
-		return v;
-	}
+    return v;
+  }
 
-	public HashMap<String, Verb> getVerbs() {
-		return verbs;
-	}
+  public HashMap<String, Verb> getVerbs() {
+    return verbs;
+  }
 
-	/**
-	 * Run Verb
-	 * 
-	 * @param verb
-	 *            Verb
-	 * @param target
-	 *            When one object is used with another object.
-	 */
-	public void runVerb(String verb, String state, String target, ActionCallback cb) {
+  /**
+   * Run Verb
+   *
+   * @param verb Verb
+   * @param target When one object is used with another object.
+   */
+  public void runVerb(String verb, String state, String target, ActionCallback cb) {
 
-		Verb v = null;
+    Verb v = null;
 
-		EngineLogger.debug(MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", verb, state, target));
+    EngineLogger.debug(
+        MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", verb, state, target));
 
-		v = getVerb(verb, state, target);
+    v = getVerb(verb, state, target);
 
-		if (v == null) {
-			v = w.getVerbManager().getVerb(verb, null, null);
-		}
+    if (v == null) {
+      v = w.getVerbManager().getVerb(verb, null, null);
+    }
 
-		if (v != null) {
-			v.run(target, cb);
-		} else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
-		}
-	}
+    if (v != null) {
+      v.run(target, cb);
+    } else {
+      EngineLogger.error(
+          MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
+    }
+  }
 
-	/**
-	 * Cancels the execution of a running verb
-	 * 
-	 * @param verb
-	 * @param target
-	 */
-	public void cancelVerb(String verb, String state, String target) {
-		Verb v = null;
+  /**
+   * Cancels the execution of a running verb
+   *
+   * @param verb
+   * @param target
+   */
+  public void cancelVerb(String verb, String state, String target) {
+    Verb v = null;
 
-		v = getVerb(verb, state, target);
+    v = getVerb(verb, state, target);
 
-		if (v == null) {
-			v = w.getVerbManager().getVerb(verb, null, null);
-		}
+    if (v == null) {
+      v = w.getVerbManager().getVerb(verb, null, null);
+    }
 
-		if (v != null)
-			v.cancel();
-		else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
-		}
-	}
+    if (v != null) v.cancel();
+    else {
+      EngineLogger.error(
+          MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
+    }
+  }
 
-	@Override
-	public void write(Json json) {
-		json.writeValue("verbs", verbs, verbs.getClass(), Verb.class);
-	}
+  @Override
+  public void write(Json json) {
+    json.writeValue("verbs", verbs, verbs.getClass(), Verb.class);
+  }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
+  @SuppressWarnings("unchecked")
+  @Override
+  public void read(Json json, JsonValue jsonData) {
 
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			this.w = bjson.getWorld();
-			
-			verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
-		} else {
-			for (String v : verbs.keySet()) {
-				Verb verb = verbs.get(v);
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      this.w = bjson.getWorld();
 
-				JsonValue jsonValue = jsonData.get("verbs").get(v);
+      verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
+    } else {
+      for (String v : verbs.keySet()) {
+        Verb verb = verbs.get(v);
 
-				if (jsonValue != null)
-					verb.read(json, jsonValue);
-				else
-					EngineLogger.debug("LOAD WARNING: Verb not found in saved game: " + jsonData.name + "." + v);
-			}
-		}
-	}
+        JsonValue jsonValue = jsonData.get("verbs").get(v);
 
+        if (jsonValue != null) verb.read(json, jsonValue);
+        else
+          EngineLogger.debug(
+              "LOAD WARNING: Verb not found in saved game: " + jsonData.name + "." + v);
+      }
+    }
+  }
 }

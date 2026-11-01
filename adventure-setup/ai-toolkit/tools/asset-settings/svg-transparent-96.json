@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "kind": "svg-export",
+  "render": {
+    "scale": {"mode": "dpi", "value": 96},
+    "background": {"color": "#000000", "opacity": 0}
+  }
+}

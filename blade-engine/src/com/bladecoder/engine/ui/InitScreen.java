@@ -13,88 +13,88 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 
 public class InitScreen extends ScreenAdapter implements BladeScreen {
-	private final static String FILENAME = "ui/blade_logo.png";
-	private final static float FADE_TIME = .6f;
-	private final static float SCREEN_TIME = .8f;
+  private static final String FILENAME = "ui/blade_logo.png";
+  private static final float FADE_TIME = .6f;
+  private static final float SCREEN_TIME = .8f;
 
-	private Texture tex;
+  private Texture tex;
 
-	private UI ui;
+  private UI ui;
 
-	private float time;
-	private float fadeTime;
-	private float scale = 1f;
+  private float time;
+  private float fadeTime;
+  private float scale = 1f;
 
-	private final Viewport viewport = new ScreenViewport();
+  private final Viewport viewport = new ScreenViewport();
 
-	@Override
-	public void render(float delta) {
-		SpriteBatch batch = ui.getBatch();
+  @Override
+  public void render(float delta) {
+    SpriteBatch batch = ui.getBatch();
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(viewport.getCamera().combined);
-		batch.begin();
+    batch.setProjectionMatrix(viewport.getCamera().combined);
+    batch.begin();
 
-		if (time > FADE_TIME * 2 + SCREEN_TIME) {  // EXIT INIT SCREEN
-			batch.setColor(Color.WHITE);
-			ui.setCurrentScreen(Screens.MENU_SCREEN);
-			batch.end();
-			return;
-		} else if (time > FADE_TIME + SCREEN_TIME) {  // FADE_OUT
-			batch.setColor(1, 1, 1, 1 - fadeTime / FADE_TIME);
-		} else if (time < FADE_TIME) { // FADE IN
-			batch.setColor(1, 1, 1, fadeTime / FADE_TIME);
-		} else {
-			fadeTime = 0;
-		}
+    if (time > FADE_TIME * 2 + SCREEN_TIME) { // EXIT INIT SCREEN
+      batch.setColor(Color.WHITE);
+      ui.setCurrentScreen(Screens.MENU_SCREEN);
+      batch.end();
+      return;
+    } else if (time > FADE_TIME + SCREEN_TIME) { // FADE_OUT
+      batch.setColor(1, 1, 1, 1 - fadeTime / FADE_TIME);
+    } else if (time < FADE_TIME) { // FADE IN
+      batch.setColor(1, 1, 1, fadeTime / FADE_TIME);
+    } else {
+      fadeTime = 0;
+    }
 
-		final int viewportW = viewport.getScreenWidth();
-		final int viewportH = viewport.getScreenHeight();
-		final float texW = tex.getWidth() * scale;
-		final float texH = tex.getHeight() * scale;
-		batch.draw(tex, (viewportW - texW) / 2, (viewportH - texH) / 2, texW, texH);
-		batch.setColor(Color.WHITE);
+    final int viewportW = viewport.getScreenWidth();
+    final int viewportH = viewport.getScreenHeight();
+    final float texW = tex.getWidth() * scale;
+    final float texH = tex.getHeight() * scale;
+    batch.draw(tex, (viewportW - texW) / 2, (viewportH - texH) / 2, texW, texH);
+    batch.setColor(Color.WHITE);
 
-		time += delta;
-		fadeTime += delta;
-		batch.end();
-	}
+    time += delta;
+    fadeTime += delta;
+    batch.end();
+  }
 
-	@Override
-	public void resize(int width, int height) {
-		viewport.update(width, height, true);
-		scale = width / (float) EngineAssetManager.getInstance().getResolution().portraitWidth;
-	}
+  @Override
+  public void resize(int width, int height) {
+    viewport.update(width, height, true);
+    scale = width / (float) EngineAssetManager.getInstance().getResolution().portraitWidth;
+  }
 
-	protected void retrieveAssets() {
-		tex = new Texture(EngineAssetManager.getInstance().getResAsset(FILENAME));
-		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-	}
+  protected void retrieveAssets() {
+    tex = new Texture(EngineAssetManager.getInstance().getResAsset(FILENAME));
+    tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+  }
 
-	@Override
-	public void dispose() {
-		if(tex != null) {
-			tex.dispose();
-			tex = null;
-		}
-	}
+  @Override
+  public void dispose() {
+    if (tex != null) {
+      tex.dispose();
+      tex = null;
+    }
+  }
 
-	@Override
-	public void show() {
-		time = fadeTime = 0;
-		Gdx.input.setInputProcessor(null);
-		retrieveAssets();
-	}
+  @Override
+  public void show() {
+    time = fadeTime = 0;
+    Gdx.input.setInputProcessor(null);
+    retrieveAssets();
+  }
 
-	@Override
-	public void hide() {
-		dispose();
-	}
+  @Override
+  public void hide() {
+    dispose();
+  }
 
-	@Override
-	public void setUI(UI ui) {
-		this.ui = ui;
-	}
+  @Override
+  public void setUI(UI ui) {
+    this.ui = ui;
+  }
 }

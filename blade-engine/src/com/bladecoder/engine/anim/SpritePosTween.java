@@ -8,79 +8,92 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for spriteactor position animation
- * <p>
- * TODO: Y speed depends on scale if fake depth is used
+ *
+ * <p>TODO: Y speed depends on scale if fake depth is used
  */
 public class SpritePosTween extends Tween<SpriteActor> {
 
-    private float startX, startY;
-    private float targetX, targetY;
-    private InterpolationMode interpolationX;
-    private InterpolationMode interpolationY;
+  private float startX, startY;
+  private float targetX, targetY;
+  private InterpolationMode interpolationX;
+  private InterpolationMode interpolationY;
 
-    public SpritePosTween() {
+  public SpritePosTween() {}
+
+  public void start(
+      SpriteActor target,
+      Tween.Type repeatType,
+      int count,
+      float tx,
+      float ty,
+      float duration,
+      InterpolationMode interpolation,
+      ActionCallback cb) {
+    start(target, repeatType, count, tx, ty, duration, interpolation, interpolation, cb);
+  }
+
+  public void start(
+      SpriteActor target,
+      Tween.Type repeatType,
+      int count,
+      float tx,
+      float ty,
+      float duration,
+      InterpolationMode interpolationX,
+      InterpolationMode interpolationY,
+      ActionCallback cb) {
+
+    this.target = target;
+    startX = target.getX();
+    startY = target.getY();
+    targetX = tx;
+    targetY = ty;
+
+    setDuration(duration);
+    setType(repeatType);
+    setCount(count);
+
+    this.interpolationX = interpolationX;
+    this.interpolationY = interpolationY;
+
+    if (cb != null) {
+      setCb(cb);
     }
 
-    public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration,
-                      InterpolationMode interpolation, ActionCallback cb) {
-        start(target, repeatType, count, tx, ty, duration, interpolation, interpolation, cb);
-    }
+    restart();
+  }
 
-    public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration,
-                      InterpolationMode interpolationX, InterpolationMode interpolationY, ActionCallback cb) {
+  @Override
+  public void updateTarget() {
 
-        this.target = target;
-        startX = target.getX();
-        startY = target.getY();
-        targetX = tx;
-        targetY = ty;
+    float percentX = getPercent(interpolationX);
+    float percentY = getPercent(interpolationY);
 
-        setDuration(duration);
-        setType(repeatType);
-        setCount(count);
+    target.setPosition(
+        startX + percentX * (targetX - startX), startY + percentY * (targetY - startY));
+  }
 
-        this.interpolationX = interpolationX;
-        this.interpolationY = interpolationY;
+  @Override
+  public void write(Json json) {
+    super.write(json);
 
-        if (cb != null) {
-            setCb(cb);
-        }
+    json.writeValue("startX", startX);
+    json.writeValue("startY", startY);
+    json.writeValue("targetX", targetX);
+    json.writeValue("targetY", targetY);
+    json.writeValue("interpolationX", interpolationX);
+    json.writeValue("interpolationY", interpolationY);
+  }
 
-        restart();
-    }
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
 
-    @Override
-    public void updateTarget() {
-
-        float percentX = getPercent(interpolationX);
-        float percentY = getPercent(interpolationY);
-
-        target.setPosition(startX + percentX * (targetX - startX),
-                startY + percentY * (targetY - startY));
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-
-        json.writeValue("startX", startX);
-        json.writeValue("startY", startY);
-        json.writeValue("targetX", targetX);
-        json.writeValue("targetY", targetY);
-        json.writeValue("interpolationX", interpolationX);
-        json.writeValue("interpolationY", interpolationY);
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        super.read(json, jsonData);
-
-        startX = json.readValue("startX", Float.class, jsonData);
-        startY = json.readValue("startY", Float.class, jsonData);
-        targetX = json.readValue("targetX", Float.class, jsonData);
-        targetY = json.readValue("targetY", Float.class, jsonData);
-        interpolationX = json.readValue("interpolationX", InterpolationMode.class, jsonData);
-        interpolationY = json.readValue("interpolationY", InterpolationMode.class, jsonData);
-
-    }
+    startX = json.readValue("startX", Float.class, jsonData);
+    startY = json.readValue("startY", Float.class, jsonData);
+    targetX = json.readValue("targetX", Float.class, jsonData);
+    targetY = json.readValue("targetY", Float.class, jsonData);
+    interpolationX = json.readValue("interpolationX", InterpolationMode.class, jsonData);
+    interpolationY = json.readValue("interpolationY", InterpolationMode.class, jsonData);
+  }
 }

@@ -21,111 +21,114 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
 
 public class AnimationWidget extends Widget {
-    private AnimationDesc fa;
-    private ActorRenderer renderer;
-    EditAnimationDialog editFADialog;
+  private AnimationDesc fa;
+  private ActorRenderer renderer;
+  EditAnimationDialog editFADialog;
 
-    public AnimationWidget(EditAnimationDialog createEditFADialog) {
-        this.editFADialog = createEditFADialog;
+  public AnimationWidget(EditAnimationDialog createEditFADialog) {
+    this.editFADialog = createEditFADialog;
+  }
+
+  public void setSource(String type, AnimationDesc anim) {
+    fa = anim;
+
+    if (renderer != null) {
+      renderer.dispose();
+      renderer = null;
     }
 
-    public void setSource(String type, AnimationDesc anim) {
-        fa = anim;
+    if (type.equals(Project.SPINE_RENDERER_STRING)) {
+      renderer = new SpineRenderer();
+      ((SpineRenderer) renderer).enableEvents(false);
+    } else if (type.equals(Project.IMAGE_RENDERER_STRING)) {
+      renderer = new ImageRenderer();
+    } else {
+      renderer = new AtlasRenderer();
+    }
 
-        if (renderer != null) {
-            renderer.dispose();
-            renderer = null;
-        }
+    renderer.setOrgAlign(Align.bottom);
 
-        if (type.equals(Project.SPINE_RENDERER_STRING)) {
-            renderer = new SpineRenderer();
-            ((SpineRenderer) renderer).enableEvents(false);
-        } else if (type.equals(Project.IMAGE_RENDERER_STRING)) {
-            renderer = new ImageRenderer();
-        } else {
-            renderer = new AtlasRenderer();
-        }
+    try {
+      renderer.loadAssets();
+      EngineAssetManager.getInstance().finishLoading();
+      renderer.retrieveAssets();
+    } catch (Exception e) {
+      EditorLogger.error("Error loading asset: " + e.getMessage());
+    }
+  }
 
-        renderer.setOrgAlign(Align.bottom);
+  public String[] getAnimations() {
+    try {
+      return ((AnimationRenderer) renderer).getInternalAnimations(fa);
+    } catch (Exception e) {
+      // Message.show(getStage(),
+      // "Error loading animations from selected source", 4);
+      EditorLogger.error(
+          "Error loading animations from selected source:" + fa.source + ": " + e.getMessage());
+      return new String[0];
+    }
+  }
 
+  public void setAnimation(String id, String speedStr, Tween.Type t) {
+
+    if (fa != null && id != null && !id.isEmpty()) {
+
+      if (fa instanceof AtlasAnimationDesc) ((AtlasAnimationDesc) fa).regions = null;
+
+      Tween.Type type = Tween.Type.REPEAT;
+      float speed = 2.0f;
+
+      if (speedStr != null && !speedStr.isEmpty()) {
         try {
-            renderer.loadAssets();
-            EngineAssetManager.getInstance().finishLoading();
-            renderer.retrieveAssets();
-        } catch (Exception e) {
-            EditorLogger.error("Error loading asset: " + e.getMessage());
+          speed = Float.parseFloat(speedStr);
+        } catch (NumberFormatException e) {
+          speed = 0;
         }
+      }
+
+      if (t == Tween.Type.YOYO) type = Tween.Type.YOYO;
+      else if (t == Tween.Type.REVERSE) type = Tween.Type.REVERSE_REPEAT;
+
+      fa.id = id;
+      fa.duration = speed;
+      fa.animationType = type;
+      fa.count = -1;
+
+      ((AnimationRenderer) renderer).getAnimations().clear();
+
+      ((AnimationRenderer) renderer).addAnimation(fa);
+      ((AnimationRenderer) renderer).startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
     }
+  }
 
-    public String[] getAnimations() {
-        try {
-            return ((AnimationRenderer) renderer).getInternalAnimations(fa);
-        } catch (Exception e) {
-            // Message.show(getStage(),
-            // "Error loading animations from selected source", 4);
-            EditorLogger.error("Error loading animations from selected source:" + fa.source + ": " + e.getMessage());
-            return new String[0];
-        }
+  @Override
+  public void draw(Batch batch, float parentAlpha) {
+    super.draw(batch, parentAlpha);
 
-    }
+    if (renderer == null || ((AnimationRenderer) renderer).getCurrentAnimation() == null) return;
 
-    public void setAnimation(String id, String speedStr, Tween.Type t) {
+    float tmp = batch.getPackedColor();
+    batch.setColor(Color.WHITE);
 
-        if (fa != null && id != null && !id.isEmpty()) {
+    renderer.update(Gdx.graphics.getDeltaTime());
 
-            if (fa instanceof AtlasAnimationDesc)
-                ((AtlasAnimationDesc) fa).regions = null;
+    RectangleRenderer.draw(batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
 
-            Tween.Type type = Tween.Type.REPEAT;
-            float speed = 2.0f;
+    float scalew = getWidth() / renderer.getWidth();
+    float scaleh = getHeight() / renderer.getHeight();
+    float scale = scalew > scaleh ? scaleh : scalew;
+    renderer.draw(
+        (SpriteBatch) batch,
+        getX() + renderer.getWidth() * scale / 2,
+        getY(),
+        scale,
+        scale,
+        0f,
+        null);
+    batch.setPackedColor(tmp);
+  }
 
-            if (speedStr != null && !speedStr.isEmpty()) {
-                try {
-                    speed = Float.parseFloat(speedStr);
-                } catch (NumberFormatException e) {
-                    speed = 0;
-                }
-            }
-
-            if (t == Tween.Type.YOYO)
-                type = Tween.Type.YOYO;
-            else if (t == Tween.Type.REVERSE)
-                type = Tween.Type.REVERSE_REPEAT;
-
-            fa.id = id;
-            fa.duration = speed;
-            fa.animationType = type;
-            fa.count = -1;
-
-            ((AnimationRenderer) renderer).getAnimations().clear();
-
-            ((AnimationRenderer) renderer).addAnimation(fa);
-            ((AnimationRenderer) renderer).startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
-        }
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-
-        if (renderer == null || ((AnimationRenderer) renderer).getCurrentAnimation() == null)
-            return;
-
-        float tmp = batch.getPackedColor();
-        batch.setColor(Color.WHITE);
-
-        renderer.update(Gdx.graphics.getDeltaTime());
-
-        RectangleRenderer.draw(batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
-
-        float scalew = getWidth() / renderer.getWidth();
-        float scaleh = getHeight() / renderer.getHeight();
-        float scale = scalew > scaleh ? scaleh : scalew;
-        renderer.draw((SpriteBatch) batch, getX() + renderer.getWidth() * scale / 2, getY(), scale, scale, 0f, null);
-        batch.setPackedColor(tmp);
-    }
-
-    public void dispose() {
-        renderer.dispose();
-    }
+  public void dispose() {
+    renderer.dispose();
+  }
 }

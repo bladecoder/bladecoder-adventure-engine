@@ -176,3 +176,10 @@ tasks.register('remoteProtocolTest', JavaExec) {
 tasks.named('check') {
     dependsOn tasks.named('remoteProtocolTest')
 }
+
+// Ship the canonical MODEL schema with the HTTP authoring API; no editor dependency.
+tasks.named('processResources') {
+    from(rootProject.file('adventure-setup/ai-toolkit/tools/model-contract/chapter.schema.json')) {
+        into 'edit'
+    }
+}

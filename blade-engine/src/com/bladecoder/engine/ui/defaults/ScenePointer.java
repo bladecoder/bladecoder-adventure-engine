@@ -20,152 +20,167 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class ScenePointer {
-	private static final String LEAVE_ICON = "leave";
-	private static final String POINTER_ICON = "pointer";
-	private static final String HOTSPOT_ICON = "hotspotpointer";
+  private static final String LEAVE_ICON = "leave";
+  private static final String POINTER_ICON = "pointer";
+  private static final String HOTSPOT_ICON = "hotspotpointer";
 
-	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
+  private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
 
-	private Color tmpTint = new Color();
+  private Color tmpTint = new Color();
 
-	private BitmapFont font;
+  private BitmapFont font;
 
-	private String desc = null;
+  private String desc = null;
 
-	private Drawable leaveIcon;
-	private Drawable pointerIcon;
-	private Drawable hotspotIcon;
-	private Drawable currentIcon;
-	private SpriteActor draggingActor;
+  private Drawable leaveIcon;
+  private Drawable pointerIcon;
+  private Drawable hotspotIcon;
+  private Drawable currentIcon;
+  private SpriteActor draggingActor;
 
-	private final Vector2 mousepos = new Vector2();
+  private final Vector2 mousepos = new Vector2();
 
-	private float pointerScale;
-	private float leaveRotation = 0f;
-	private final World world;
-	private final UI ui;
+  private float pointerScale;
+  private float leaveRotation = 0f;
+  private final World world;
+  private final UI ui;
 
-	private final GlyphLayout layout = new GlyphLayout();
+  private final GlyphLayout layout = new GlyphLayout();
 
-	public ScenePointer(UI ui) {
-		this.ui = ui;
-		this.world = ui.getWorld();
-		font = ui.getSkin().getFont("desc");
-		pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
-		leaveIcon = ui.getSkin().getDrawable(LEAVE_ICON);
-		hotspotIcon = ui.getSkin().getDrawable(HOTSPOT_ICON);
-		reset();
-	}
+  public ScenePointer(UI ui) {
+    this.ui = ui;
+    this.world = ui.getWorld();
+    font = ui.getSkin().getFont("desc");
+    pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
+    leaveIcon = ui.getSkin().getDrawable(LEAVE_ICON);
+    hotspotIcon = ui.getSkin().getDrawable(HOTSPOT_ICON);
+    reset();
+  }
 
-	public void reset() {
-		setDefaultIcon();
-		draggingActor = null;
-	}
+  public void reset() {
+    setDefaultIcon();
+    draggingActor = null;
+  }
 
-	public void drag(SpriteActor a) {
-		draggingActor = a;
-		tmpTint.set(DRAG_NOT_HOTSPOT_COLOR);
+  public void drag(SpriteActor a) {
+    draggingActor = a;
+    tmpTint.set(DRAG_NOT_HOTSPOT_COLOR);
 
-		if (a != null && draggingActor.getTint() != null)
-			tmpTint.mul(draggingActor.getTint());
-	}
+    if (a != null && draggingActor.getTint() != null) tmpTint.mul(draggingActor.getTint());
+  }
 
-	public void setDefaultIcon() {
-		currentIcon = pointerIcon;
-		desc = null;
-	}
+  public void setDefaultIcon() {
+    currentIcon = pointerIcon;
+    desc = null;
+  }
 
-	public void setLeaveIcon(float rot) {
-		currentIcon = leaveIcon;
-		leaveRotation = rot;
-	}
+  public void setLeaveIcon(float rot) {
+    currentIcon = leaveIcon;
+    leaveRotation = rot;
+  }
 
-	public void setHotspotIcon() {
-		currentIcon = hotspotIcon;
-	}
+  public void setHotspotIcon() {
+    currentIcon = hotspotIcon;
+  }
 
-	public void setIcon(Drawable r) {
-		currentIcon = r;
-	}
+  public void setIcon(Drawable r) {
+    currentIcon = r;
+  }
 
-	public void setDesc(String s) {
-		desc = s;
+  public void setDesc(String s) {
+    desc = s;
 
-		if (desc != null) {
+    if (desc != null) {
 
-			if (desc.charAt(0) == I18N.PREFIX)
-				desc = world.getI18N().getString(desc.substring(1));
+      if (desc.charAt(0) == I18N.PREFIX) desc = world.getI18N().getString(desc.substring(1));
 
-			layout.setText(font, desc);
-		}
-	}
+      layout.setText(font, desc);
+    }
+  }
 
-	private void getInputUnproject(Viewport v, Vector2 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY());
+  private void getInputUnproject(Viewport v, Vector2 out) {
+    out.set(Gdx.input.getX(), Gdx.input.getY());
 
-		v.unproject(out);
-	}
+    v.unproject(out);
+  }
 
-	public void update(float delta) {
-		if (currentIcon instanceof AnimationDrawable)
-			((AnimationDrawable) currentIcon).act(delta);
-	}
+  public void update(float delta) {
+    if (currentIcon instanceof AnimationDrawable) ((AnimationDrawable) currentIcon).act(delta);
+  }
 
-	public void draw(SpriteBatch batch, Viewport v) {
+  public void draw(SpriteBatch batch, Viewport v) {
 
-		getInputUnproject(v, mousepos);
+    getInputUnproject(v, mousepos);
 
-		boolean multiTouch = ui.getInputMode() == InputMode.TOUCHPANEL;
+    boolean multiTouch = ui.getInputMode() == InputMode.TOUCHPANEL;
 
-		// DRAW TARGET DESCRIPTION
-		if (desc != null && (!multiTouch || Gdx.input.isTouched())) {
-			float margin = DPIUtils.UI_SPACE;
+    // DRAW TARGET DESCRIPTION
+    if (desc != null && (!multiTouch || Gdx.input.isTouched())) {
+      float margin = DPIUtils.UI_SPACE;
 
-			float textX = mousepos.x - layout.width / 2;
-			float textY = mousepos.y + layout.height + DPIUtils.UI_SPACE + DPIUtils.getTouchMinSize();
+      float textX = mousepos.x - layout.width / 2;
+      float textY = mousepos.y + layout.height + DPIUtils.UI_SPACE + DPIUtils.getTouchMinSize();
 
-			if (textX < 0)
-				textX = 0;
+      if (textX < 0) textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin, layout.width + margin * 2,
-					layout.height + margin * 2, Color.BLACK);
-			font.draw(batch, layout, textX, textY);
-		}
+      RectangleRenderer.draw(
+          batch,
+          textX - margin,
+          textY - layout.height - margin,
+          layout.width + margin * 2,
+          layout.height + margin * 2,
+          Color.BLACK);
+      font.draw(batch, layout, textX, textY);
+    }
 
-		if (draggingActor == null) {
-			if (!multiTouch || (currentIcon == leaveIcon && Gdx.input.isTouched())) {
+    if (draggingActor == null) {
+      if (!multiTouch || (currentIcon == leaveIcon && Gdx.input.isTouched())) {
 
-				if (currentIcon instanceof TransformDrawable) {
+        if (currentIcon instanceof TransformDrawable) {
 
-					TransformDrawable i = (TransformDrawable) currentIcon;
+          TransformDrawable i = (TransformDrawable) currentIcon;
 
-					i.draw(batch, mousepos.x - currentIcon.getMinWidth() / 2,
-							mousepos.y - currentIcon.getMinHeight() / 2, currentIcon.getMinWidth() / 2,
-							currentIcon.getMinHeight() / 2, currentIcon.getMinWidth(), currentIcon.getMinHeight(),
-							pointerScale, pointerScale, currentIcon == leaveIcon ? leaveRotation : 0);
-				} else {
-					float width = currentIcon.getMinWidth() * pointerScale;
-					float height = currentIcon.getMinHeight() * pointerScale;
-					float x = mousepos.x - width / 2;
-					float y = mousepos.y - height / 2;
+          i.draw(
+              batch,
+              mousepos.x - currentIcon.getMinWidth() / 2,
+              mousepos.y - currentIcon.getMinHeight() / 2,
+              currentIcon.getMinWidth() / 2,
+              currentIcon.getMinHeight() / 2,
+              currentIcon.getMinWidth(),
+              currentIcon.getMinHeight(),
+              pointerScale,
+              pointerScale,
+              currentIcon == leaveIcon ? leaveRotation : 0);
+        } else {
+          float width = currentIcon.getMinWidth() * pointerScale;
+          float height = currentIcon.getMinHeight() * pointerScale;
+          float x = mousepos.x - width / 2;
+          float y = mousepos.y - height / 2;
 
-					currentIcon.draw(batch, x, y, width, height);
-				}
-			}
-		} else {
-			float h = (draggingActor.getHeight() > draggingActor.getWidth() ? draggingActor.getHeight()
-					: draggingActor.getWidth());
-			float size = DPIUtils.getTouchMinSize() / h * 1.8f;
+          currentIcon.draw(batch, x, y, width, height);
+        }
+      }
+    } else {
+      float h =
+          (draggingActor.getHeight() > draggingActor.getWidth()
+              ? draggingActor.getHeight()
+              : draggingActor.getWidth());
+      float size = DPIUtils.getTouchMinSize() / h * 1.8f;
 
-			ActorRenderer r = draggingActor.getRenderer();
+      ActorRenderer r = draggingActor.getRenderer();
 
-			r.draw(batch, mousepos.x, mousepos.y - draggingActor.getHeight() * size / 2, size, size, 0f,
-					currentIcon != hotspotIcon ? tmpTint : draggingActor.getTint());
-		}
-	}
+      r.draw(
+          batch,
+          mousepos.x,
+          mousepos.y - draggingActor.getHeight() * size / 2,
+          size,
+          size,
+          0f,
+          currentIcon != hotspotIcon ? tmpTint : draggingActor.getTint());
+    }
+  }
 
-	public void resize(int width, int height) {
-		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
-	}
-
+  public void resize(int width, int height) {
+    pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
+  }
 }

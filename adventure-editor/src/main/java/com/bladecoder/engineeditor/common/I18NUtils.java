@@ -2,7 +2,6 @@ package com.bladecoder.engineeditor.common;
 
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,222 +17,238 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class I18NUtils {
-    private static final String SEPARATOR = "\t";
-    private static final String TSV_EXT = ".tsv";
-    private static final String PROPERTIES_EXT = ".properties";
+  private static final String SEPARATOR = "\t";
+  private static final String TSV_EXT = ".tsv";
+  private static final String PROPERTIES_EXT = ".properties";
 
-    public static void exportTSV(String modelPath, String outFile, final String chapterId, String defaultLocale)
-            throws IOException {
-        File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+  public static void exportTSV(
+      String modelPath, String outFile, final String chapterId, String defaultLocale)
+      throws IOException {
+    File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 
-        File outputFile;
+    File outputFile;
 
-        if (outFile == null)
-            outputFile = new File(modelPath, chapterId + TSV_EXT);
-        else
-            outputFile = new File(outFile);
+    if (outFile == null) outputFile = new File(modelPath, chapterId + TSV_EXT);
+    else outputFile = new File(outFile);
 
-        // 1. Find all chapter properties
-        File[] files = new File(modelPath).listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File arg0, String arg1) {
-                if (!arg1.endsWith(PROPERTIES_EXT) || !arg1.startsWith(chapterId + "_"))
-                    return false;
+    // 1. Find all chapter properties
+    File[] files =
+        new File(modelPath)
+            .listFiles(
+                new FilenameFilter() {
+                  @Override
+                  public boolean accept(File arg0, String arg1) {
+                    if (!arg1.endsWith(PROPERTIES_EXT) || !arg1.startsWith(chapterId + "_"))
+                      return false;
 
-                return true;
-            }
-        });
+                    return true;
+                  }
+                });
 
-        OrderedProperties[] props = new OrderedProperties[files.length + 1];
+    OrderedProperties[] props = new OrderedProperties[files.length + 1];
 
-        props[0] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+    props[0] =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
-        props[0].load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+    props[0].load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
-        for (int i = 1; i < props.length; i++) {
-            props[i] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
-            props[i].load(new InputStreamReader(new FileInputStream(files[i - 1]), I18N.ENCODING));
+    for (int i = 1; i < props.length; i++) {
+      props[i] =
+          new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+      props[i].load(new InputStreamReader(new FileInputStream(files[i - 1]), I18N.ENCODING));
+    }
+
+    // WRITE THE OUTPUT FILE
+    BufferedWriter writer = null;
+
+    writer = new BufferedWriter(new FileWriter(outputFile));
+
+    String lang = defaultLocale;
+
+    writer.write("KEY");
+
+    // write header
+    for (int i = 0; i < props.length; i++) {
+      if (i != 0)
+        lang =
+            files[i - 1]
+                .getName()
+                .substring(
+                    files[i - 1].getName().lastIndexOf('_') + 1,
+                    files[i - 1].getName().lastIndexOf('.'));
+
+      writer.write(SEPARATOR + lang);
+    }
+
+    writer.write("\n");
+
+    Set<Entry<String, String>> keySet = props[0].entrySet();
+
+    for (Entry<String, String> e : keySet) {
+      writer.write(e.getKey());
+
+      for (OrderedProperties p : props) {
+        if (p.getProperty(e.getKey()) == null) {
+          writer.write(SEPARATOR + "**" + props[0].getProperty(e.getKey()).replace("\n", "\\n"));
+          System.out.println("KEY NOT FOUND: " + e);
+        } else {
+          writer.write(SEPARATOR + p.getProperty(e.getKey()).replace("\n", "\\n"));
         }
+      }
 
-        // WRITE THE OUTPUT FILE
-        BufferedWriter writer = null;
+      writer.write("\n");
+    }
 
-        writer = new BufferedWriter(new FileWriter(outputFile));
+    writer.close();
+  }
 
-        String lang = defaultLocale;
+  public static void importTSV(
+      String modelPath, String tsvFile, String chapterId, String defaultLocale) throws IOException {
+    File inputFile = new File(tsvFile);
 
-        writer.write("KEY");
+    try (BufferedReader br =
+        new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF8"))) {
+      // get header
+      String line = br.readLine();
 
-        // write header
+      if (line != null) {
+        String[] langs = line.split(SEPARATOR);
+        OrderedProperties[] props = new OrderedProperties[langs.length - 1];
+
         for (int i = 0; i < props.length; i++) {
-            if (i != 0)
-                lang = files[i - 1].getName().substring(files[i - 1].getName().lastIndexOf('_') + 1,
-                        files[i - 1].getName().lastIndexOf('.'));
-
-            writer.write(SEPARATOR + lang);
+          OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
+          builder.withSuppressDateInComment(true);
+          props[i] = builder.build();
         }
 
-        writer.write("\n");
+        // get keys and texts
+        while ((line = br.readLine()) != null) {
+          String[] values = line.split(SEPARATOR);
 
-        Set<Entry<String, String>> keySet = props[0].entrySet();
+          if (values.length != langs.length) {
+            EditorLogger.error("Incorrect line in .tsv: " + line);
+            continue;
+          }
 
-        for (Entry<String, String> e : keySet) {
-            writer.write(e.getKey());
+          String key = values[0];
 
-            for (OrderedProperties p : props) {
-                if (p.getProperty(e.getKey()) == null) {
-                    writer.write(SEPARATOR + "**" + props[0].getProperty(e.getKey()).replace("\n", "\\n"));
-                    System.out.println("KEY NOT FOUND: " + e);
-                } else {
-                    writer.write(SEPARATOR + p.getProperty(e.getKey()).replace("\n", "\\n"));
-                }
-            }
+          for (int i = 0; i < props.length; i++) {
+            String value = values[i + 1];
+            if (value != null) value = value.replace("\\n", "\n");
 
-            writer.write("\n");
+            props[i].setProperty(key, value);
+          }
         }
 
-        writer.close();
+        // save properties
+        for (int i = 0; i < props.length; i++) {
+
+          String i18nFilename;
+
+          if (langs[i + 1].equals(defaultLocale)) {
+            i18nFilename = modelPath + "/" + chapterId + PROPERTIES_EXT;
+          } else {
+            i18nFilename = modelPath + "/" + chapterId + "_" + langs[i + 1] + PROPERTIES_EXT;
+          }
+
+          FileOutputStream os = new FileOutputStream(i18nFilename);
+          Writer out = new OutputStreamWriter(os, I18N.ENCODING);
+          props[i].store(out, null);
+        }
+      }
+    }
+  }
+
+  public static void newLocale(
+      String modelPath, final String chapterId, String defaultLocale, String newLocale)
+      throws IOException {
+    File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+    File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
+
+    OrderedProperties defaultProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+    OrderedProperties newProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+
+    defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+
+    for (Entry<String, String> e : defaultProp.entrySet()) {
+      newProp.setProperty(e.getKey(), "**" + defaultProp.getProperty(e.getKey()));
     }
 
-    public static void importTSV(String modelPath, String tsvFile, String chapterId, String defaultLocale)
-            throws IOException {
-        File inputFile = new File(tsvFile);
+    // save new .properties
+    FileOutputStream os = new FileOutputStream(newChapter);
+    Writer out = new OutputStreamWriter(os, I18N.ENCODING);
+    newProp.store(out, newChapter.getName());
+  }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF8"))) {
-            // get header
-            String line = br.readLine();
+  public static void compare(
+      String modelPath, final String chapterId, String defaultLocale, String destLocale)
+      throws IOException {
+    File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+    File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-            if (line != null) {
-                String[] langs = line.split(SEPARATOR);
-                OrderedProperties[] props = new OrderedProperties[langs.length - 1];
+    OrderedProperties defaultProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+    OrderedProperties destProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
-                for (int i = 0; i < props.length; i++) {
-                    OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
-                    builder.withSuppressDateInComment(true);
-                    props[i] = builder.build();
-                }
+    defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+    destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
-                // get keys and texts
-                while ((line = br.readLine()) != null) {
-                    String[] values = line.split(SEPARATOR);
-
-                    if (values.length != langs.length) {
-                        EditorLogger.error("Incorrect line in .tsv: " + line);
-                        continue;
-                    }
-
-                    String key = values[0];
-
-                    for (int i = 0; i < props.length; i++) {
-                        String value = values[i + 1];
-                        if (value != null)
-                            value = value.replace("\\n", "\n");
-
-                        props[i].setProperty(key, value);
-                    }
-                }
-
-                // save properties
-                for (int i = 0; i < props.length; i++) {
-
-                    String i18nFilename;
-
-                    if (langs[i + 1].equals(defaultLocale)) {
-                        i18nFilename = modelPath + "/" + chapterId + PROPERTIES_EXT;
-                    } else {
-                        i18nFilename = modelPath + "/" + chapterId + "_" + langs[i + 1] + PROPERTIES_EXT;
-                    }
-
-                    FileOutputStream os = new FileOutputStream(i18nFilename);
-                    Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-                    props[i].store(out, null);
-                }
-            }
-        }
+    // SEARCH FOR NOT EXISTING DEST KEYS
+    for (Entry<String, String> e : defaultProp.entrySet()) {
+      if (destProp.getProperty(e.getKey()) == null) {
+        EditorLogger.error("Key not found in '" + destLocale + "' locale: " + e.getKey());
+      }
     }
 
-    public static void newLocale(String modelPath, final String chapterId, String defaultLocale, String newLocale)
-            throws IOException {
-        File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
-        File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
+    // SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
+    for (Entry<String, String> e : destProp.entrySet()) {
+      if (defaultProp.getProperty(e.getKey()) == null) {
+        EditorLogger.error("Key not found in default locale: " + e.getKey());
+      }
+    }
+  }
 
-        OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
-        OrderedProperties newProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
+  public static void sync(
+      String modelPath, final String chapterId, String defaultLocale, String destLocale)
+      throws IOException {
+    File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+    File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-        defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+    OrderedProperties defaultProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+    OrderedProperties destProp =
+        new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
-        for (Entry<String, String> e : defaultProp.entrySet()) {
-            newProp.setProperty(e.getKey(), "**" + defaultProp.getProperty(e.getKey()));
-        }
+    defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+    destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
-        // save new .properties
-        FileOutputStream os = new FileOutputStream(newChapter);
-        Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-        newProp.store(out, newChapter.getName());
+    // SEARCH FOR NOT EXISTING DEST KEYS
+    for (String key : defaultProp.stringPropertyNames()) {
+      if (destProp.getProperty(key) == null) {
+        System.out.println(
+            "ADDING Key not found in '"
+                + destLocale
+                + "' locale: "
+                + key
+                + "="
+                + defaultProp.getProperty(key));
+        destProp.setProperty(key, "**" + defaultProp.getProperty(key));
+      }
     }
 
-    public static void compare(String modelPath, final String chapterId, String defaultLocale, String destLocale)
-            throws IOException {
-        File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
-        File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
-
-        OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
-        OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
-
-        defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
-        destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
-
-        // SEARCH FOR NOT EXISTING DEST KEYS
-        for (Entry<String, String> e : defaultProp.entrySet()) {
-            if (destProp.getProperty(e.getKey()) == null) {
-                EditorLogger.error("Key not found in '" + destLocale + "' locale: " + e.getKey());
-            }
-        }
-
-        // SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
-        for (Entry<String, String> e : destProp.entrySet()) {
-            if (defaultProp.getProperty(e.getKey()) == null) {
-                EditorLogger.error("Key not found in default locale: " + e.getKey());
-            }
-        }
+    // SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
+    for (String key : destProp.stringPropertyNames()) {
+      if (defaultProp.getProperty(key) == null) {
+        System.out.println("DELETE MANUALLY Key not found in default locale: " + key);
+      }
     }
 
-    public static void sync(String modelPath, final String chapterId, String defaultLocale, String destLocale)
-            throws IOException {
-        File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
-        File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
-
-        OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
-        OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
-                .build();
-
-        defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
-        destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
-
-        // SEARCH FOR NOT EXISTING DEST KEYS
-        for (String key : defaultProp.stringPropertyNames()) {
-            if (destProp.getProperty(key) == null) {
-                System.out.println("ADDING Key not found in '" + destLocale + "' locale: " + key + "="
-                        + defaultProp.getProperty(key));
-                destProp.setProperty(key, "**" + defaultProp.getProperty(key));
-            }
-        }
-
-        // SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
-        for (String key : destProp.stringPropertyNames()) {
-            if (defaultProp.getProperty(key) == null) {
-                System.out.println("DELETE MANUALLY Key not found in default locale: " + key);
-            }
-        }
-
-        // save dest .properties
-        FileOutputStream os = new FileOutputStream(destChapter);
-        Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-        destProp.store(out, destChapter.getName());
-    }
+    // save dest .properties
+    FileOutputStream os = new FileOutputStream(destChapter);
+    Writer out = new OutputStreamWriter(os, I18N.ENCODING);
+    destProp.store(out, destChapter.getName());
+  }
 }

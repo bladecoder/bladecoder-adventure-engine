@@ -1,7 +1,5 @@
 package com.bladecoder.engine.ui;
 
-import java.util.Locale;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,406 +24,441 @@ import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
+import java.util.Locale;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
-	public enum InventoryPos {
-		TOP, DOWN, LEFT, RIGHT, CENTER
-	}
+  public enum InventoryPos {
+    TOP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    CENTER
+  }
+
+  private int tileSize;
+  private int margin;
+  private float rowSpace;
+  private int cols, rows;
+  private final InventoryPos inventoryPos;
+  private boolean autosize = true;
+
+  private SpriteActor draggedActor = null;
+
+  private final SceneScreen sceneScreen;
+
+  private InventoryUIStyle style;
+
+  private Button menuButton;
+
+  private final Vector2 orgPos = new Vector2();
+  private final Vector2 targetPos = new Vector2();
+
+  private final ScenePointer pointer;
+
+  private boolean singleAction =
+      Config.getInstance().getProperty(Config.SINGLE_ACTION_INVENTORY, false);
+
+  public InventoryUI(SceneScreen scr, ScenePointer pointer) {
+    style = scr.getUI().getSkin().get(InventoryUIStyle.class);
+    sceneScreen = scr;
+    this.pointer = pointer;
+
+    inventoryPos =
+        InventoryPos.valueOf(
+            Config.getInstance()
+                .getProperty(Config.INVENTORY_POS_PROP, "DOWN")
+                .toUpperCase(Locale.ENGLISH));
+
+    autosize = Config.getInstance().getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
+
+    addListener(
+        new InputListener() {
+          @Override
+          public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+            if (pointer == 11) { // pointer > 10 comes from controller
+              touchedUp(x, y, ActionButton.LOOKAT);
+            } else if (pointer == 12) {
+              startDragging(x, y);
+            } else {
+
+              ActionButton b = SceneGestureListener.mouseToAction(button);
+
+              touchedUp(x, y, b);
+            }
+          }
+
+          @Override
+          public boolean mouseMoved(InputEvent event, float x, float y) {
+
+            return true;
+          }
+
+          @Override
+          public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            if (draggedActor == null) startDragging(x, y);
+          }
+
+          @Override
+          public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            return true;
+          }
+
+          @Override
+          public void exit(
+              InputEvent event,
+              float x,
+              float y,
+              int pointer,
+              com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+
+            // EngineLogger.debug("EXIT EVENT: " + toActor);
+            if (!(toActor instanceof PieMenu)
+                && !(toActor instanceof InventoryUI)
+                && draggedActor != null) hide();
+          }
+        });
+
+    if (style.menuButtonStyle != null) {
+      menuButton = new Button(style.menuButtonStyle);
+
+      addActor(menuButton);
+      menuButton.addListener(
+          new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+              sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
+            }
+          });
 
-    private int tileSize;
-	private int margin;
-	private float rowSpace;
-	private int cols, rows;
-	private final InventoryPos inventoryPos;
-	private boolean autosize = true;
+      float iconSize = DPIUtils.getPrefButtonSize();
 
-	private SpriteActor draggedActor = null;
-
-	private final SceneScreen sceneScreen;
-
-	private InventoryUIStyle style;
-
-	private Button menuButton;
-
-	private final Vector2 orgPos = new Vector2();
-	private final Vector2 targetPos = new Vector2();
-
-	private final ScenePointer pointer;
-
-	private boolean singleAction = Config.getInstance().getProperty(Config.SINGLE_ACTION_INVENTORY, false);
-
-	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
-		style = scr.getUI().getSkin().get(InventoryUIStyle.class);
-		sceneScreen = scr;
-		this.pointer = pointer;
-
-		inventoryPos = InventoryPos.valueOf(
-				Config.getInstance().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
-
-		autosize = Config.getInstance().getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
-
-		addListener(new InputListener() {
-			@Override
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
-				if (pointer == 11) { // pointer > 10 comes from controller
-					touchedUp(x, y, ActionButton.LOOKAT);
-				} else if (pointer == 12) {
-					startDragging(x, y);
-				} else {
-
-					ActionButton b = SceneGestureListener.mouseToAction(button);
-
-					touchedUp(x, y, b);
-				}
-
-			}
-
-			@Override
-			public boolean mouseMoved(InputEvent event, float x, float y) {
-
-				return true;
-			}
-
-			@Override
-			public void touchDragged(InputEvent event, float x, float y, int pointer) {
-				if (draggedActor == null)
-					startDragging(x, y);
-			}
-
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				return true;
-			}
-
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer,
-					com.badlogic.gdx.scenes.scene2d.Actor toActor) {
-
-				// EngineLogger.debug("EXIT EVENT: " + toActor);
-				if (!(toActor instanceof PieMenu) && !(toActor instanceof InventoryUI) && draggedActor != null)
-					hide();
-			}
-		});
-
-		if (style.menuButtonStyle != null) {
-			menuButton = new Button(style.menuButtonStyle);
-
-			addActor(menuButton);
-			menuButton.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-					sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
-				}
-			});
-
-			float iconSize = DPIUtils.getPrefButtonSize();
-
-			menuButton.setSize(iconSize, iconSize);
-		}
-	}
-
-	public void touchedUp(float x, float y, ActionButton button) {
-		if (draggedActor != null) {
-			stopDragging(button);
-			return;
-		}
-
-		InteractiveActor actor = getItemAt(x, y);
-		if (actor != null) {
-			if (singleAction) {
-				sceneScreen.runVerb(actor, "lookat", null);
-			} else {
-				sceneScreen.actorClick(actor, button);
-			}
-		} else {
-			hide();
-		}
-	}
-
-	public void show() {
-		if (!isVisible()) {
-			resize((int) getStage().getCamera().viewportWidth, (int) getStage().getCamera().viewportHeight);
-			setVisible(true);
-			setPosition(orgPos.x, orgPos.y);
-
-			addAction(Actions.sequence(Actions.moveTo(targetPos.x, targetPos.y, .1f), Actions.run(new Runnable() {
-
-				@Override
-				public void run() {
-					if (sceneScreen.getUI().getInputMode() == InputMode.GAMEPAD) {
-						cursorToInventoryActor(0);
-					}
-				}
-
-			})));
-		}
-	}
-
-	public void hide() {
-		if (isVisible())
-			addAction(Actions.sequence(Actions.moveTo(orgPos.x, orgPos.y, .1f), Actions.hide()));
-	}
-
-	public void resize(int width, int height) {
-
-		Inventory inventory = sceneScreen.getWorld().getInventory();
-
-		tileSize = (int) DPIUtils.getTouchMinSize() * 2;
-		margin = (int) DPIUtils.getMarginSize();
-
-		rowSpace = DPIUtils.getSpacing();
-
-		int capacity = 0;
-
-		do {
-
-			int w = (int) (width * .7f / tileSize) * tileSize;
-			int h = (int) (height * .7f / tileSize) * tileSize;
-
-			if (autosize) {
-				if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
-					int w2 = tileSize * ((inventory.getNumItems() - 1) / (h / tileSize) + 1);
-
-					if (w2 < w)
-						w = w2;
-				} else {
-
-					int h2 = tileSize * ((inventory.getNumItems() - 1) / (w / tileSize) + 1);
-
-					if (h2 < h)
-						h = h2;
-				}
-			}
-
-			cols = w / tileSize;
-			rows = h / tileSize;
-
-			setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
-
-			capacity = cols * rows;
-
-			if (inventory.getNumItems() > capacity) {
-				tileSize *= .8;
-			}
-
-		} while (inventory.getNumItems() > capacity);
-
-		if (inventory.getNumItems() > capacity)
-			EngineLogger.error("Items in inventory excees the UI capacity");
-
-		setVisible(false);
-
-		if (inventoryPos == InventoryPos.TOP) {
-			orgPos.set((width - getWidth()) / 2, height + getHeight());
-			targetPos.set((width - getWidth()) / 2, height - getHeight() - DPIUtils.getSpacing());
-		} else if (inventoryPos == InventoryPos.DOWN) {
-			orgPos.set((width - getWidth()) / 2, -getHeight());
-			targetPos.set((width - getWidth()) / 2, DPIUtils.getSpacing());
-		} else if (inventoryPos == InventoryPos.LEFT) {
-			orgPos.set(-getWidth(), (height - getHeight()) / 2);
-			targetPos.set(DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
-		} else if (inventoryPos == InventoryPos.RIGHT) {
-			orgPos.set(width + getWidth(), (height - getHeight()) / 2); // TODO
-			targetPos.set(width - getWidth() - DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
-		} else {
-			orgPos.set((width - getWidth()) / 2, -getHeight());
-			targetPos.set((width - getWidth()) / 2, (height - getHeight()) / 2);
-		}
-
-		setX(orgPos.x);
-		setY(orgPos.y);
-
-		if (menuButton != null) {
-			menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
-			float iconSize = DPIUtils.getPrefButtonSize();
-
-			menuButton.setSize(iconSize, iconSize);
-		}
-	}
-
-	public void setStyle(String name) {
-		style = sceneScreen.getUI().getSkin().get(name == null ? "default" : name, InventoryUIStyle.class);
-	}
-
-	public void retrieveAssets(TextureAtlas atlas) {
-	}
-
-	@Override
-	public void draw(Batch batch, float alpha) {
-		Inventory inventory = sceneScreen.getWorld().getInventory();
-
-		if (!inventory.isVisible()) {
-			setVisible(false);
-			return;
-		}
-
-		if (style.background != null) {
-			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
-		}
-
-		// DRAW ITEMS
-		int capacity = cols * rows;
-
-		for (int i = 0; i < inventory.getNumItems() && i < capacity; i++) {
-
-			SpriteActor a = inventory.get(i);
-			ActorRenderer r = a.getRenderer();
-
-			float size = (tileSize - rowSpace) / (r.getHeight() > r.getWidth() ? r.getHeight() : r.getWidth());
-
-			float x = i % cols;
-			float y = (rows - 1) - i / cols;
-
-			if (style.itemBackground != null) {
-				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin,
-						getY() + y * tileSize + y * rowSpace + margin, tileSize, tileSize);
-			}
-
-			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
-					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, size,
-					0f, a.getTint());
-		}
-
-		super.draw(batch, alpha);
-	}
-
-    /** Geometry of an existing displayed tile, in inventory-local coordinates. */
-    public com.badlogic.gdx.math.Rectangle getItemBounds(int i) {
-        if(i<0 || i>=sceneScreen.getWorld().getInventory().getNumItems() || cols<=0)throw new IllegalArgumentException("Invalid inventory item index");
-        return new com.badlogic.gdx.math.Rectangle((i%cols)*(tileSize+rowSpace)+margin,
-            ((rows-1)-i/cols)*(tileSize+rowSpace)+margin,tileSize,tileSize);
+      menuButton.setSize(iconSize, iconSize);
     }
-    public SpriteActor getDraggedActor(){return draggedActor;}
+  }
 
-	public void cursorToInventoryActor(int i) {
-		float x = i % cols;
-		float y = (rows - 1) - i / cols;
+  public void touchedUp(float x, float y, ActionButton button) {
+    if (draggedActor != null) {
+      stopDragging(button);
+      return;
+    }
 
-		Vector2 pos = new Vector2(x * tileSize + x * rowSpace + margin + tileSize / 2f,
-				y * tileSize + y * rowSpace + margin + tileSize / 2f);
+    InteractiveActor actor = getItemAt(x, y);
+    if (actor != null) {
+      if (singleAction) {
+        sceneScreen.runVerb(actor, "lookat", null);
+      } else {
+        sceneScreen.actorClick(actor, button);
+      }
+    } else {
+      hide();
+    }
+  }
 
-		localToScreenCoordinates(pos);
+  public void show() {
+    if (!isVisible()) {
+      resize(
+          (int) getStage().getCamera().viewportWidth, (int) getStage().getCamera().viewportHeight);
+      setVisible(true);
+      setPosition(orgPos.x, orgPos.y);
 
-		Gdx.input.setCursorPosition((int) pos.x, (int) pos.y);
+      addAction(
+          Actions.sequence(
+              Actions.moveTo(targetPos.x, targetPos.y, .1f),
+              Actions.run(
+                  new Runnable() {
 
-		getStage().mouseMoved(Gdx.input.getX(), Gdx.input.getY());
-	}
+                    @Override
+                    public void run() {
+                      if (sceneScreen.getUI().getInputMode() == InputMode.GAMEPAD) {
+                        cursorToInventoryActor(0);
+                      }
+                    }
+                  })));
+    }
+  }
 
-	public int getIndexUnderCursor() {
-		Vector2 inputPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-		getStage().screenToStageCoordinates(inputPos);
+  public void hide() {
+    if (isVisible())
+      addAction(Actions.sequence(Actions.moveTo(orgPos.x, orgPos.y, .1f), Actions.hide()));
+  }
 
-		if (hit(inputPos.x, inputPos.y, false) == null)
-			return -1;
+  public void resize(int width, int height) {
 
-		int col = (int) ((inputPos.x - getX() - margin) / (tileSize + rowSpace));
-		int row = (int) ((inputPos.y - getY() - margin) / (tileSize + rowSpace));
+    Inventory inventory = sceneScreen.getWorld().getInventory();
 
-		int i = row * cols + col;
+    tileSize = (int) DPIUtils.getTouchMinSize() * 2;
+    margin = (int) DPIUtils.getMarginSize();
 
-		EngineLogger.debug(">> COL: " + col + " ROW: " + row + " Idx: " + i);
+    rowSpace = DPIUtils.getSpacing();
 
-		return i;
-	}
+    int capacity = 0;
 
-	public void cancelDragging() {
-		draggedActor = null;
-		pointer.drag(null);
-	}
+    do {
 
-	private void startDragging(float x, float y) {
-		draggedActor = getItemAt(x, y);
-		if (draggedActor != null)
-			pointer.drag(draggedActor);
-	}
+      int w = (int) (width * .7f / tileSize) * tileSize;
+      int h = (int) (height * .7f / tileSize) * tileSize;
 
-	public boolean isDragging() {
-		return draggedActor != null;
-	}
+      if (autosize) {
+        if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
+          int w2 = tileSize * ((inventory.getNumItems() - 1) / (h / tileSize) + 1);
 
-	private void stopDragging(ActionButton button) {
+          if (w2 < w) w = w2;
+        } else {
 
-		InteractiveActor targetActor = sceneScreen.getCurrentActor();
+          int h2 = tileSize * ((inventory.getNumItems() - 1) / (w / tileSize) + 1);
 
-		if (targetActor != null) {
-			if (targetActor != draggedActor)
-				use(targetActor, draggedActor);
-			else if (singleAction)
-				sceneScreen.runVerb(targetActor, "lookat", null);
-			else
-				sceneScreen.actorClick(targetActor, button);
-		}
+          if (h2 < h) h = h2;
+        }
+      }
 
-		draggedActor = null;
-		pointer.drag(null);
-	}
+      cols = w / tileSize;
+      rows = h / tileSize;
 
-	private void use(InteractiveActor targetActor, InteractiveActor invActor) {
-		// get best matched verb
-		Verb vtarget = targetActor.getVerb("use", invActor.getId());
-		Verb vinv = invActor.getVerb("use", targetActor.getId());
-		Verb bestMatch = vtarget;
+      setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
 
-		if (bestMatch == null) {
-			bestMatch = vinv;
-		} else if (vtarget != null && vinv != null && targetActor.getId().equals(vinv.getTarget())
-				&& !invActor.getId().equals(vtarget.getTarget())) {
-			// if the two actors have "use" verbs, we choose the one with the
-			// target matches the actor id.
-			bestMatch = vinv;
-		}
+      capacity = cols * rows;
 
-		if (vinv == bestMatch) {
-			sceneScreen.runVerb(invActor, "use", targetActor.getId());
-		} else {
-			sceneScreen.runVerb(targetActor, "use", invActor.getId());
-		}
-	}
+      if (inventory.getNumItems() > capacity) {
+        tileSize *= .8;
+      }
 
-	public SpriteActor getItemAt(float x, float y) {
-		if (x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
-			return null;
+    } while (inventory.getNumItems() > capacity);
 
-		Inventory inventory = sceneScreen.getWorld().getInventory();
+    if (inventory.getNumItems() > capacity)
+      EngineLogger.error("Items in inventory excees the UI capacity");
 
-		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols
-				+ (int) (x - margin) / (tileSize + (int) rowSpace);
+    setVisible(false);
 
-		if (i >= 0 && i < inventory.getNumItems()) {
-			// EngineLogger.debug(" X: " + x + " Y:" + y + " DESC:" +
-			// inventory.getItem(i).getDesc());
-			return inventory.get(i);
-		}
+    if (inventoryPos == InventoryPos.TOP) {
+      orgPos.set((width - getWidth()) / 2, height + getHeight());
+      targetPos.set((width - getWidth()) / 2, height - getHeight() - DPIUtils.getSpacing());
+    } else if (inventoryPos == InventoryPos.DOWN) {
+      orgPos.set((width - getWidth()) / 2, -getHeight());
+      targetPos.set((width - getWidth()) / 2, DPIUtils.getSpacing());
+    } else if (inventoryPos == InventoryPos.LEFT) {
+      orgPos.set(-getWidth(), (height - getHeight()) / 2);
+      targetPos.set(DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
+    } else if (inventoryPos == InventoryPos.RIGHT) {
+      orgPos.set(width + getWidth(), (height - getHeight()) / 2); // TODO
+      targetPos.set(width - getWidth() - DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
+    } else {
+      orgPos.set((width - getWidth()) / 2, -getHeight());
+      targetPos.set((width - getWidth()) / 2, (height - getHeight()) / 2);
+    }
 
-		return null;
-	}
+    setX(orgPos.x);
+    setY(orgPos.y);
 
-	public InventoryPos getInventoryPos() {
-		return inventoryPos;
-	}
+    if (menuButton != null) {
+      menuButton.setPosition(
+          getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
+      float iconSize = DPIUtils.getPrefButtonSize();
 
-	/**
-	 * The style for the InventoryUI.
-	 * 
-	 * @author Rafael Garcia
-	 */
-	static public class InventoryUIStyle {
-		/** Optional. */
-		public Drawable background;
-		/** Optional. */
-		public Drawable itemBackground;
-		public ButtonStyle menuButtonStyle;
-		public ButtonStyle inventoryButtonStyle;
+      menuButton.setSize(iconSize, iconSize);
+    }
+  }
 
-		public InventoryUIStyle() {
-		}
+  public void setStyle(String name) {
+    style =
+        sceneScreen.getUI().getSkin().get(name == null ? "default" : name, InventoryUIStyle.class);
+  }
 
-		public InventoryUIStyle(InventoryUIStyle style) {
-			background = style.background;
-			menuButtonStyle = style.menuButtonStyle;
-			itemBackground = style.itemBackground;
-			inventoryButtonStyle = style.inventoryButtonStyle;
-		}
-	}
+  public void retrieveAssets(TextureAtlas atlas) {}
+
+  @Override
+  public void draw(Batch batch, float alpha) {
+    Inventory inventory = sceneScreen.getWorld().getInventory();
+
+    if (!inventory.isVisible()) {
+      setVisible(false);
+      return;
+    }
+
+    if (style.background != null) {
+      style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
+    }
+
+    // DRAW ITEMS
+    int capacity = cols * rows;
+
+    for (int i = 0; i < inventory.getNumItems() && i < capacity; i++) {
+
+      SpriteActor a = inventory.get(i);
+      ActorRenderer r = a.getRenderer();
+
+      float size =
+          (tileSize - rowSpace) / (r.getHeight() > r.getWidth() ? r.getHeight() : r.getWidth());
+
+      float x = i % cols;
+      float y = (rows - 1) - i / cols;
+
+      if (style.itemBackground != null) {
+        style.itemBackground.draw(
+            batch,
+            getX() + x * tileSize + x * rowSpace + margin,
+            getY() + y * tileSize + y * rowSpace + margin,
+            tileSize,
+            tileSize);
+      }
+
+      r.draw(
+          (SpriteBatch) batch,
+          getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
+          getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin,
+          size,
+          size,
+          0f,
+          a.getTint());
+    }
+
+    super.draw(batch, alpha);
+  }
+
+  /** Geometry of an existing displayed tile, in inventory-local coordinates. */
+  public com.badlogic.gdx.math.Rectangle getItemBounds(int i) {
+    if (i < 0 || i >= sceneScreen.getWorld().getInventory().getNumItems() || cols <= 0)
+      throw new IllegalArgumentException("Invalid inventory item index");
+    return new com.badlogic.gdx.math.Rectangle(
+        (i % cols) * (tileSize + rowSpace) + margin,
+        ((rows - 1) - i / cols) * (tileSize + rowSpace) + margin,
+        tileSize,
+        tileSize);
+  }
+
+  public SpriteActor getDraggedActor() {
+    return draggedActor;
+  }
+
+  public void cursorToInventoryActor(int i) {
+    float x = i % cols;
+    float y = (rows - 1) - i / cols;
+
+    Vector2 pos =
+        new Vector2(
+            x * tileSize + x * rowSpace + margin + tileSize / 2f,
+            y * tileSize + y * rowSpace + margin + tileSize / 2f);
+
+    localToScreenCoordinates(pos);
+
+    Gdx.input.setCursorPosition((int) pos.x, (int) pos.y);
+
+    getStage().mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+  }
+
+  public int getIndexUnderCursor() {
+    Vector2 inputPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+    getStage().screenToStageCoordinates(inputPos);
+
+    if (hit(inputPos.x, inputPos.y, false) == null) return -1;
+
+    int col = (int) ((inputPos.x - getX() - margin) / (tileSize + rowSpace));
+    int row = (int) ((inputPos.y - getY() - margin) / (tileSize + rowSpace));
+
+    int i = row * cols + col;
+
+    EngineLogger.debug(">> COL: " + col + " ROW: " + row + " Idx: " + i);
+
+    return i;
+  }
+
+  public void cancelDragging() {
+    draggedActor = null;
+    pointer.drag(null);
+  }
+
+  private void startDragging(float x, float y) {
+    draggedActor = getItemAt(x, y);
+    if (draggedActor != null) pointer.drag(draggedActor);
+  }
+
+  public boolean isDragging() {
+    return draggedActor != null;
+  }
+
+  private void stopDragging(ActionButton button) {
+
+    InteractiveActor targetActor = sceneScreen.getCurrentActor();
+
+    if (targetActor != null) {
+      if (targetActor != draggedActor) use(targetActor, draggedActor);
+      else if (singleAction) sceneScreen.runVerb(targetActor, "lookat", null);
+      else sceneScreen.actorClick(targetActor, button);
+    }
+
+    draggedActor = null;
+    pointer.drag(null);
+  }
+
+  private void use(InteractiveActor targetActor, InteractiveActor invActor) {
+    // get best matched verb
+    Verb vtarget = targetActor.getVerb("use", invActor.getId());
+    Verb vinv = invActor.getVerb("use", targetActor.getId());
+    Verb bestMatch = vtarget;
+
+    if (bestMatch == null) {
+      bestMatch = vinv;
+    } else if (vtarget != null
+        && vinv != null
+        && targetActor.getId().equals(vinv.getTarget())
+        && !invActor.getId().equals(vtarget.getTarget())) {
+      // if the two actors have "use" verbs, we choose the one with the
+      // target matches the actor id.
+      bestMatch = vinv;
+    }
+
+    if (vinv == bestMatch) {
+      sceneScreen.runVerb(invActor, "use", targetActor.getId());
+    } else {
+      sceneScreen.runVerb(targetActor, "use", invActor.getId());
+    }
+  }
+
+  public SpriteActor getItemAt(float x, float y) {
+    if (x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
+      return null;
+
+    Inventory inventory = sceneScreen.getWorld().getInventory();
+
+    int i =
+        ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols
+            + (int) (x - margin) / (tileSize + (int) rowSpace);
+
+    if (i >= 0 && i < inventory.getNumItems()) {
+      // EngineLogger.debug(" X: " + x + " Y:" + y + " DESC:" +
+      // inventory.getItem(i).getDesc());
+      return inventory.get(i);
+    }
+
+    return null;
+  }
+
+  public InventoryPos getInventoryPos() {
+    return inventoryPos;
+  }
+
+  /**
+   * The style for the InventoryUI.
+   *
+   * @author Rafael Garcia
+   */
+  public static class InventoryUIStyle {
+    /** Optional. */
+    public Drawable background;
+
+    /** Optional. */
+    public Drawable itemBackground;
+
+    public ButtonStyle menuButtonStyle;
+    public ButtonStyle inventoryButtonStyle;
+
+    public InventoryUIStyle() {}
+
+    public InventoryUIStyle(InventoryUIStyle style) {
+      background = style.background;
+      menuButtonStyle = style.menuButtonStyle;
+      itemBackground = style.itemBackground;
+      inventoryButtonStyle = style.inventoryButtonStyle;
+    }
+  }
 }

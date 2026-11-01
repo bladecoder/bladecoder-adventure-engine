@@ -1,8 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -17,98 +14,106 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import java.io.File;
+import java.io.IOException;
 
 public class CreateResolutionDialog extends EditDialog {
 
-	private static final String INFO = "Create a new resolution. Scale all atlases and images of the game.";
+  private static final String INFO =
+      "Create a new resolution. Scale all atlases and images of the game.";
 
-	private InputPanel scale;
+  private InputPanel scale;
 
-	protected ChangeListener listener;
+  protected ChangeListener listener;
 
-	String atlasDir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
-	String uiDir = Ctx.project.getAssetPath() + Project.UI_PATH;
-	String imageDir = Ctx.project.getAssetPath() + Project.IMAGE_PATH;
+  String atlasDir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
+  String uiDir = Ctx.project.getAssetPath() + Project.UI_PATH;
+  String imageDir = Ctx.project.getAssetPath() + Project.IMAGE_PATH;
 
-	public CreateResolutionDialog(Skin skin) {
-		super("CREATE RESOLUTION", skin);
+  public CreateResolutionDialog(Skin skin) {
+    super("CREATE RESOLUTION", skin);
 
-		scale = InputPanelFactory.createInputPanel(skin, "Scale", "Scale relative to the world resolution",
-				Param.Type.FLOAT, true);
+    scale =
+        InputPanelFactory.createInputPanel(
+            skin, "Scale", "Scale relative to the world resolution", Param.Type.FLOAT, true);
 
-		addInputPanel(scale);
+    addInputPanel(scale);
 
-		setInfo(INFO);
-	}
+    setInfo(INFO);
+  }
 
-	@Override
-	protected void ok() {
+  @Override
+  protected void ok() {
 
-		final Stage stage = getStage();
+    final Stage stage = getStage();
 
-		Message.showMsg(stage, "Creating resolution...", true);
+    Message.showMsg(stage, "Creating resolution...", true);
 
-		Timer.schedule(new Task() {
-			@Override
-			public void run() {
-				createResolution();
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            createResolution();
 
-				String msg = scaleImages();
+            String msg = scaleImages();
 
-				if (listener != null)
-					listener.changed(new ChangeEvent(), CreateResolutionDialog.this);
+            if (listener != null) listener.changed(new ChangeEvent(), CreateResolutionDialog.this);
 
-				Message.hideMsg();
+            Message.hideMsg();
 
-				if (msg != null)
-					Message.showMsgDialog(stage, "Error creating resolution", msg);
-			}
-		}, 1);
-	}
+            if (msg != null) Message.showMsgDialog(stage, "Error creating resolution", msg);
+          }
+        },
+        1);
+  }
 
-	private void createResolution() {
-//		float s = Float.parseFloat(scale.getText());
-//		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);
-		String prefix = scale.getText().trim();
+  private void createResolution() {
+    //		float s = Float.parseFloat(scale.getText());
+    //		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +
+    // (int)(Ctx.project.getWorld().getHeight() * s);
+    String prefix = scale.getText().trim();
 
-		new File(atlasDir + "/" + prefix).mkdir();
-		new File(uiDir + "/" + prefix).mkdir();
-		new File(imageDir + "/" + prefix).mkdir();
-	}
+    new File(atlasDir + "/" + prefix).mkdir();
+    new File(uiDir + "/" + prefix).mkdir();
+    new File(imageDir + "/" + prefix).mkdir();
+  }
 
-	private String scaleImages() {
+  private String scaleImages() {
 
-		float s = Float.parseFloat(scale.getText());
-//		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);
-		String prefix = scale.getText().trim();
+    float s = Float.parseFloat(scale.getText());
+    //		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +
+    // (int)(Ctx.project.getWorld().getHeight() * s);
+    String prefix = scale.getText().trim();
 
-		// COPY ASSETS FROM WORLD RESOLUTION SCALED
-		String wPrefix = Ctx.project.getResDir();
+    // COPY ASSETS FROM WORLD RESOLUTION SCALED
+    String wPrefix = Ctx.project.getResDir();
 
-		try {
-			ImageUtils.scaleDirFiles(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
-			ImageUtils.scaleDirFiles(new File(imageDir + "/" + wPrefix), new File(imageDir + "/" + prefix), s);
+    try {
+      ImageUtils.scaleDirFiles(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
+      ImageUtils.scaleDirFiles(
+          new File(imageDir + "/" + wPrefix), new File(imageDir + "/" + prefix), s);
 
-			ImageUtils.scaleDirAtlases(new File(atlasDir + "/" + wPrefix), new File(atlasDir + "/" + prefix), s);
-			ImageUtils.scaleDirAtlases(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
-		} catch (IOException e) {
-			return e.getMessage();
-		}
+      ImageUtils.scaleDirAtlases(
+          new File(atlasDir + "/" + wPrefix), new File(atlasDir + "/" + prefix), s);
+      ImageUtils.scaleDirAtlases(
+          new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
+    } catch (IOException e) {
+      return e.getMessage();
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	@Override
-	protected boolean validateFields() {
-		boolean ok = true;
+  @Override
+  protected boolean validateFields() {
+    boolean ok = true;
 
-		if (!scale.validateField())
-			ok = false;
+    if (!scale.validateField()) ok = false;
 
-		return ok;
-	}
+    return ok;
+  }
 
-	public void setListener(ChangeListener changeListener) {
-		this.listener = changeListener;
-	}
+  public void setListener(ChangeListener changeListener) {
+    this.listener = changeListener;
+  }
 }

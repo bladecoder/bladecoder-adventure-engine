@@ -1,45 +1,44 @@
 package com.bladecoder.engine.polygonalpathfinder;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.pathfinder.NavPath;
+import java.util.ArrayList;
 
-/**  
+/**
  * Implementation of a navigation path for a polygonal map.
- * 
- * @author rgarcia 
+ *
+ * @author rgarcia
  */
 public class NavPathPolygonal implements NavPath<NavNodePolygonal> {
-	private final ArrayList<Vector2> resultPath = new ArrayList<Vector2>();
+  private final ArrayList<Vector2> resultPath = new ArrayList<Vector2>();
 
-	@Override
-	public void fill (NavNodePolygonal startNode, NavNodePolygonal targetNode) {
-		
-		// TODO Ineficcient add in index 0 and new
-		
-		resultPath.clear();
-		
-		NavNodePolygonal current = targetNode;
-		while (current != startNode) {
-			resultPath.add(0, new Vector2(current.getX(), current.getY()));
-			current = (NavNodePolygonal)current.parent;
-		}
-		
-		resultPath.add(0, new Vector2(current.getX(), current.getY()));
-	}
+  @Override
+  public void fill(NavNodePolygonal startNode, NavNodePolygonal targetNode) {
 
-	@Override
-	public void clear () {
-		resultPath.clear();
-	}
+    // TODO Ineficcient add in index 0 and new
 
-	@Override
-	public int getLength () {
-		return resultPath.size();
-	}
-	
-	public ArrayList<Vector2> getPath() {
-		return resultPath;
-	}
+    resultPath.clear();
+
+    NavNodePolygonal current = targetNode;
+    while (current != startNode) {
+      resultPath.add(0, new Vector2(current.getX(), current.getY()));
+      current = (NavNodePolygonal) current.parent;
+    }
+
+    resultPath.add(0, new Vector2(current.getX(), current.getY()));
+  }
+
+  @Override
+  public void clear() {
+    resultPath.clear();
+  }
+
+  @Override
+  public int getLength() {
+    return resultPath.size();
+  }
+
+  public ArrayList<Vector2> getPath() {
+    return resultPath;
+  }
 }

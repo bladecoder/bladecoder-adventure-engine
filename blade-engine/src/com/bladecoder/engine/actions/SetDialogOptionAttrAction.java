@@ -11,53 +11,51 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR, required = true)
-	@ActionPropertyDescription("The target actor")
-	private SceneActorRef actor;
+  @ActionProperty(type = Type.SCENE_CHARACTER_ACTOR, required = true)
+  @ActionPropertyDescription("The target actor")
+  private SceneActorRef actor;
 
-	@ActionProperty(required = true)
-	@ActionPropertyDescription("The dialog")
-	private String dialog;
+  @ActionProperty(required = true)
+  @ActionPropertyDescription("The dialog")
+  private String dialog;
 
-	@ActionProperty(required = true)
-	@ActionPropertyDescription("The option")
-	private int option;
+  @ActionProperty(required = true)
+  @ActionPropertyDescription("The option")
+  private int option;
 
-	@ActionProperty
-	@ActionPropertyDescription("Show/Hide the dialog option")
-	private Boolean visible;
-	
-	private World w;
-	
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @ActionProperty
+  @ActionPropertyDescription("Show/Hide the dialog option")
+  private Boolean visible;
 
-	@Override
-	public boolean run(VerbRunner cb) {
-		final Scene s = actor.getScene(w);
+  private World w;
 
-		CharacterActor a = (CharacterActor) s.getActor(actor.getActorId(), true);
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-		Dialog d = a.getDialog(dialog);
+  @Override
+  public boolean run(VerbRunner cb) {
+    final Scene s = actor.getScene(w);
 
-		if (d == null) {
-			EngineLogger.error("SetDialogOptionAttrAction: Dialog '" + dialog + "' not found");
-			return false;
-		}
+    CharacterActor a = (CharacterActor) s.getActor(actor.getActorId(), true);
 
-		DialogOption o = d.getOptions().get(option);
+    Dialog d = a.getDialog(dialog);
 
-		if (o == null) {
-			EngineLogger.error("SetDialogOptionAttrAction: Option '" + option + "' not found");
-			return false;
-		}
+    if (d == null) {
+      EngineLogger.error("SetDialogOptionAttrAction: Dialog '" + dialog + "' not found");
+      return false;
+    }
 
-		if (visible != null)
-			o.setVisible(visible);
+    DialogOption o = d.getOptions().get(option);
 
-		return false;
-	}
+    if (o == null) {
+      EngineLogger.error("SetDialogOptionAttrAction: Option '" + option + "' not found");
+      return false;
+    }
 
+    if (visible != null) o.setVisible(visible);
+
+    return false;
+  }
 }

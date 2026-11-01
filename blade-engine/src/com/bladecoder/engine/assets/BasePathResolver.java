@@ -1,35 +1,34 @@
 package com.bladecoder.engine.assets;
 
-import java.io.File;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import java.io.File;
 
 public class BasePathResolver implements FileHandleResolver {
-	String basePath;
+  String basePath;
 
-	@Override
-	public FileHandle resolve(String fileName) {
-		
-		String fullName;
+  @Override
+  public FileHandle resolve(String fileName) {
 
-		if (new File(fileName).isAbsolute()) {
-			fullName = fileName;
-		} else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(basePath);
-			sb.append("/");
-			sb.append(fileName);
-			fullName = sb.toString();
-		}
-		
-		//EngineLogger.debug(fullName);
+    String fullName;
 
-		return Gdx.files.absolute(fullName);
-	}
+    if (new File(fileName).isAbsolute()) {
+      fullName = fileName;
+    } else {
+      StringBuilder sb = new StringBuilder();
+      sb.append(basePath);
+      sb.append("/");
+      sb.append(fileName);
+      fullName = sb.toString();
+    }
 
-	public BasePathResolver(String base) {
-		basePath = base;
-	}
+    // EngineLogger.debug(fullName);
+
+    return Gdx.files.absolute(fullName);
+  }
+
+  public BasePathResolver(String base) {
+    basePath = base;
+  }
 }

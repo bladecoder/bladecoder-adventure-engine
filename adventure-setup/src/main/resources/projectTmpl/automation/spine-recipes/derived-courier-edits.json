@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "bone_offsets": {
+    "envelope": {
+      "x": 3
+    }
+  },
+  "attachment_paths": {},
+  "animations": {
+    "salute": {
+      "bones": {
+        "envelope": {
+          "rotate": [
+            {
+              "value": 0
+            },
+            {
+              "time": 0.5,
+              "value": 30
+            },
+            {
+              "time": 1,
+              "value": 0
+            }
+          ]
+        }
+      }
+    }
+  },
+  "replace_animations": []
+}

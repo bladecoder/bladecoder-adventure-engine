@@ -14,191 +14,196 @@ import java.util.List;
  * @author rgarcia
  */
 public class RunProccess {
-    private static final String ANT_MAIN_CLASS = "org.apache.tools.ant.launch.Launcher";
+  private static final String ANT_MAIN_CLASS = "org.apache.tools.ant.launch.Launcher";
 
-    private static String getClasspath(List<String> classpathEntries) {
-        StringBuilder builder = new StringBuilder();
-        int count = 0;
-        final int totalSize = classpathEntries.size();
-        for (String classpathEntry : classpathEntries) {
-            builder.append(classpathEntry);
-            count++;
-            if (count < totalSize) {
-                builder.append(System.getProperty("path.separator"));
-            }
-        }
-        return builder.toString();
+  private static String getClasspath(List<String> classpathEntries) {
+    StringBuilder builder = new StringBuilder();
+    int count = 0;
+    final int totalSize = classpathEntries.size();
+    for (String classpathEntry : classpathEntries) {
+      builder.append(classpathEntry);
+      count++;
+      if (count < totalSize) {
+        builder.append(System.getProperty("path.separator"));
+      }
+    }
+    return builder.toString();
+  }
+
+  public static boolean runBladeEngine(
+      File prjFolder, String chapter, String scene, boolean fullscreen) throws IOException {
+    List<String> args = new ArrayList<>();
+    args.add(":desktop:run");
+    String appArgs = "-PappArgs=['-d'";
+
+    if (!fullscreen) appArgs += ",'-w'";
+
+    if (chapter != null) {
+      appArgs += ",'-chapter','" + chapter + "'";
     }
 
-    public static boolean runBladeEngine(File prjFolder, String chapter, String scene, boolean fullscreen)
-            throws IOException {
-        List<String> args = new ArrayList<>();
-        args.add(":desktop:run");
-        String appArgs = "-PappArgs=['-d'";
-
-        if (!fullscreen)
-            appArgs += ",'-w'";
-
-        if (chapter != null) {
-            appArgs += ",'-chapter','" + chapter + "'";
-        }
-
-        if (scene != null) {
-            appArgs += ",'-t','" + scene + "'";
-        }
-
-        appArgs += "]";
-        args.add(appArgs);
-
-        return runGradle(prjFolder, args);
+    if (scene != null) {
+      appArgs += ",'-t','" + scene + "'";
     }
 
-    public static boolean runBladeEngineInternal(File prjFolder, String chapter, String scene) throws IOException {
-        List<String> args = new ArrayList<>();
-        args.add("-w");
-        args.add("-adv-dir");
-        args.add(prjFolder.getAbsolutePath());
+    appArgs += "]";
+    args.add(appArgs);
 
-        if (scene != null) {
-            args.add("-t");
-            args.add(scene);
-        }
+    return runGradle(prjFolder, args);
+  }
 
-        if (chapter != null) {
-            args.add("-chapter");
-            args.add(chapter);
-        }
+  public static boolean runBladeEngineInternal(File prjFolder, String chapter, String scene)
+      throws IOException {
+    List<String> args = new ArrayList<>();
+    args.add("-w");
+    args.add("-adv-dir");
+    args.add(prjFolder.getAbsolutePath());
 
-        List<String> cp = new ArrayList<>();
-        cp.add(System.getProperty("java.class.path"));
-
-        runJavaProccess("com.bladecoder.engineeditor.utils.DesktopLauncher", cp, args);
-
-        return true;
+    if (scene != null) {
+      args.add("-t");
+      args.add(scene);
     }
 
-    public static Process runJavaProccess(String mainClass, List<String> classpathEntries, List<String> args)
-            throws IOException {
-        String javaRT = System.getProperty("java.home") + "/bin/java";
-        String workingDirectory = ".";
-
-        List<String> argumentsList = new ArrayList<>();
-        argumentsList.add(javaRT);
-
-        if (classpathEntries != null && !classpathEntries.isEmpty()) {
-            argumentsList.add("-classpath");
-            argumentsList.add(getClasspath(classpathEntries));
-        }
-
-        argumentsList.add(mainClass);
-
-        if (args != null)
-            argumentsList.addAll(args);
-
-        ProcessBuilder processBuilder = new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
-        // processBuilder.redirectErrorStream(true);
-        processBuilder.directory(new File(workingDirectory));
-        processBuilder.inheritIO();
-
-        return processBuilder.start();
+    if (chapter != null) {
+      args.add("-chapter");
+      args.add(chapter);
     }
 
-    public static Process runJavaHomeBin(String bin, List<String> args) throws IOException {
-        String cmd = System.getProperty("java.home") + "/bin/" + bin;
-        String workingDirectory = ".";
+    List<String> cp = new ArrayList<>();
+    cp.add(System.getProperty("java.class.path"));
 
-        List<String> argumentsList = new ArrayList<>();
-        argumentsList.add(cmd);
+    runJavaProccess("com.bladecoder.engineeditor.utils.DesktopLauncher", cp, args);
 
-        if (args != null)
-            argumentsList.addAll(args);
+    return true;
+  }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
-        // processBuilder.redirectErrorStream(true);
-        processBuilder.directory(new File(workingDirectory));
-        processBuilder.inheritIO();
+  public static Process runJavaProccess(
+      String mainClass, List<String> classpathEntries, List<String> args) throws IOException {
+    String javaRT = System.getProperty("java.home") + "/bin/java";
+    String workingDirectory = ".";
 
-        return processBuilder.start();
+    List<String> argumentsList = new ArrayList<>();
+    argumentsList.add(javaRT);
+
+    if (classpathEntries != null && !classpathEntries.isEmpty()) {
+      argumentsList.add("-classpath");
+      argumentsList.add(getClasspath(classpathEntries));
     }
 
-    public static boolean runGradle(File workingDir, List<String> parameters) {
-        String exec = workingDir.getAbsolutePath() + "/"
-                + (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
+    argumentsList.add(mainClass);
 
-        List<String> argumentsList = new ArrayList<>();
-        argumentsList.add(exec);
-        argumentsList.addAll(parameters);
+    if (args != null) argumentsList.addAll(args);
 
-        EditorLogger.msgThreaded("Executing 'gradlew " + parameters + "'");
+    ProcessBuilder processBuilder =
+        new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
+    // processBuilder.redirectErrorStream(true);
+    processBuilder.directory(new File(workingDirectory));
+    processBuilder.inheritIO();
 
-        try {
-            final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
+    return processBuilder.start();
+  }
 
-            // TODO: READ OUTPUT FROM pb AND print in output stream
-            // if (System.console() != null)
-            // pb.inheritIO();
+  public static Process runJavaHomeBin(String bin, List<String> args) throws IOException {
+    String cmd = System.getProperty("java.home") + "/bin/" + bin;
+    String workingDirectory = ".";
 
-            final Process process = pb.start();
+    List<String> argumentsList = new ArrayList<>();
+    argumentsList.add(cmd);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                EditorLogger.msgThreaded(line);
-            }
+    if (args != null) argumentsList.addAll(args);
 
-            process.waitFor();
-            return process.exitValue() == 0;
-        } catch (Exception e) {
-            EditorLogger.msgThreaded("ERROR: " + e.getMessage());
-            return false;
-        }
+    ProcessBuilder processBuilder =
+        new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
+    // processBuilder.redirectErrorStream(true);
+    processBuilder.directory(new File(workingDirectory));
+    processBuilder.inheritIO();
+
+    return processBuilder.start();
+  }
+
+  public static boolean runGradle(File workingDir, List<String> parameters) {
+    String exec =
+        workingDir.getAbsolutePath()
+            + "/"
+            + (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
+
+    List<String> argumentsList = new ArrayList<>();
+    argumentsList.add(exec);
+    argumentsList.addAll(parameters);
+
+    EditorLogger.msgThreaded("Executing 'gradlew " + parameters + "'");
+
+    try {
+      final ProcessBuilder pb =
+          new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
+
+      // TODO: READ OUTPUT FROM pb AND print in output stream
+      // if (System.console() != null)
+      // pb.inheritIO();
+
+      final Process process = pb.start();
+
+      BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      String line;
+      while ((line = in.readLine()) != null) {
+        EditorLogger.msgThreaded(line);
+      }
+
+      process.waitFor();
+      return process.exitValue() == 0;
+    } catch (Exception e) {
+      EditorLogger.msgThreaded("ERROR: " + e.getMessage());
+      return false;
+    }
+  }
+
+  public static boolean runInklecate(File workingDir, List<String> parameters) {
+    String exec = workingDir.getAbsolutePath() + "/" + "inklecate.exe";
+
+    if (!new File(exec).exists()) {
+      exec = workingDir.getAbsolutePath() + "/" + "inklecate";
     }
 
-    public static boolean runInklecate(File workingDir, List<String> parameters) {
-        String exec = workingDir.getAbsolutePath() + "/" + "inklecate.exe";
-
-        if (!new File(exec).exists()) {
-            exec = workingDir.getAbsolutePath() + "/" + "inklecate";
-        }
-
-        if (!new File(exec).exists()) {
-            EditorLogger.msgThreaded("ERROR: Could not find inklecate.exe or inklecate in " + workingDir.getAbsolutePath());
-            return false;
-        }
-
-        List<String> argumentsList = new ArrayList<>();
-        argumentsList.add(exec);
-        argumentsList.addAll(parameters);
-
-        EditorLogger.msgThreaded("Executing 'inklecate " + parameters + "'");
-
-        try {
-            final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
-
-            // TODO: READ OUTPUT FROM pb AND print in output stream
-            // if (System.console() != null)
-            // pb.inheritIO();
-
-            final Process process = pb.start();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                EditorLogger.msgThreaded(line);
-            }
-
-            process.waitFor();
-            return process.exitValue() == 0;
-        } catch (Exception e) {
-            EditorLogger.msgThreaded("ERROR: " + e.getMessage());
-            return false;
-        }
+    if (!new File(exec).exists()) {
+      EditorLogger.msgThreaded(
+          "ERROR: Could not find inklecate.exe or inklecate in " + workingDir.getAbsolutePath());
+      return false;
     }
 
-    public static boolean runGradle(File workingDir, String parameters) {
+    List<String> argumentsList = new ArrayList<>();
+    argumentsList.add(exec);
+    argumentsList.addAll(parameters);
 
-        String[] split = parameters.split(" ");
+    EditorLogger.msgThreaded("Executing 'inklecate " + parameters + "'");
 
-        return runGradle(workingDir, Arrays.asList(split));
+    try {
+      final ProcessBuilder pb =
+          new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
+
+      // TODO: READ OUTPUT FROM pb AND print in output stream
+      // if (System.console() != null)
+      // pb.inheritIO();
+
+      final Process process = pb.start();
+
+      BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      String line;
+      while ((line = in.readLine()) != null) {
+        EditorLogger.msgThreaded(line);
+      }
+
+      process.waitFor();
+      return process.exitValue() == 0;
+    } catch (Exception e) {
+      EditorLogger.msgThreaded("ERROR: " + e.getMessage());
+      return false;
     }
+  }
+
+  public static boolean runGradle(File workingDir, String parameters) {
+
+    String[] split = parameters.split(" ");
+
+    return runGradle(workingDir, Arrays.asList(split));
+  }
 }

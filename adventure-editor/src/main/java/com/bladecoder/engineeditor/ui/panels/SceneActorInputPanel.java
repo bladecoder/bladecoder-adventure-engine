@@ -1,9 +1,5 @@
 package com.bladecoder.engineeditor.ui.panels;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,134 +14,134 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engineeditor.Ctx;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 public class SceneActorInputPanel extends InputPanel {
-	FilteredSelectBox<String> scene;
-	EditableSelectBox<String> actor;
-	Table panel;
-	
-	private final Param.Type type; 
-	
+  FilteredSelectBox<String> scene;
+  EditableSelectBox<String> actor;
+  Table panel;
 
-	SceneActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Param.Type type) {
-		
-		this.type = type;
-		
-		panel = new Table(skin);
-		scene = new FilteredSelectBox<>(skin);
-		actor = new EditableSelectBox<>(skin);
+  private final Param.Type type;
 
-		panel.add(new Label(" Scene ", skin));
-		panel.add(scene);
-		panel.add(new Label("  Actor ", skin));
-		panel.add(actor);
+  SceneActorInputPanel(
+      Skin skin,
+      String title,
+      String desc,
+      boolean mandatory,
+      String defaultValue,
+      Param.Type type) {
 
-		Scene[] scenes = Ctx.project.getWorld().getScenes().values().toArray(new Scene[0]);
-		
-		int l = scenes.length + 1;
-		
-		String[] values = new String[l];
+    this.type = type;
 
-		values[0] = "";
+    panel = new Table(skin);
+    scene = new FilteredSelectBox<>(skin);
+    actor = new EditableSelectBox<>(skin);
 
-		for (int i = 0; i < scenes.length; i++) {
-			values[i + 1] = scenes[i].getId();
-		}
-		
-		Arrays.sort(values);
-		
-		scene.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				sceneSelected();
-			}
-		});		
+    panel.add(new Label(" Scene ", skin));
+    panel.add(scene);
+    panel.add(new Label("  Actor ", skin));
+    panel.add(actor);
 
-		init(skin, title, desc, panel, mandatory, defaultValue);
-		
-		scene.setItems(values);
+    Scene[] scenes = Ctx.project.getWorld().getScenes().values().toArray(new Scene[0]);
 
-		if (values.length > 0) {
-			if (defaultValue != null)
-				setText(defaultValue);
-			else
-				scene.setSelectedIndex(0);
-		}
-		
-		
-	}
-	
-	private void sceneSelected() {
-		String s = scene.getSelected();
-		
-		if(s == null || s.isEmpty()) {
-			s = Ctx.project.getSelectedScene().getId();
-		}
-		
-		Scene scn = Ctx.project.getWorld().getScene(s);
-		
-		actor.setItems(getActorValues(scn));	
-	}
-	
-	public String getText() {
-		if(actor.getSelected().isEmpty())
-			return null;
-		
-		return (new SceneActorRef(scene.getSelected(), actor.getSelected())).toString();
-	}
+    int l = scenes.length + 1;
 
-	public void setText(String s) {	
-		SceneActorRef aa = new SceneActorRef(s);
-		
-		scene.setSelected(aa.getSceneId() == null?"":aa.getSceneId());
-		sceneSelected();
-		actor.setSelected(aa.getActorId());
-	}
-	
-	private String[] getActorValues(Scene scn) {
-		Map<String, BaseActor> actors = scn.getActors();
-		
-		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
-		
-		for(BaseActor a: actors.values()) {
-			if(type == Param.Type.SCENE_CHARACTER_ACTOR) {
-				if(a instanceof CharacterActor)
-					filteredActors.add(a);
-			} else if(type == Param.Type.SCENE_INTERACTIVE_ACTOR) {
-				if(a instanceof InteractiveActor)
-					filteredActors.add(a);
-			} else if(type == Param.Type.SCENE_SPRITE_ACTOR) {
-				if(a instanceof SpriteActor)
-					filteredActors.add(a);
-			} else if(type == Param.Type.SCENE_WALKZONE_ACTOR) {
-				if(a instanceof WalkZoneActor)
-					filteredActors.add(a);				
-			} else {
-				filteredActors.add(a);
-			}
-		}
-		
-		String[] result = null;
-		
-		if (type != Param.Type.SCENE_WALKZONE_ACTOR) {
-			// Add player variable to the list
-			result = new String[filteredActors.size() + 1];
+    String[] values = new String[l];
 
-			result[0] = Scene.VAR_PLAYER;
+    values[0] = "";
 
-			for (int i = 0; i < filteredActors.size(); i++) {
-				result[i + 1] = filteredActors.get(i).getId();
-			}
-		} else {
-			result = new String[filteredActors.size()];
-			
-			for (int i = 0; i < filteredActors.size(); i++) {
-				result[i] = filteredActors.get(i).getId();
-			}
-		}
-		
-		Arrays.sort(result);
-		
-		return result;
-	}
+    for (int i = 0; i < scenes.length; i++) {
+      values[i + 1] = scenes[i].getId();
+    }
+
+    Arrays.sort(values);
+
+    scene.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            sceneSelected();
+          }
+        });
+
+    init(skin, title, desc, panel, mandatory, defaultValue);
+
+    scene.setItems(values);
+
+    if (values.length > 0) {
+      if (defaultValue != null) setText(defaultValue);
+      else scene.setSelectedIndex(0);
+    }
+  }
+
+  private void sceneSelected() {
+    String s = scene.getSelected();
+
+    if (s == null || s.isEmpty()) {
+      s = Ctx.project.getSelectedScene().getId();
+    }
+
+    Scene scn = Ctx.project.getWorld().getScene(s);
+
+    actor.setItems(getActorValues(scn));
+  }
+
+  public String getText() {
+    if (actor.getSelected().isEmpty()) return null;
+
+    return (new SceneActorRef(scene.getSelected(), actor.getSelected())).toString();
+  }
+
+  public void setText(String s) {
+    SceneActorRef aa = new SceneActorRef(s);
+
+    scene.setSelected(aa.getSceneId() == null ? "" : aa.getSceneId());
+    sceneSelected();
+    actor.setSelected(aa.getActorId());
+  }
+
+  private String[] getActorValues(Scene scn) {
+    Map<String, BaseActor> actors = scn.getActors();
+
+    ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
+
+    for (BaseActor a : actors.values()) {
+      if (type == Param.Type.SCENE_CHARACTER_ACTOR) {
+        if (a instanceof CharacterActor) filteredActors.add(a);
+      } else if (type == Param.Type.SCENE_INTERACTIVE_ACTOR) {
+        if (a instanceof InteractiveActor) filteredActors.add(a);
+      } else if (type == Param.Type.SCENE_SPRITE_ACTOR) {
+        if (a instanceof SpriteActor) filteredActors.add(a);
+      } else if (type == Param.Type.SCENE_WALKZONE_ACTOR) {
+        if (a instanceof WalkZoneActor) filteredActors.add(a);
+      } else {
+        filteredActors.add(a);
+      }
+    }
+
+    String[] result = null;
+
+    if (type != Param.Type.SCENE_WALKZONE_ACTOR) {
+      // Add player variable to the list
+      result = new String[filteredActors.size() + 1];
+
+      result[0] = Scene.VAR_PLAYER;
+
+      for (int i = 0; i < filteredActors.size(); i++) {
+        result[i + 1] = filteredActors.get(i).getId();
+      }
+    } else {
+      result = new String[filteredActors.size()];
+
+      for (int i = 0; i < filteredActors.size(); i++) {
+        result[i] = filteredActors.get(i).getId();
+      }
+    }
+
+    Arrays.sort(result);
+
+    return result;
+  }
 }

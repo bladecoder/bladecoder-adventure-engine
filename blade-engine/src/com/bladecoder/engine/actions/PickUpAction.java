@@ -13,70 +13,69 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
-	@ActionProperty(type = Type.SCENE_SPRITE_ACTOR, required = true)
-	@ActionPropertyDescription("The target actor")
-	private SceneActorRef actor;
+  @ActionProperty(type = Type.SCENE_SPRITE_ACTOR, required = true)
+  @ActionPropertyDescription("The target actor")
+  private SceneActorRef actor;
 
-	@ActionProperty
-	@ActionPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
-	private String animation;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
+  private String animation;
 
-	@ActionProperty
-	@ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
-	private String inventory;
+  @ActionProperty
+  @ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
+  private String inventory;
 
-	private World w;
+  private World w;
 
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-	@Override
-	public boolean run(VerbRunner cb) {
-		Scene scn = this.actor.getScene(w);
-		InteractiveActor actor = (InteractiveActor) scn.getActor(this.actor.getActorId(), false);
+  @Override
+  public boolean run(VerbRunner cb) {
+    Scene scn = this.actor.getScene(w);
+    InteractiveActor actor = (InteractiveActor) scn.getActor(this.actor.getActorId(), false);
 
-		if (actor == null) {
-			EngineLogger.error("PickUpAction - Actor not found:" + this.actor.getActorId());
+    if (actor == null) {
+      EngineLogger.error("PickUpAction - Actor not found:" + this.actor.getActorId());
 
-			return false;
-		}
+      return false;
+    }
 
-		scn.removeActor(actor);
+    scn.removeActor(actor);
 
-		if (actor instanceof SpriteActor) {
-			SpriteActor a = (SpriteActor) actor;
+    if (actor instanceof SpriteActor) {
+      SpriteActor a = (SpriteActor) actor;
 
-			if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null) {
-				a.loadAssets();
-				EngineAssetManager.getInstance().finishLoading();
-				a.retrieveAssets();
-			}
+      if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null) {
+        a.loadAssets();
+        EngineAssetManager.getInstance().finishLoading();
+        a.retrieveAssets();
+      }
 
-			if (a.getRenderer() instanceof AnimationRenderer) {
-				if (animation != null)
-					a.startAnimation(animation, null);
-				else if (((AnimationRenderer) a.getRenderer()).getAnimations().get(a.getId() + ".inventory") != null)
-					a.startAnimation(a.getId() + ".inventory", null);
-			}
+      if (a.getRenderer() instanceof AnimationRenderer) {
+        if (animation != null) a.startAnimation(animation, null);
+        else if (((AnimationRenderer) a.getRenderer()).getAnimations().get(a.getId() + ".inventory")
+            != null) a.startAnimation(a.getId() + ".inventory", null);
+      }
 
-			Inventory inv = null;
+      Inventory inv = null;
 
-			if (inventory == null) {
-				inv = w.getInventory();
-			} else {
-				inv = w.getInventories().get(inventory);
-				if (inv == null) {
-					EngineLogger.error("Inventory not found: " + inventory);
-					return false;
-				}
-			}
+      if (inventory == null) {
+        inv = w.getInventory();
+      } else {
+        inv = w.getInventories().get(inventory);
+        if (inv == null) {
+          EngineLogger.error("Inventory not found: " + inventory);
+          return false;
+        }
+      }
 
-			inv.addItem(a);
-		}
+      inv.addItem(a);
+    }
 
-		return false;
-	}
-
+    return false;
+  }
 }

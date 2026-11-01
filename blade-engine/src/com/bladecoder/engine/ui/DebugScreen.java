@@ -19,517 +19,545 @@ import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DebugScreen implements BladeScreen {
-    private UI ui;
+  private UI ui;
 
-    private Stage stage;
+  private Stage stage;
 
-    private TextField speedText;
-    private SelectBox<String> recordings;
-    private SelectBox<String> scenes;
-    private TextField recFilename;
-    private TextButton rec;
-    private TextButton remoteControl;
+  private TextField speedText;
+  private SelectBox<String> recordings;
+  private SelectBox<String> scenes;
+  private TextField recFilename;
+  private TextButton rec;
+  private TextButton remoteControl;
 
-    private TextField testerTimeConf;
-    private TextField inSceneTimeConf;
-    private TextField testerExcludeList;
+  private TextField testerTimeConf;
+  private TextField inSceneTimeConf;
+  private TextField testerExcludeList;
 
-    private Pointer pointer;
+  private Pointer pointer;
 
-    private ScreenControllerHandler controller;
+  private ScreenControllerHandler controller;
 
-    public DebugScreen() {
+  public DebugScreen() {}
+
+  @Override
+  public void render(float delta) {
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    stage.act(delta);
+    stage.draw();
+
+    controller.update(delta);
+  }
+
+  @Override
+  public void resize(int width, int height) {
+    stage.getViewport().update(width, height, true);
+    pointer.resize();
+    table.invalidate();
+  }
+
+  @Override
+  public void dispose() {
+    if (stage != null) {
+      stage.dispose();
+      stage = null;
     }
+  }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+  Table table;
 
-        stage.act(delta);
-        stage.draw();
+  @Override
+  public void show() {
+    float size = DPIUtils.getPrefButtonSize();
+    float margin = DPIUtils.getMarginSize();
 
-        controller.update(delta);
-    }
+    stage = new Stage(new ScreenViewport());
 
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-        pointer.resize();
-        table.invalidate();
-    }
+    table = new Table(ui.getSkin());
+    table.setFillParent(true);
+    table.left().top();
+    table.pad(margin);
 
-    @Override
-    public void dispose() {
-        if (stage != null) {
-            stage.dispose();
-            stage = null;
-        }
-    }
-
-    Table table;
-
-    @Override
-    public void show() {
-        float size = DPIUtils.getPrefButtonSize();
-        float margin = DPIUtils.getMarginSize();
-
-        stage = new Stage(new ScreenViewport());
-
-        table = new Table(ui.getSkin());
-        table.setFillParent(true);
-        table.left().top();
-        table.pad(margin);
-
-        table.addListener(new InputListener() {
-            @Override
-            public boolean keyUp(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                return true;
-            }
+    table.addListener(
+        new InputListener() {
+          @Override
+          public boolean keyUp(InputEvent event, int keycode) {
+            if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
+              ui.setCurrentScreen(Screens.SCENE_SCREEN);
+            return true;
+          }
         });
 
-        stage.setKeyboardFocus(table);
-        controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
+    stage.setKeyboardFocus(table);
+    controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
 
-        Button back = new Button(ui.getSkin(), "back");
+    Button back = new Button(ui.getSkin(), "back");
 
-        back.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
+    back.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            ui.setCurrentScreen(Screens.SCENE_SCREEN);
+          }
+        });
+
+    Label title = new Label("DEBUG", ui.getSkin(), "title");
+
+    Table header = new Table();
+    header.padBottom(margin);
+    Container<Button> cont = new Container<>(back);
+    cont.size(size);
+    header.add(cont);
+    header.add(title).fillX().expandX().left();
+    table.add(header).colspan(3).fillX().expandX().left();
+
+    // ------------- SPEED
+    speedText =
+        new TextField(
+            Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()),
+            ui.getSkin());
+    TextButton speedButton = new TextButton("Set Speed", ui.getSkin());
+    speedButton.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+            scnScr.setSpeed(Float.parseFloat(speedText.getText()));
+          }
+        });
+
+    speedButton.pad(2, 3, 2, 3);
+    HorizontalGroup sGroup = new HorizontalGroup();
+    sGroup.space(10);
+    sGroup.addActor(speedText);
+    sGroup.addActor(speedButton);
+
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Game Speed: ", ui.getSkin(), "debug"));
+    table.add(sGroup);
+
+    // ------------- RECORDING
+
+    final Recorder r = ui.getRecorder();
+    TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
+    rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
+    play.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final Recorder r = ui.getRecorder();
+
+            if (!r.isPlaying()) {
+              r.setFilename(recordings.getSelected());
+              r.load();
+              r.setPlaying(true);
+              ui.setCurrentScreen(Screens.SCENE_SCREEN);
+            } else {
+              r.setPlaying(false);
+              ui.setCurrentScreen(Screens.SCENE_SCREEN);
+            }
+          }
+        });
+
+    rec.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final Recorder r = ui.getRecorder();
+
+            if (r.isPlaying()) {
+              r.setPlaying(false);
+            }
+
+            if (!r.isRecording()) r.setFilename(recFilename.getText());
+
+            r.setRecording(!r.isRecording());
+            rec.setText(r.isRecording() ? "Stop Rec" : "Rec");
+
+            if (r.isRecording()) ui.setCurrentScreen(Screens.SCENE_SCREEN);
+          }
+        });
+
+    recordings = new SelectBox<>(ui.getSkin());
+
+    String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("tests");
+    ArrayList<String> al = new ArrayList<>();
+
+    for (String file : testFiles)
+      if (file.endsWith(Recorder.RECORD_EXT))
+        al.add(file.substring(0, file.indexOf(Recorder.RECORD_EXT)));
+
+    FileHandle[] testFiles2 = EngineAssetManager.getInstance().getUserFolder().list();
+
+    for (FileHandle file : testFiles2)
+      if (file.name().endsWith(Recorder.RECORD_EXT))
+        al.add(file.name().substring(0, file.name().indexOf(Recorder.RECORD_EXT)));
+
+    recordings.setItems(al.toArray(new String[al.size()]));
+
+    play.pad(2, 3, 2, 3);
+    rec.pad(2, 3, 2, 3);
+
+    recFilename = new TextField(r.getFileName(), ui.getSkin());
+
+    HorizontalGroup rGroup = new HorizontalGroup();
+    rGroup.space(10);
+    rGroup.addActor(recordings);
+    rGroup.addActor(play);
+    rGroup.addActor(new Label("Rec. Filename", ui.getSkin(), "debug"));
+    rGroup.addActor(recFilename);
+    rGroup.addActor(rec);
+
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
+    table.add(rGroup);
+
+    // ------------- REMOTE CONTROL
+    final RemoteControlServer server = ui.getRemoteControlServer();
+    remoteControl = new TextButton("", ui.getSkin());
+    updateRemoteControlButton(server);
+    remoteControl.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            if (server.isRunning()) server.stop();
+            else server.start(server.getConfiguredPort());
+
+            updateRemoteControlButton(server);
+          }
+        });
+
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("HTTP Remote Control: ", ui.getSkin(), "debug"));
+    table.add(remoteControl);
+
+    TextButton inspector = new TextButton("Runtime inspector (debug)", ui.getSkin());
+    inspector.setName("debug.inspector");
+    inspector.addListener(
+        new ClickListener() {
+          public void clicked(InputEvent event, float x, float y) {
+            if (server.isRunning() && !"debug".equals(server.getMode())) {
+              EngineLogger.error("Stop the player controller before opening debug inspection");
+              return;
+            }
+            if (!server.isRunning()
+                && !server.start(0, com.bladecoder.engine.remote.RemoteControlMode.DEBUG)) return;
+            RuntimeInspectorScreen screen = new RuntimeInspectorScreen();
+            screen.setUI(ui);
+            ui.setCurrentScreen(screen);
+          }
+        });
+    table.row().pad(5);
+    table.add(new Label("Runtime diagnostics: ", ui.getSkin(), "debug"));
+    table.add(inspector);
+
+    // ------------- LOAD CHAPTER
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Load Chapter: ", ui.getSkin(), "debug"));
+
+    HorizontalGroup chGroup = new HorizontalGroup();
+    chGroup.space(10);
+
+    final TextField chapter = new TextField("", ui.getSkin());
+    chGroup.addActor(chapter);
+
+    TextButton loadButton = new TextButton("Load", ui.getSkin());
+    loadButton.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            String c = chapter.getText();
+
+            if (!c.isEmpty()) {
+              try {
+                ui.getWorld().getSerializer().loadChapter(c, null, true);
                 ui.setCurrentScreen(Screens.SCENE_SCREEN);
+              } catch (IOException e) {
+                EngineLogger.error("Loading chapter.", e);
+              }
             }
+          }
         });
 
-        Label title = new Label("DEBUG", ui.getSkin(), "title");
+    chGroup.addActor(loadButton);
 
-        Table header = new Table();
-        header.padBottom(margin);
-        Container<Button> cont = new Container<>(back);
-        cont.size(size);
-        header.add(cont);
-        header.add(title).fillX().expandX().left();
-        table.add(header).colspan(3).fillX().expandX().left();
+    table.add(chGroup);
 
-        // ------------- SPEED
-        speedText = new TextField(Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()),
-                ui.getSkin());
-        TextButton speedButton = new TextButton("Set Speed", ui.getSkin());
-        speedButton.addListener(new ClickListener() {
+    // ------------- SCENES
+    final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
+    final TextButton initScene = new TextButton("Init", ui.getSkin(), "toggle");
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-                scnScr.setSpeed(Float.parseFloat(speedText.getText()));
-            }
+    initScene.setChecked(true);
+
+    TextButton go = new TextButton("Go", ui.getSkin());
+    go.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            ui.getWorld().setCutMode(false);
+            ui.getWorld().resume();
+
+            if (testScene.isChecked()) ui.getWorld().setTestScene(scenes.getSelected());
+
+            ui.getWorld().setCurrentScene(scenes.getSelected(), initScene.isChecked(), null);
+            ui.setCurrentScreen(Screens.SCENE_SCREEN);
+          }
         });
 
-        speedButton.pad(2, 3, 2, 3);
-        HorizontalGroup sGroup = new HorizontalGroup();
-        sGroup.space(10);
-        sGroup.addActor(speedText);
-        sGroup.addActor(speedButton);
+    go.pad(2, 3, 2, 3);
 
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Game Speed: ", ui.getSkin(), "debug"));
-        table.add(sGroup);
+    scenes = new SelectBox<>(ui.getSkin());
+    String[] scnArray = ui.getWorld().getScenes().keySet().toArray(new String[0]);
+    Arrays.sort(scnArray);
+    scenes.setItems(scnArray);
 
-        // ------------- RECORDING
+    HorizontalGroup scGroup = new HorizontalGroup();
+    scGroup.space(10);
+    scGroup.addActor(scenes);
+    scGroup.addActor(go);
+    scGroup.addActor(testScene);
+    scGroup.addActor(initScene);
 
-        final Recorder r = ui.getRecorder();
-        TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
-        rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
-        play.addListener(new ClickListener() {
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Go to Scene: ", ui.getSkin(), "debug"));
+    table.add(scGroup);
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final Recorder r = ui.getRecorder();
+    // ------------- TESTERBOT
+    final TesterBot bot = ui.getTesterBot();
 
-                if (!r.isPlaying()) {
-                    r.setFilename(recordings.getSelected());
-                    r.load();
-                    r.setPlaying(true);
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                } else {
-                    r.setPlaying(false);
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                }
-            }
+    TextButton runBot = new TextButton(bot.isEnabled() ? "Stop" : "Run", ui.getSkin());
+    runBot.addListener(
+        new ClickListener() {
+
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final TesterBot bot = ui.getTesterBot();
+
+            bot.setMaxWaitInverval(Float.parseFloat(testerTimeConf.getText()));
+            bot.setInSceneTime(Float.parseFloat(inSceneTimeConf.getText()));
+            bot.setExcludeList(testerExcludeList.getText());
+            bot.setEnabled(!bot.isEnabled());
+
+            ui.setCurrentScreen(Screens.SCENE_SCREEN);
+          }
         });
 
-        rec.addListener(new ClickListener() {
+    runBot.pad(2, 3, 2, 3);
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final Recorder r = ui.getRecorder();
+    testerTimeConf = new TextField(Float.toString(bot.getMaxWaitInverval()), ui.getSkin());
+    inSceneTimeConf = new TextField(Float.toString(bot.getInSceneTime()), ui.getSkin());
+    testerExcludeList = new TextField(bot.getExcludeList(), ui.getSkin());
 
-                if (r.isPlaying()) {
-                    r.setPlaying(false);
-                }
+    TextButton testerLeaveConf = new TextButton("Leave", ui.getSkin(), "toggle");
+    testerLeaveConf.addListener(
+        new ClickListener() {
 
-                if (!r.isRecording())
-                    r.setFilename(recFilename.getText());
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final TesterBot bot = ui.getTesterBot();
 
-                r.setRecording(!r.isRecording());
-                rec.setText(r.isRecording() ? "Stop Rec" : "Rec");
-
-                if (r.isRecording())
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-            }
+            bot.setRunLeaveVerbs(!bot.isRunLeaveVerbs());
+          }
         });
 
-        recordings = new SelectBox<>(ui.getSkin());
+    testerLeaveConf.setChecked(bot.isRunLeaveVerbs());
 
-        String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("tests");
-        ArrayList<String> al = new ArrayList<>();
+    TextButton testerGotoConf = new TextButton("Goto", ui.getSkin(), "toggle");
+    testerGotoConf.addListener(
+        new ClickListener() {
 
-        for (String file : testFiles)
-            if (file.endsWith(Recorder.RECORD_EXT))
-                al.add(file.substring(0, file.indexOf(Recorder.RECORD_EXT)));
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final TesterBot bot = ui.getTesterBot();
 
-        FileHandle[] testFiles2 = EngineAssetManager.getInstance().getUserFolder().list();
-
-        for (FileHandle file : testFiles2)
-            if (file.name().endsWith(Recorder.RECORD_EXT))
-                al.add(file.name().substring(0, file.name().indexOf(Recorder.RECORD_EXT)));
-
-        recordings.setItems(al.toArray(new String[al.size()]));
-
-        play.pad(2, 3, 2, 3);
-        rec.pad(2, 3, 2, 3);
-
-        recFilename = new TextField(r.getFileName(), ui.getSkin());
-
-        HorizontalGroup rGroup = new HorizontalGroup();
-        rGroup.space(10);
-        rGroup.addActor(recordings);
-        rGroup.addActor(play);
-        rGroup.addActor(new Label("Rec. Filename", ui.getSkin(), "debug"));
-        rGroup.addActor(recFilename);
-        rGroup.addActor(rec);
-
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
-        table.add(rGroup);
-
-        // ------------- REMOTE CONTROL
-        final RemoteControlServer server = ui.getRemoteControlServer();
-        remoteControl = new TextButton("", ui.getSkin());
-        updateRemoteControlButton(server);
-        remoteControl.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (server.isRunning())
-                    server.stop();
-                else
-                    server.start(server.getConfiguredPort());
-
-                updateRemoteControlButton(server);
-            }
+            bot.setRunGoto(!bot.isRunGoto());
+          }
         });
 
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("HTTP Remote Control: ", ui.getSkin(), "debug"));
-        table.add(remoteControl);
+    testerGotoConf.setChecked(bot.isRunGoto());
 
-        TextButton inspector=new TextButton("Runtime inspector (debug)",ui.getSkin());inspector.setName("debug.inspector");
-        inspector.addListener(new ClickListener(){public void clicked(InputEvent event,float x,float y){
-            if(server.isRunning() && !"debug".equals(server.getMode())) {EngineLogger.error("Stop the player controller before opening debug inspection");return;}
-            if(!server.isRunning() && !server.start(0,com.bladecoder.engine.remote.RemoteControlMode.DEBUG))return;
-            RuntimeInspectorScreen screen=new RuntimeInspectorScreen();screen.setUI(ui);ui.setCurrentScreen(screen);
-        }});
-        table.row().pad(5);table.add(new Label("Runtime diagnostics: ",ui.getSkin(),"debug"));table.add(inspector);
+    TextButton testerPassText = new TextButton("Pass Texts", ui.getSkin(), "toggle");
+    testerPassText.addListener(
+        new ClickListener() {
 
-        // ------------- LOAD CHAPTER
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Load Chapter: ", ui.getSkin(), "debug"));
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final TesterBot bot = ui.getTesterBot();
 
-        HorizontalGroup chGroup = new HorizontalGroup();
-        chGroup.space(10);
-
-        final TextField chapter = new TextField("", ui.getSkin());
-        chGroup.addActor(chapter);
-
-        TextButton loadButton = new TextButton("Load", ui.getSkin());
-        loadButton.addListener(new ClickListener() {
-
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                String c = chapter.getText();
-
-                if (!c.isEmpty()) {
-                    try {
-                        ui.getWorld().getSerializer().loadChapter(c, null, true);
-                        ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                    } catch (IOException e) {
-                        EngineLogger.error("Loading chapter.", e);
-                    }
-                }
-            }
+            bot.setPassTexts(!bot.isPassTexts());
+          }
         });
 
-        chGroup.addActor(loadButton);
+    testerPassText.setChecked(bot.isPassTexts());
 
-        table.add(chGroup);
+    TextButton testerWaitWhenWalking = new TextButton("Wait When Walking", ui.getSkin(), "toggle");
+    testerWaitWhenWalking.addListener(
+        new ClickListener() {
 
-        // ------------- SCENES
-        final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
-        final TextButton initScene = new TextButton("Init", ui.getSkin(), "toggle");
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            final TesterBot bot = ui.getTesterBot();
 
-        initScene.setChecked(true);
-
-        TextButton go = new TextButton("Go", ui.getSkin());
-        go.addListener(new ClickListener() {
-
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ui.getWorld().setCutMode(false);
-                ui.getWorld().resume();
-
-                if (testScene.isChecked())
-                    ui.getWorld().setTestScene(scenes.getSelected());
-
-                ui.getWorld().setCurrentScene(scenes.getSelected(), initScene.isChecked(), null);
-                ui.setCurrentScreen(Screens.SCENE_SCREEN);
-            }
+            bot.setWaitWhenWalking(!bot.isWaitWhenWalking());
+          }
         });
 
-        go.pad(2, 3, 2, 3);
+    testerWaitWhenWalking.setChecked(bot.isWaitWhenWalking());
 
-        scenes = new SelectBox<>(ui.getSkin());
-        String[] scnArray = ui.getWorld().getScenes().keySet().toArray(new String[0]);
-        Arrays.sort(scnArray);
-        scenes.setItems(scnArray);
+    HorizontalGroup botGroup = new HorizontalGroup();
+    botGroup.space(10);
 
-        HorizontalGroup scGroup = new HorizontalGroup();
-        scGroup.space(10);
-        scGroup.addActor(scenes);
-        scGroup.addActor(go);
-        scGroup.addActor(testScene);
-        scGroup.addActor(initScene);
+    botGroup.addActor(testerLeaveConf);
+    botGroup.addActor(testerGotoConf);
+    botGroup.addActor(testerPassText);
+    botGroup.addActor(testerWaitWhenWalking);
 
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Go to Scene: ", ui.getSkin(), "debug"));
-        table.add(scGroup);
+    HorizontalGroup botGroup2 = new HorizontalGroup();
+    botGroup2.space(10);
 
-        // ------------- TESTERBOT
-        final TesterBot bot = ui.getTesterBot();
+    botGroup2.addActor(new Label("Excl. List: ", ui.getSkin(), "debug"));
+    botGroup2.addActor(testerExcludeList);
+    botGroup2.addActor(new Label("Interval: ", ui.getSkin(), "debug"));
+    botGroup2.addActor(testerTimeConf);
+    botGroup2.addActor(new Label("Scn Time: ", ui.getSkin(), "debug"));
+    botGroup2.addActor(inSceneTimeConf);
+    botGroup2.addActor(runBot);
 
-        TextButton runBot = new TextButton(bot.isEnabled() ? "Stop" : "Run", ui.getSkin());
-        runBot.addListener(new ClickListener() {
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Tester Bot: ", ui.getSkin(), "debug"));
+    table.add(botGroup);
+    table.row().pad(5).align(Align.left);
+    table.add();
+    table.add(botGroup2);
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final TesterBot bot = ui.getTesterBot();
-
-                bot.setMaxWaitInverval(Float.parseFloat(testerTimeConf.getText()));
-                bot.setInSceneTime(Float.parseFloat(inSceneTimeConf.getText()));
-                bot.setExcludeList(testerExcludeList.getText());
-                bot.setEnabled(!bot.isEnabled());
-
-                ui.setCurrentScreen(Screens.SCENE_SCREEN);
+    // ------------- LOAD INK STORY FROM STRING
+    TextArea externalInkString = new TextArea("", ui.getSkin());
+    externalInkString.setPrefRows(2);
+    TextButton externalInkStringButton = new TextButton("Load", ui.getSkin());
+    externalInkStringButton.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            try {
+              ui.getWorld().getInkManager().newStory("test-story", externalInkString.getText());
+              ui.setCurrentScreen(Screens.SCENE_SCREEN);
+            } catch (Exception e) {
+              EngineLogger.error("Error loading story: " + e.getMessage());
             }
+          }
         });
 
-        runBot.pad(2, 3, 2, 3);
+    externalInkStringButton.pad(2, 3, 2, 3);
 
-        testerTimeConf = new TextField(Float.toString(bot.getMaxWaitInverval()), ui.getSkin());
-        inSceneTimeConf = new TextField(Float.toString(bot.getInSceneTime()), ui.getSkin());
-        testerExcludeList = new TextField(bot.getExcludeList(), ui.getSkin());
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("External Story", ui.getSkin(), "debug"));
+    table.add(externalInkString).expandX().fillX();
+    table.add(externalInkStringButton);
 
-        TextButton testerLeaveConf = new TextButton("Leave", ui.getSkin(), "toggle");
-        testerLeaveConf.addListener(new ClickListener() {
+    // ------------- GO TO KNOT
+    TextField knot = new TextField("", ui.getSkin());
+    TextField flow = new TextField("", ui.getSkin());
+    TextButton knotButton = new TextButton("Go", ui.getSkin());
+    knotButton.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            try {
+              String flowName = flow.getText().isEmpty() ? null : flow.getText();
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final TesterBot bot = ui.getTesterBot();
-
-                bot.setRunLeaveVerbs(!bot.isRunLeaveVerbs());
+              ui.getWorld().getInkManager().runPath(knot.getText(), null, flowName, null);
+              ui.setCurrentScreen(Screens.SCENE_SCREEN);
+            } catch (Exception e) {
+              EngineLogger.error("Error going to knot/stich: " + e.getMessage());
             }
+          }
         });
 
-        testerLeaveConf.setChecked(bot.isRunLeaveVerbs());
+    knotButton.pad(2, 3, 2, 3);
 
-        TextButton testerGotoConf = new TextButton("Goto", ui.getSkin(), "toggle");
-        testerGotoConf.addListener(new ClickListener() {
+    table.row().pad(5).align(Align.left);
+    table.add(new Label("Go to knot/stich", ui.getSkin(), "debug"));
+    table.add(knot).expandX().fillX();
+    table.add(new Label("Flow", ui.getSkin(), "debug"));
+    table.add(flow).expandX().fillX();
+    table.add(knotButton);
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final TesterBot bot = ui.getTesterBot();
+    // ------------- VERSION LABEL NOT IN TABLE
+    String versionString =
+        Config.getInstance().getProperty(Config.TITLE_PROP, "title unspecified")
+            + " v"
+            + Config.getInstance().getProperty(Config.VERSION_PROP, "unspecified")
+            + "\n"
+            + "Blade Engine: v"
+            + Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, "unspecified")
+            + "\n"
+            + "libGdx: v"
+            + Config.getInstance().getProperty("gdxVersion", "unspecified")
+            + "\n"
+            + "RoboVM: v"
+            + Config.getInstance().getProperty("roboVMVersion", "unspecified")
+            + "\n";
+    // + "Gdx.app.getVersion: " + Gdx.app.getVersion();
 
-                bot.setRunGoto(!bot.isRunGoto());
-            }
-        });
+    Label version = new Label(versionString, ui.getSkin(), "debug");
+    version.setColor(Color.LIGHT_GRAY);
+    Table versionStack = new Table();
+    versionStack.defaults().pad(DPIUtils.getSpacing());
+    versionStack.pad(0);
+    versionStack.add(version);
+    versionStack.bottom().left();
+    versionStack.setFillParent(true);
+    versionStack.pack();
+    table.row();
+    table.add(versionStack).colspan(3).left();
 
-        testerGotoConf.setChecked(bot.isRunGoto());
+    table.pack();
 
-        TextButton testerPassText = new TextButton("Pass Texts", ui.getSkin(), "toggle");
-        testerPassText.addListener(new ClickListener() {
+    ScrollPane scrollPane = new ScrollPane(table);
+    scrollPane.setFillParent(true);
+    stage.addActor(scrollPane);
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final TesterBot bot = ui.getTesterBot();
+    pointer = new Pointer(ui);
+    stage.addActor(pointer);
 
-                bot.setPassTexts(!bot.isPassTexts());
-            }
-        });
+    Gdx.input.setInputProcessor(stage);
+  }
 
-        testerPassText.setChecked(bot.isPassTexts());
-
-        TextButton testerWaitWhenWalking = new TextButton("Wait When Walking", ui.getSkin(), "toggle");
-        testerWaitWhenWalking.addListener(new ClickListener() {
-
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                final TesterBot bot = ui.getTesterBot();
-
-                bot.setWaitWhenWalking(!bot.isWaitWhenWalking());
-            }
-        });
-
-        testerWaitWhenWalking.setChecked(bot.isWaitWhenWalking());
-
-        HorizontalGroup botGroup = new HorizontalGroup();
-        botGroup.space(10);
-
-        botGroup.addActor(testerLeaveConf);
-        botGroup.addActor(testerGotoConf);
-        botGroup.addActor(testerPassText);
-        botGroup.addActor(testerWaitWhenWalking);
-
-        HorizontalGroup botGroup2 = new HorizontalGroup();
-        botGroup2.space(10);
-
-        botGroup2.addActor(new Label("Excl. List: ", ui.getSkin(), "debug"));
-        botGroup2.addActor(testerExcludeList);
-        botGroup2.addActor(new Label("Interval: ", ui.getSkin(), "debug"));
-        botGroup2.addActor(testerTimeConf);
-        botGroup2.addActor(new Label("Scn Time: ", ui.getSkin(), "debug"));
-        botGroup2.addActor(inSceneTimeConf);
-        botGroup2.addActor(runBot);
-
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Tester Bot: ", ui.getSkin(), "debug"));
-        table.add(botGroup);
-        table.row().pad(5).align(Align.left);
-        table.add();
-        table.add(botGroup2);
-
-        // ------------- LOAD INK STORY FROM STRING
-        TextArea externalInkString = new TextArea("", ui.getSkin());
-        externalInkString.setPrefRows(2);
-        TextButton externalInkStringButton = new TextButton("Load",ui.getSkin());
-        externalInkStringButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                try {
-                    ui.getWorld().getInkManager().newStory("test-story", externalInkString.getText());
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                } catch (Exception e) {
-                    EngineLogger.error("Error loading story: " + e.getMessage());
-                }
-            }
-        });
-
-        externalInkStringButton.pad(2, 3, 2, 3);
-
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("External Story", ui.getSkin(), "debug"));
-        table.add(externalInkString).expandX().fillX();
-        table.add(externalInkStringButton);
-
-        // ------------- GO TO KNOT
-        TextField knot = new TextField("", ui.getSkin());
-        TextField flow = new TextField("", ui.getSkin());
-        TextButton knotButton = new TextButton("Go", ui.getSkin());
-        knotButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                try {
-                    String flowName = flow.getText().isEmpty() ? null : flow.getText();
-
-                    ui.getWorld().getInkManager().runPath(knot.getText(), null, flowName, null);
-                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
-                } catch (Exception e) {
-                    EngineLogger.error("Error going to knot/stich: " + e.getMessage());
-                }
-            }
-        });
-
-        knotButton.pad(2, 3, 2, 3);
-
-        table.row().pad(5).align(Align.left);
-        table.add(new Label("Go to knot/stich", ui.getSkin(), "debug"));
-        table.add(knot).expandX().fillX();
-        table.add(new Label("Flow", ui.getSkin(), "debug"));
-        table.add(flow).expandX().fillX();
-        table.add(knotButton);
-
-
-        // ------------- VERSION LABEL NOT IN TABLE
-        String versionString = Config.getInstance().getProperty(Config.TITLE_PROP, "title unspecified") + " v"
-                + Config.getInstance().getProperty(Config.VERSION_PROP, "unspecified") + "\n" + "Blade Engine: v"
-                + Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, "unspecified") + "\n" + "libGdx: v"
-                + Config.getInstance().getProperty("gdxVersion", "unspecified") + "\n" + "RoboVM: v"
-                + Config.getInstance().getProperty("roboVMVersion", "unspecified") + "\n";
-        // + "Gdx.app.getVersion: " + Gdx.app.getVersion();
-
-        Label version = new Label(versionString, ui.getSkin(), "debug");
-        version.setColor(Color.LIGHT_GRAY);
-        Table versionStack = new Table();
-        versionStack.defaults().pad(DPIUtils.getSpacing());
-        versionStack.pad(0);
-        versionStack.add(version);
-        versionStack.bottom().left();
-        versionStack.setFillParent(true);
-        versionStack.pack();
-        table.row();
-        table.add(versionStack).colspan(3).left();
-
-        table.pack();
-
-        ScrollPane scrollPane = new ScrollPane(table);
-        scrollPane.setFillParent(true);
-        stage.addActor(scrollPane);
-
-        pointer = new Pointer(ui);
-        stage.addActor(pointer);
-
-        Gdx.input.setInputProcessor(stage);
+  private void updateRemoteControlButton(RemoteControlServer server) {
+    if (server.isRunning()) {
+      remoteControl.setText("Stop HTTP (" + server.getConfiguredPort() + ")");
+    } else if (server.getLastError() != null) {
+      remoteControl.setText("Start HTTP (error)");
+    } else {
+      remoteControl.setText("Start HTTP (" + server.getConfiguredPort() + ")");
     }
+  }
 
-    private void updateRemoteControlButton(RemoteControlServer server) {
-        if (server.isRunning()) {
-            remoteControl.setText("Stop HTTP (" + server.getConfiguredPort() + ")");
-        } else if (server.getLastError() != null) {
-            remoteControl.setText("Start HTTP (error)");
-        } else {
-            remoteControl.setText("Start HTTP (" + server.getConfiguredPort() + ")");
-        }
-    }
+  @Override
+  public void hide() {
+    dispose();
+  }
 
-    @Override
-    public void hide() {
-        dispose();
-    }
+  @Override
+  public void pause() {}
 
-    @Override
-    public void pause() {
-    }
+  @Override
+  public void resume() {}
 
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void setUI(UI ui) {
-        this.ui = ui;
-    }
+  @Override
+  public void setUI(UI ui) {
+    this.ui = ui;
+  }
 }

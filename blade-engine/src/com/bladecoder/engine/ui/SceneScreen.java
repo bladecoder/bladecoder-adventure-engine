@@ -5,23 +5,26 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
 
 public interface SceneScreen extends BladeScreen {
-	enum ActionButton {
-		LOOKAT, ACTION, INVENTORY, NONE
-	}
+  enum ActionButton {
+    LOOKAT,
+    ACTION,
+    INVENTORY,
+    NONE
+  }
 
-	UI getUI();
+  UI getUI();
 
-	World getWorld();
+  World getWorld();
 
-	Viewport getViewport();
+  Viewport getViewport();
 
-	InteractiveActor getCurrentActor();
+  InteractiveActor getCurrentActor();
 
-	void actorClick(InteractiveActor actor, ActionButton button);
+  void actorClick(InteractiveActor actor, ActionButton button);
 
-	void runVerb(InteractiveActor a, String verb, String target);
+  void runVerb(InteractiveActor a, String verb, String target);
 
-	float getSpeed();
+  float getSpeed();
 
-	void setSpeed(float speed);
+  void setSpeed(float speed);
 }

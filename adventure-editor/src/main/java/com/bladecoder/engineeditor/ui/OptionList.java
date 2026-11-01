@@ -1,8 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,225 +14,233 @@ import com.bladecoder.engineeditor.ui.panels.CellRenderer;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
 import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteOption;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class OptionList extends ModelList<Dialog, DialogOption> {
-	Skin skin;
+  Skin skin;
 
-	private ImageButton upBtn;
-	private ImageButton downBtn;
+  private ImageButton upBtn;
+  private ImageButton downBtn;
 
-	public OptionList(Skin skin) {
-		super(skin, false);
-		this.skin = skin;
+  public OptionList(Skin skin) {
+    super(skin, false);
+    this.skin = skin;
 
-		setCellRenderer(listCellRenderer);
+    setCellRenderer(listCellRenderer);
 
-		upBtn = new ImageButton(skin);
-		downBtn = new ImageButton(skin);
+    upBtn = new ImageButton(skin);
+    downBtn = new ImageButton(skin);
 
-		toolbar.addToolBarButton(upBtn, "ic_up", "Move up", "Move up");
-		toolbar.addToolBarButton(downBtn, "ic_down", "Move down", "Move down");
-		toolbar.pack();
+    toolbar.addToolBarButton(upBtn, "ic_up", "Move up", "Move up");
+    toolbar.addToolBarButton(downBtn, "ic_down", "Move down", "Move down");
+    toolbar.pack();
 
-		list.addListener(new ChangeListener() {
+    list.addListener(
+        new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex();
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            int pos = list.getSelectedIndex();
 
-				toolbar.disableEdit(pos == -1);
-				upBtn.setDisabled(pos == -1 || pos == 0);
-				downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
-			}
-		});
+            toolbar.disableEdit(pos == -1);
+            upBtn.setDisabled(pos == -1 || pos == 0);
+            downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
+          }
+        });
 
-		upBtn.addListener(new ChangeListener() {
+    upBtn.addListener(
+        new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				up();
-			}
-		});
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            up();
+          }
+        });
 
-		downBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				down();
-			}
-		});
+    downBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            down();
+          }
+        });
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof DialogOption && !(evt.getSource() instanceof EditOptionDialog)) {
-					addElements(parent, parent.getOptions());
-				}
-			}
-		});
-	}
+    Ctx.project.addPropertyChangeListener(
+        Project.NOTIFY_ELEMENT_CREATED,
+        new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getNewValue() instanceof DialogOption
+                && !(evt.getSource() instanceof EditOptionDialog)) {
+              addElements(parent, parent.getOptions());
+            }
+          }
+        });
+  }
 
-	@Override
-	protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
-		return new EditOptionDialog(skin, parent, e, list.getSelectedIndex());
-	}
+  @Override
+  protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
+    return new EditOptionDialog(skin, parent, e, list.getSelectedIndex());
+  }
 
-	@Override
-	protected void create() {
-		EditOptionDialog dialog = (EditOptionDialog) getEditElementDialogInstance(null);
-		dialog.show(getStage());
-		dialog.setListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex() + 1;
+  @Override
+  protected void create() {
+    EditOptionDialog dialog = (EditOptionDialog) getEditElementDialogInstance(null);
+    dialog.show(getStage());
+    dialog.setListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            int pos = list.getSelectedIndex() + 1;
 
-				DialogOption e = ((EditOptionDialog) actor).getElement();
-				list.getItems().insert(pos, e);
-				list.setSelectedIndex(pos);
-				list.invalidateHierarchy();
-			}
-		});
-	}
+            DialogOption e = ((EditOptionDialog) actor).getElement();
+            list.getItems().insert(pos, e);
+            list.setSelectedIndex(pos);
+            list.invalidateHierarchy();
+          }
+        });
+  }
 
-	private void up() {
-		int pos = list.getSelectedIndex();
+  private void up() {
+    int pos = list.getSelectedIndex();
 
-		if (pos == -1 || pos == 0)
-			return;
+    if (pos == -1 || pos == 0) return;
 
-		Array<DialogOption> items = list.getItems();
-		DialogOption e = items.get(pos);
-		DialogOption e2 = items.get(pos - 1);
+    Array<DialogOption> items = list.getItems();
+    DialogOption e = items.get(pos);
+    DialogOption e2 = items.get(pos - 1);
 
-		items.set(pos - 1, e);
-		items.set(pos, e2);
+    items.set(pos - 1, e);
+    items.set(pos, e2);
 
-		parent.getOptions().set(pos - 1, e);
-		parent.getOptions().set(pos, e2);
+    parent.getOptions().set(pos - 1, e);
+    parent.getOptions().set(pos, e2);
 
-		list.setSelectedIndex(pos - 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+    list.setSelectedIndex(pos - 1);
+    upBtn.setDisabled(list.getSelectedIndex() == 0);
+    downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	private void down() {
-		int pos = list.getSelectedIndex();
-		Array<DialogOption> items = list.getItems();
+  private void down() {
+    int pos = list.getSelectedIndex();
+    Array<DialogOption> items = list.getItems();
 
-		if (pos == -1 || pos == items.size - 1)
-			return;
+    if (pos == -1 || pos == items.size - 1) return;
 
-		DialogOption e = items.get(pos);
-		DialogOption e2 = items.get(pos + 1);
+    DialogOption e = items.get(pos);
+    DialogOption e2 = items.get(pos + 1);
 
-		parent.getOptions().set(pos + 1, e);
-		parent.getOptions().set(pos, e2);
+    parent.getOptions().set(pos + 1, e);
+    parent.getOptions().set(pos, e2);
 
-		items.set(pos + 1, e);
-		items.set(pos, e2);
-		list.setSelectedIndex(pos + 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+    items.set(pos + 1, e);
+    items.set(pos, e2);
+    list.setSelectedIndex(pos + 1);
+    upBtn.setDisabled(list.getSelectedIndex() == 0);
+    downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	@Override
-	protected void delete() {
+  @Override
+  protected void delete() {
 
-		DialogOption option = removeSelected();
+    DialogOption option = removeSelected();
 
-		int idx = parent.getOptions().indexOf(option);
+    int idx = parent.getOptions().indexOf(option);
 
-		parent.getOptions().remove(option);
+    parent.getOptions().remove(option);
 
-		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(option);
+    // TRANSLATIONS
+    Ctx.project.getI18N().putTranslationsInElement(option);
 
-		// UNDO
-		Ctx.project.getUndoStack().add(new UndoDeleteOption(parent, option, idx));
+    // UNDO
+    Ctx.project.getUndoStack().add(new UndoDeleteOption(parent, option, idx));
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	@Override
-	protected void copy() {
-		DialogOption e = list.getSelected();
+  @Override
+  protected void copy() {
+    DialogOption e = list.getSelected();
 
-		if (e == null)
-			return;
+    if (e == null) return;
 
-		clipboard = (DialogOption) ElementUtils.cloneElement(e);
-		toolbar.disablePaste(false);
+    clipboard = (DialogOption) ElementUtils.cloneElement(e);
+    toolbar.disablePaste(false);
 
-		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(clipboard);
-	}
+    // TRANSLATIONS
+    Ctx.project.getI18N().putTranslationsInElement(clipboard);
+  }
 
-	@Override
-	protected void paste() {
-		DialogOption newElement = (DialogOption) ElementUtils.cloneElement(clipboard);
+  @Override
+  protected void paste() {
+    DialogOption newElement = (DialogOption) ElementUtils.cloneElement(clipboard);
 
-		int pos = list.getSelectedIndex() + 1;
+    int pos = list.getSelectedIndex() + 1;
 
-		list.getItems().insert(pos, newElement);
+    list.getItems().insert(pos, newElement);
 
-		parent.addOption(newElement);
+    parent.addOption(newElement);
 
-		Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(),
-				Ctx.project.getSelectedActor().getId(), parent.getId(), pos, newElement);
+    Ctx.project
+        .getI18N()
+        .extractStrings(
+            Ctx.project.getSelectedScene().getId(),
+            Ctx.project.getSelectedActor().getId(),
+            parent.getId(),
+            pos,
+            newElement);
 
-		list.setSelectedIndex(pos);
-		list.invalidateHierarchy();
+    list.setSelectedIndex(pos);
+    list.invalidateHierarchy();
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	// -------------------------------------------------------------------------
-	// ListCellRenderer
-	// -------------------------------------------------------------------------
-	private final CellRenderer<DialogOption> listCellRenderer = new CellRenderer<DialogOption>() {
+  // -------------------------------------------------------------------------
+  // ListCellRenderer
+  // -------------------------------------------------------------------------
+  private final CellRenderer<DialogOption> listCellRenderer =
+      new CellRenderer<DialogOption>() {
 
-		@Override
-		protected String getCellTitle(DialogOption e) {
-			String text = e.getText();
+        @Override
+        protected String getCellTitle(DialogOption e) {
+          String text = e.getText();
 
-			int i = parent.getOptions().indexOf(e);
+          int i = parent.getOptions().indexOf(e);
 
-			String str = i + ". " + Ctx.project.translate(text);
-			
-			if(e.isOnce())
-				str = "[[ONCE]" + str;
-			
-			if(!e.isVisible())
-				str = "[GRAY]" + str + "[]";
-			
-			return str;
-		}
+          String str = i + ". " + Ctx.project.translate(text);
 
-		@Override
-		protected String getCellSubTitle(DialogOption e) {
+          if (e.isOnce()) str = "[[ONCE]" + str;
 
-			StringBuilder sb = new StringBuilder();
-			String response = e.getResponseText();
+          if (!e.isVisible()) str = "[GRAY]" + str + "[]";
 
-			if (response != null && !response.isEmpty())
-				sb.append("R: ").append(Ctx.project.translate(response).replace("\n", "|")).append(' ');
+          return str;
+        }
 
-			if (e.getVerbId() != null)
-				sb.append(" verb: ").append(e.getVerbId());
+        @Override
+        protected String getCellSubTitle(DialogOption e) {
 
-			if (e.getNext() != null)
-				sb.append(" next: ").append(e.getNext());
+          StringBuilder sb = new StringBuilder();
+          String response = e.getResponseText();
 
-			return sb.toString();
-		}
+          if (response != null && !response.isEmpty())
+            sb.append("R: ").append(Ctx.project.translate(response).replace("\n", "|")).append(' ');
 
-		@Override
-		protected boolean hasSubtitle() {
-			return true;
-		}
-	};
+          if (e.getVerbId() != null) sb.append(" verb: ").append(e.getVerbId());
 
+          if (e.getNext() != null) sb.append(" next: ").append(e.getNext());
+
+          return sb.toString();
+        }
+
+        @Override
+        protected boolean hasSubtitle() {
+          return true;
+        }
+      };
 }

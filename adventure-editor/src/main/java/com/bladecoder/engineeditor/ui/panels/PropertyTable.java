@@ -14,144 +14,147 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class PropertyTable extends Container<Table> {
-	private static final String[] BOOLEAN_VALUES = { "", "true", "false" };
+  private static final String[] BOOLEAN_VALUES = {"", "true", "false"};
 
-	Skin skin;
-	Table table;
+  Skin skin;
+  Table table;
 
-	public enum Types {
-		INTEGER, BOOLEAN, FLOAT, STRING, OPTIONS
-	}
+  public enum Types {
+    INTEGER,
+    BOOLEAN,
+    FLOAT,
+    STRING,
+    OPTIONS
+  }
 
-	public PropertyTable(Skin skin) {
-		// super(skin);
-		table = new Table(skin);
-		this.skin = skin;
-		top().left();
-		table.top().left();
+  public PropertyTable(Skin skin) {
+    // super(skin);
+    table = new Table(skin);
+    this.skin = skin;
+    top().left();
+    table.top().left();
 
-		table.add(new Label("Name", skin));
-		table.add(new Label("Value", skin));
-		table.setFillParent(true);
+    table.add(new Label("Name", skin));
+    table.add(new Label("Value", skin));
+    table.setFillParent(true);
 
-		fill();
-		prefHeight(1000);
+    fill();
+    prefHeight(1000);
 
-		setActor(table);
-	}
+    setActor(table);
+  }
 
-	public void addProperty(String name, String value, Types type) {
+  public void addProperty(String name, String value, Types type) {
 
-		table.row();
-		table.add(new Label(name, skin)).expandX().left();
+    table.row();
+    table.add(new Label(name, skin)).expandX().left();
 
-		if (type == Types.BOOLEAN) {
-			SelectBox<String> sb = new SelectBox<String>(skin);
-			sb.setItems(BOOLEAN_VALUES);
-			if (value != null)
-				sb.setSelected(value);
-			sb.setName(name);
-			table.add(sb).expandX().left();
+    if (type == Types.BOOLEAN) {
+      SelectBox<String> sb = new SelectBox<String>(skin);
+      sb.setItems(BOOLEAN_VALUES);
+      if (value != null) sb.setSelected(value);
+      sb.setName(name);
+      table.add(sb).expandX().left();
 
-			sb.addListener(new ChangeListener() {
+      sb.addListener(
+          new ChangeListener() {
 
-				@SuppressWarnings("unchecked")
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					updateModel(actor.getName(), ((SelectBox<String>) actor).getSelected());
+            @SuppressWarnings("unchecked")
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+              updateModel(actor.getName(), ((SelectBox<String>) actor).getSelected());
+            }
+          });
+    } else {
+      TextField tf = new TextField(value == null ? "" : value, skin);
+      tf.setName(name);
+      table.add(tf).expandX().left();
 
-				}
-			});
-		} else {
-			TextField tf = new TextField(value == null ? "" : value, skin);
-			tf.setName(name);
-			table.add(tf).expandX().left();
+      if (type == Types.INTEGER)
+        tf.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
-			if (type == Types.INTEGER)
-				tf.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+      tf.setTextFieldListener(
+          new TextFieldListener() {
+            @Override
+            public void keyTyped(TextField actor, char c) {
+              if (c == 13) { // ENTER KEY
+                updateModel(actor.getName(), ((TextField) actor).getText());
+                EditorLogger.debug("Updating property: " + actor.getName());
+              }
+            }
+          });
 
-			tf.setTextFieldListener(new TextFieldListener() {
-				@Override
-				public void keyTyped(TextField actor, char c) {
-					if (c == 13) { // ENTER KEY
-						updateModel(actor.getName(), ((TextField) actor).getText());
-						EditorLogger.debug("Updating property: " + actor.getName());
-					}
-				}
-			});
+      tf.addListener(
+          new FocusListener() {
 
-			tf.addListener(new FocusListener() {
+            @Override
+            public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+              if (!focused) {
+                updateModel(actor.getName(), ((TextField) actor).getText());
+                EditorLogger.debug("Updating property: " + actor.getName());
+              }
+            }
+          });
+    }
+  }
 
-				@Override
-				public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-					if (!focused) {
-						updateModel(actor.getName(), ((TextField) actor).getText());
-						EditorLogger.debug("Updating property: " + actor.getName());
-					}
-				}
-			});
-		}
-	}
+  @SuppressWarnings("unchecked")
+  public void setProperty(String name, String value) {
+    SnapshotArray<Actor> actors = table.getChildren();
 
-	@SuppressWarnings("unchecked")
-	public void setProperty(String name, String value) {
-		SnapshotArray<Actor> actors = table.getChildren();
+    for (Actor a : actors) {
+      if (name.equals(a.getName())) {
+        if (a instanceof SelectBox<?>) {
+          ((SelectBox<String>) a).setSelected(value == null ? "" : value);
+        } else {
+          ((TextField) a).setText(value == null ? "" : value);
+        }
 
-		for (Actor a : actors) {
-			if (name.equals(a.getName())) {
-				if (a instanceof SelectBox<?>) {
-					((SelectBox<String>) a).setSelected(value == null ? "" : value);
-				} else {
-					((TextField) a).setText(value == null ? "" : value);
-				}
+        return;
+      }
+    }
+  }
 
-				return;
-			}
-		}
-	}
+  public void addProperty(String name, int value) {
+    addProperty(name, Integer.toString(value), Types.INTEGER);
+  }
 
-	public void addProperty(String name, int value) {
-		addProperty(name, Integer.toString(value), Types.INTEGER);
-	}
+  public void addProperty(String name, float value) {
+    addProperty(name, Float.toString(value), Types.FLOAT);
+  }
 
-	public void addProperty(String name, float value) {
-		addProperty(name, Float.toString(value), Types.FLOAT);
-	}
+  public void addProperty(String name, String value) {
+    addProperty(name, value, Types.STRING);
+  }
 
-	public void addProperty(String name, String value) {
-		addProperty(name, value, Types.STRING);
-	}
+  public void addProperty(String name, boolean value) {
+    addProperty(name, Boolean.toString(value), Types.BOOLEAN);
+  }
 
-	public void addProperty(String name, boolean value) {
-		addProperty(name, Boolean.toString(value), Types.BOOLEAN);
-	}
+  public void addProperty(String name, String selected, String[] value) {
+    table.row();
+    table.add(new Label(name, skin)).expandX().left();
 
-	public void addProperty(String name, String selected, String[] value) {
-		table.row();
-		table.add(new Label(name, skin)).expandX().left();
+    SelectBox<String> sb = new SelectBox<String>(skin);
+    sb.setItems(value);
+    if (selected != null) sb.setSelected(selected);
+    sb.setName(name);
+    table.add(sb).expandX().left();
 
-		SelectBox<String> sb = new SelectBox<String>(skin);
-		sb.setItems(value);
-		if (selected != null)
-			sb.setSelected(selected);
-		sb.setName(name);
-		table.add(sb).expandX().left();
+    sb.addListener(
+        new ChangeListener() {
 
-		sb.addListener(new ChangeListener() {
+          @SuppressWarnings("unchecked")
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            updateModel(actor.getName(), ((SelectBox<String>) actor).getSelected());
+          }
+        });
+  }
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				updateModel(actor.getName(), ((SelectBox<String>) actor).getSelected());
-			}
-		});
-	}
+  protected void updateModel(String property, String value) {}
 
-	protected void updateModel(String property, String value) {
-
-	}
-
-	protected void clearProps() {
-		table.clear();
-	}
+  protected void clearProps() {
+    table.clear();
+  }
 }

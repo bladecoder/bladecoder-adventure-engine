@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "cue": "starter-loop",
+  "notes": 14,
+  "source_sha256": "5d50f466eb30c34fce21bd64b643779b922071df2583df5da4dc1c45bcde5f06",
+  "recipe_sha256": "26fd1b962d3190bf18b81d076825e7f10b31ba2b270f8e277849d509195af2f5",
+  "soundfont_sha256": "c5378b62028c920cb11e4803327983fee2f2cdff5dc89c708e39da417e51c854",
+  "renderer_sha256": "60e0aa37c5c1826bdd63ec6e29acd7acfe4fc3cb63072551dbe7ae2872deded6",
+  "gain_db": 23.77309917518035,
+  "pipeline_sha256": "fd3c0d924e34a905e5cf816e9ecb866f5b2961491dc36dad9b1eff10a97043ae",
+  "fluidsynth_version": "2.6.0",
+  "renderer_settings": {
+    "sample_rate": 44100,
+    "gain": 0.45,
+    "reverb_room_size": 0.3,
+    "reverb_damp": 0.5,
+    "reverb_width": 55,
+    "reverb_level": 0.15,
+    "chorus": false
+  },
+  "ffmpeg_version": "ffmpeg version 8.1.2-2ubuntu2 Copyright (c) 2000-2026 the FFmpeg developers",
+  "output_sha256": "afd375bb60f5f2cf84bcea305b86791394a9d4fb8744b60b92f754039fb4e100",
+  "metrics": {
+    "codec": "mp3",
+    "bits_per_sample": null,
+    "analysis_pcm_bits": 16,
+    "bit_rate": 192000,
+    "frames": 176400,
+    "sample_rate": 44100,
+    "channels": 2,
+    "seconds": 4.0,
+    "stereo_nonidentical_frames": 176364,
+    "peak_dbfs": -9.417419601662104,
+    "rms_dbfs": -23.969235076141715,
+    "clipped_samples": 0,
+    "longest_silence_seconds": 0.0,
+    "seam_delta": 0.01678466796875,
+    "integrated_lufs": -21.1,
+    "true_peak_dbfs": -9.4
+  },
+  "intermediate_policy": "temporary outside repository; removed on exit",
+  "listening_review": "Not evaluated by renderer; contextual review is recorded separately."
+}

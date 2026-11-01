@@ -1,0 +1,3 @@
+interface:
+  display_name: "Write Game Ink"
+  short_description: "Write and verify game-integrated Ink dialogue"

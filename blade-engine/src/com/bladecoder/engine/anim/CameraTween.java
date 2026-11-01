@@ -7,69 +7,74 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.util.InterpolationMode;
 
-/**
- * Tween for camera position and zoom animation
- */
+/** Tween for camera position and zoom animation */
 public class CameraTween extends Tween<SceneCamera> {
 
-    private float startX, startY, startZoom;
-    private float targetX, targetY, targetZoom;
+  private float startX, startY, startZoom;
+  private float targetX, targetY, targetZoom;
 
-    public CameraTween() {
+  public CameraTween() {}
+
+  public void start(
+      SceneCamera camera,
+      Tween.Type repeatType,
+      int count,
+      float targetX,
+      float targetY,
+      float targetZoom,
+      float duration,
+      InterpolationMode interpolation,
+      ActionCallback cb) {
+
+    this.target = camera;
+
+    Vector2 currentPos = camera.getPosition();
+
+    startX = currentPos.x;
+    startY = currentPos.y;
+    startZoom = camera.getZoom();
+    this.targetX = targetX;
+    this.targetY = targetY;
+    this.targetZoom = targetZoom;
+
+    setDuration(duration);
+    setType(repeatType);
+    setCount(count);
+    setInterpolation(interpolation);
+
+    if (cb != null) {
+      setCb(cb);
     }
+  }
 
-    public void start(SceneCamera camera, Tween.Type repeatType, int count, float targetX, float targetY,
-                      float targetZoom, float duration, InterpolationMode interpolation, ActionCallback cb) {
+  @Override
+  public void updateTarget() {
+    target.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
+    target.setPosition(
+        startX + getPercent() * (targetX - startX), startY + getPercent() * (targetY - startY));
+  }
 
-        this.target = camera;
+  @Override
+  public void write(Json json) {
+    super.write(json);
 
-        Vector2 currentPos = camera.getPosition();
+    json.writeValue("startX", startX);
+    json.writeValue("startY", startY);
+    json.writeValue("startZoom", startZoom);
+    json.writeValue("targetX", targetX);
+    json.writeValue("targetY", targetY);
+    json.writeValue("targetZoom", targetZoom);
+  }
 
-        startX = currentPos.x;
-        startY = currentPos.y;
-        startZoom = camera.getZoom();
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.targetZoom = targetZoom;
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
 
-        setDuration(duration);
-        setType(repeatType);
-        setCount(count);
-        setInterpolation(interpolation);
-
-        if (cb != null) {
-            setCb(cb);
-        }
-    }
-
-    @Override
-    public void updateTarget() {
-        target.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
-        target.setPosition(startX + getPercent() * (targetX - startX),
-                startY + getPercent() * (targetY - startY));
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-
-        json.writeValue("startX", startX);
-        json.writeValue("startY", startY);
-        json.writeValue("startZoom", startZoom);
-        json.writeValue("targetX", targetX);
-        json.writeValue("targetY", targetY);
-        json.writeValue("targetZoom", targetZoom);
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        super.read(json, jsonData);
-
-        startX = json.readValue("startX", Float.class, jsonData);
-        startY = json.readValue("startY", Float.class, jsonData);
-        startZoom = json.readValue("startZoom", Float.class, jsonData);
-        targetX = json.readValue("targetX", Float.class, jsonData);
-        targetY = json.readValue("targetY", Float.class, jsonData);
-        targetZoom = json.readValue("targetZoom", Float.class, jsonData);
-    }
+    startX = json.readValue("startX", Float.class, jsonData);
+    startY = json.readValue("startY", Float.class, jsonData);
+    startZoom = json.readValue("startZoom", Float.class, jsonData);
+    targetX = json.readValue("targetX", Float.class, jsonData);
+    targetY = json.readValue("targetY", Float.class, jsonData);
+    targetZoom = json.readValue("targetZoom", Float.class, jsonData);
+  }
 }

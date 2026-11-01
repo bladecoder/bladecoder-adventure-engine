@@ -1,8 +1,5 @@
 package com.bladecoder.engine.ui;
 
-import java.text.MessageFormat;
-import java.util.Locale;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -21,139 +18,143 @@ import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
+import java.text.MessageFormat;
+import java.util.Locale;
 
 public class HelpScreen extends ScreenAdapter implements BladeScreen {
-	private final static String PIE_FILENAME = "ui/helpPie";
-	private final static String TWO_BUTTONS_FILENAME = "ui/helpDesktop";
-	private final static String SINGLE_CLICK_FILENAME = "ui/helpDesktop"; // TODO
-																			// Help
-																			// for
-																			// single
-																			// button
+  private static final String PIE_FILENAME = "ui/helpPie";
+  private static final String TWO_BUTTONS_FILENAME = "ui/helpDesktop";
+  private static final String SINGLE_CLICK_FILENAME = "ui/helpDesktop"; // TODO
+  // Help
+  // for
+  // single
+  // button
 
-	private Texture tex;
+  private Texture tex;
 
-	private UI ui;
+  private UI ui;
 
-	private String localeFilename;
-	private final Viewport viewport;
+  private String localeFilename;
+  private final Viewport viewport;
 
-	private ScreenControllerHandler controller;
+  private ScreenControllerHandler controller;
 
-	public HelpScreen() {
-		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f / 16f);
-	}
+  public HelpScreen() {
+    viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f / 16f);
+  }
 
-	private final InputProcessor inputProcessor = new InputAdapter() {
-		@Override
-		public boolean keyUp(int keycode) {
-			switch (keycode) {
-			case Input.Keys.ESCAPE:
-			case Input.Keys.BACK:
-				ui.setCurrentScreen(Screens.MENU_SCREEN);
-				break;
-			}
+  private final InputProcessor inputProcessor =
+      new InputAdapter() {
+        @Override
+        public boolean keyUp(int keycode) {
+          switch (keycode) {
+            case Input.Keys.ESCAPE:
+            case Input.Keys.BACK:
+              ui.setCurrentScreen(Screens.MENU_SCREEN);
+              break;
+          }
 
-			// FIXME: This ALWAYS return true, even when we haven't dealt with
-			// the key. Is that expected?
-			return true;
-		}
+          // FIXME: This ALWAYS return true, even when we haven't dealt with
+          // the key. Is that expected?
+          return true;
+        }
 
-		@Override
-		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-			ui.setCurrentScreen(Screens.MENU_SCREEN);
-			return true;
-		}
-	};
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+          ui.setCurrentScreen(Screens.MENU_SCREEN);
+          return true;
+        }
+      };
 
-	@Override
-	public void render(float delta) {
-		SpriteBatch batch = ui.getBatch();
+  @Override
+  public void render(float delta) {
+    SpriteBatch batch = ui.getBatch();
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(viewport.getCamera().combined);
-		batch.begin();
-		batch.draw(tex, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
-		batch.end();
+    batch.setProjectionMatrix(viewport.getCamera().combined);
+    batch.begin();
+    batch.draw(tex, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+    batch.end();
 
-		controller.update(delta);
-	}
+    controller.update(delta);
+  }
 
-	@Override
-	public void resize(int width, int height) {
+  @Override
+  public void resize(int width, int height) {
 
-		float aspect = width / height;
-		float bgAspect = (float) tex.getWidth() / (float) tex.getHeight();
+    float aspect = width / height;
+    float bgAspect = (float) tex.getWidth() / (float) tex.getHeight();
 
-		if (aspect < bgAspect)
-			viewport.setWorldSize(width, (int) (width / bgAspect));
-		else
-			viewport.setWorldSize((int) (height * bgAspect), height);
+    if (aspect < bgAspect) viewport.setWorldSize(width, (int) (width / bgAspect));
+    else viewport.setWorldSize((int) (height * bgAspect), height);
 
-		viewport.update(width, height, true);
-	}
+    viewport.update(width, height, true);
+  }
 
-	@Override
-	public void dispose() {
-		if (tex != null) {
-			tex.dispose();
-			tex = null;
-		}
-	}
+  @Override
+  public void dispose() {
+    if (tex != null) {
+      tex.dispose();
+      tex = null;
+    }
+  }
 
-	@Override
-	public void show() {
-		final Locale locale = ui.getWorld().getI18N().getCurrentLocale();
-		String filename = null;
-		UIModes uiMode = UIModes
-				.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
+  @Override
+  public void show() {
+    final Locale locale = ui.getWorld().getI18N().getCurrentLocale();
+    String filename = null;
+    UIModes uiMode =
+        UIModes.valueOf(
+            Config.getInstance()
+                .getProperty(Config.UI_MODE, "TWO_BUTTONS")
+                .toUpperCase(Locale.ENGLISH));
 
-		if (ui.getInputMode() == InputMode.TOUCHPANEL && uiMode == UIModes.TWO_BUTTONS) {
-			uiMode = UIModes.PIE;
-		}
+    if (ui.getInputMode() == InputMode.TOUCHPANEL && uiMode == UIModes.TWO_BUTTONS) {
+      uiMode = UIModes.PIE;
+    }
 
-		switch (uiMode) {
-		case PIE:
-			filename = PIE_FILENAME;
-			break;
-		case SINGLE_CLICK:
-			filename = SINGLE_CLICK_FILENAME;
-			break;
-		case TWO_BUTTONS:
-			filename = TWO_BUTTONS_FILENAME;
-			break;
+    switch (uiMode) {
+      case PIE:
+        filename = PIE_FILENAME;
+        break;
+      case SINGLE_CLICK:
+        filename = SINGLE_CLICK_FILENAME;
+        break;
+      case TWO_BUTTONS:
+        filename = TWO_BUTTONS_FILENAME;
+        break;
+    }
 
-		}
+    localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
 
-		localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
+    if (!EngineAssetManager.getInstance().assetExists(localeFilename))
+      localeFilename = MessageFormat.format("{0}.png", filename);
 
-		if (!EngineAssetManager.getInstance().assetExists(localeFilename))
-			localeFilename = MessageFormat.format("{0}.png", filename);
+    tex = new Texture(EngineAssetManager.getInstance().getResAsset(localeFilename));
+    tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-		tex = new Texture(EngineAssetManager.getInstance().getResAsset(localeFilename));
-		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+    Gdx.input.setInputProcessor(inputProcessor);
+    controller =
+        new ScreenControllerHandler(ui, null, viewport) {
+          @Override
+          protected boolean buttonUp(Controller controller, int buttonCode) {
 
-		Gdx.input.setInputProcessor(inputProcessor);
-		controller = new ScreenControllerHandler(ui, null, viewport) {
-			@Override
-			protected boolean buttonUp(Controller controller, int buttonCode) {
+            ui.setCurrentScreen(Screens.MENU_SCREEN);
 
-				ui.setCurrentScreen(Screens.MENU_SCREEN);
+            return true;
+          }
+        };
+  }
 
-				return true;
-			}
-		};
-	}
+  @Override
+  public void hide() {
+    dispose();
+  }
 
-	@Override
-	public void hide() {
-		dispose();
-	}
-
-	@Override
-	public void setUI(UI ui) {
-		this.ui = ui;
-	}
+  @Override
+  public void setUI(UI ui) {
+    this.ui = ui;
+  }
 }

@@ -23,244 +23,260 @@ import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
- * 
- * For now, only one subtitle is displayed in the screen at a time.
- * 
+ *
+ * <p>For now, only one subtitle is displayed in the screen at a time.
+ *
  * @author rgarcia
- * 
  */
 public class TextManagerUI extends Actor implements ITextManagerUI {
-	private static final float PADDING = DPIUtils.getMarginSize();
+  private static final float PADDING = DPIUtils.getMarginSize();
 
-	private final Vector3 unprojectTmp = new Vector3();
+  private final Vector3 unprojectTmp = new Vector3();
 
-	private ObjectMap<String, TextManagerUIStyle> styles;
-	private Text text;
-	private final GlyphLayout layout = new GlyphLayout();
+  private ObjectMap<String, TextManagerUIStyle> styles;
+  private Text text;
+  private final GlyphLayout layout = new GlyphLayout();
 
-	private float fontX = 0;
+  private float fontX = 0;
 
-	private AtlasRegion charIcon = null;
+  private AtlasRegion charIcon = null;
 
-	private TextManagerUIStyle style;
+  private TextManagerUIStyle style;
 
-	private float maxWidth;
-	private final World world;
+  private float maxWidth;
+  private final World world;
 
-	public TextManagerUI(Skin skin, World w) {
-		this.world = w;
-		setTouchable(Touchable.disabled);
-		styles = skin.getAll(TextManagerUIStyle.class);
+  public TextManagerUI(Skin skin, World w) {
+    this.world = w;
+    setTouchable(Touchable.disabled);
+    styles = skin.getAll(TextManagerUIStyle.class);
 
-		for (TextManagerUIStyle style : styles.values()) {
-			style.font.getData().markupEnabled = true;
-		}
+    for (TextManagerUIStyle style : styles.values()) {
+      style.font.getData().markupEnabled = true;
+    }
 
-		setVisible(false);
-	}
+    setVisible(false);
+  }
 
-	@Override
-	public void setText(Text t) {
-		text = t;
+  @Override
+  public void setText(Text t) {
+    text = t;
 
-		if (t == null && isVisible()) {
-			setVisible(false);
-		} else if (t != null && !isVisible()) {
-			setVisible(true);
-		}
+    if (t == null && isVisible()) {
+      setVisible(false);
+    } else if (t != null && !isVisible()) {
+      setVisible(true);
+    }
 
-		if (isVisible()) {
-			style = getStyle(text);
-			Color color = text.color != null ? text.color : style.defaultColor;
+    if (isVisible()) {
+      style = getStyle(text);
+      Color color = text.color != null ? text.color : style.defaultColor;
 
-			if (color == null)
-				color = Color.BLACK;
+      if (color == null) color = Color.BLACK;
 
-			maxWidth = Math.min(getStage().getViewport().getScreenWidth() - PADDING * 4, style.font.getXHeight()
-					* (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
+      maxWidth =
+          Math.min(
+              getStage().getViewport().getScreenWidth() - PADDING * 4,
+              style.font.getXHeight()
+                  * (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
 
-			layout.setText(style.font, text.str, color, maxWidth, Align.center, true);
-			setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
+      layout.setText(style.font, text.str, color, maxWidth, Align.center, true);
+      setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
 
-			calcPos();
-		}
-	}
+      calcPos();
+    }
+  }
 
-	private void calcPos() {
-		float posx = text.x;
-		float posy = text.y;
+  private void calcPos() {
+    float posx = text.x;
+    float posy = text.y;
 
-		unprojectTmp.set(posx, posy, 0);
-		world.getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
+    unprojectTmp.set(posx, posy, 0);
+    world.getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
 
-		if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {
-			posx = getStage().getViewport().getScreenWidth() / 2;
-			fontX = getStage().getViewport().getScreenWidth() / 2;
-		} else {
-			posx = unprojectTmp.x;
-			fontX = posx + (layout.width - maxWidth) / 2;
-		}
+    if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {
+      posx = getStage().getViewport().getScreenWidth() / 2;
+      fontX = getStage().getViewport().getScreenWidth() / 2;
+    } else {
+      posx = unprojectTmp.x;
+      fontX = posx + (layout.width - maxWidth) / 2;
+    }
 
-		if (posy == TextManager.POS_CENTER) {
-			posy = (getStage().getViewport().getScreenHeight() - layout.height) / 2;
-		} else if (posy == TextManager.POS_SUBTITLE) {
-			posy = getStage().getViewport().getScreenHeight() * style.subtitlePosPercent - layout.height;
+    if (posy == TextManager.POS_CENTER) {
+      posy = (getStage().getViewport().getScreenHeight() - layout.height) / 2;
+    } else if (posy == TextManager.POS_SUBTITLE) {
+      posy = getStage().getViewport().getScreenHeight() * style.subtitlePosPercent - layout.height;
 
-			if (posy < 0) {
-				posy = PADDING;
-			}
-		} else {
-			posy = unprojectTmp.y;
+      if (posy < 0) {
+        posy = PADDING;
+      }
+    } else {
+      posy = unprojectTmp.y;
 
-			if (text.type != Text.Type.TALK) {
-				posy -= layout.height;
-			}
-		}
+      if (text.type != Text.Type.TALK) {
+        posy -= layout.height;
+      }
+    }
 
-		// CHAR ICON CALCS
-		if (text.type == Text.Type.SUBTITLE
-				&& !Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
-				&& text.actorId != null) {
-			charIcon = EngineAssetManager.getInstance()
-					.getRegion(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null), text.actorId);
+    // CHAR ICON CALCS
+    if (text.type == Text.Type.SUBTITLE
+        && !Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
+        && text.actorId != null) {
+      charIcon =
+          EngineAssetManager.getInstance()
+              .getRegion(
+                  Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null),
+                  text.actorId);
 
-			if (charIcon != null) {
-				float scale = getStage().getViewport().getScreenHeight() / (float) world.getHeight();
-				float iconPosY = getStage().getViewport().getScreenHeight() - charIcon.getRegionHeight() * scale
-						- DPIUtils.getMarginSize();
-				posy = Math.min(posy, iconPosY);
-			}
-		} else {
-			charIcon = null;
-		}
+      if (charIcon != null) {
+        float scale = getStage().getViewport().getScreenHeight() / (float) world.getHeight();
+        float iconPosY =
+            getStage().getViewport().getScreenHeight()
+                - charIcon.getRegionHeight() * scale
+                - DPIUtils.getMarginSize();
+        posy = Math.min(posy, iconPosY);
+      }
+    } else {
+      charIcon = null;
+    }
 
-		setPosition(posx - PADDING, posy - PADDING);
+    setPosition(posx - PADDING, posy - PADDING);
 
-		if (text.type == Text.Type.TALK) {
-			if (style.talkBubble != null) {
-				float bubbleHeight = DPIUtils.getTouchMinSize() * style.bubbleSize * .25f;
-				setY(getY() + bubbleHeight + PADDING + DPIUtils.getSpacing());
-			} else {
-				setY(getY() + PADDING + DPIUtils.getSpacing());
-			}
-		}
+    if (text.type == Text.Type.TALK) {
+      if (style.talkBubble != null) {
+        float bubbleHeight = DPIUtils.getTouchMinSize() * style.bubbleSize * .25f;
+        setY(getY() + bubbleHeight + PADDING + DPIUtils.getSpacing());
+      } else {
+        setY(getY() + PADDING + DPIUtils.getSpacing());
+      }
+    }
 
-		setX(getX() - layout.width / 2);
+    setX(getX() - layout.width / 2);
 
-		fontX = posx - maxWidth / 2;
+    fontX = posx - maxWidth / 2;
 
-		// check if the text exits the screen
-		if (getX() < 0 && getX() > -getWidth()) {
-			setX(0 + PADDING);
-			fontX = getX() + PADDING + (layout.width - maxWidth) / 2;
-		} else if (getX() + getWidth() > getStage().getViewport().getScreenWidth()
-				&& getX() + getWidth() < getStage().getViewport().getScreenWidth() + getWidth()) {
-			setX(getStage().getViewport().getScreenWidth() - getWidth() - PADDING);
-			fontX = getStage().getViewport().getScreenWidth() - layout.width / 2 - PADDING * 2 - maxWidth / 2;
-		}
+    // check if the text exits the screen
+    if (getX() < 0 && getX() > -getWidth()) {
+      setX(0 + PADDING);
+      fontX = getX() + PADDING + (layout.width - maxWidth) / 2;
+    } else if (getX() + getWidth() > getStage().getViewport().getScreenWidth()
+        && getX() + getWidth() < getStage().getViewport().getScreenWidth() + getWidth()) {
+      setX(getStage().getViewport().getScreenWidth() - getWidth() - PADDING);
+      fontX =
+          getStage().getViewport().getScreenWidth() - layout.width / 2 - PADDING * 2 - maxWidth / 2;
+    }
 
-		if (getY() + getHeight() > getStage().getViewport().getScreenHeight()) {
-			setY(getStage().getViewport().getScreenHeight() - getHeight() - PADDING);
-		}
-	}
+    if (getY() + getHeight() > getStage().getViewport().getScreenHeight()) {
+      setY(getStage().getViewport().getScreenHeight() - getHeight() - PADDING);
+    }
+  }
 
-	@Override
-	public void draw(Batch batch, float alpha) {
+  @Override
+  public void draw(Batch batch, float alpha) {
 
-		if (text.type == Text.Type.TALK) {
+    if (text.type == Text.Type.TALK) {
 
-			// When the type is TALK we recalc the pos because of scrolling
-			calcPos();
+      // When the type is TALK we recalc the pos because of scrolling
+      calcPos();
 
-			if (getX() < 0 || getX() > getStage().getViewport().getScreenWidth())
-				return;
+      if (getX() < 0 || getX() > getStage().getViewport().getScreenWidth()) return;
 
-			if (style.talkBubble != null) {
-				float scale = DPIUtils.getTouchMinSize() * style.bubbleSize * .25f / style.talkBubble.getMinHeight();
+      if (style.talkBubble != null) {
+        float scale =
+            DPIUtils.getTouchMinSize() * style.bubbleSize * .25f / style.talkBubble.getMinHeight();
 
-				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale * .5f + style.bubbledx;
-				// check screen exit
-				bubbleX = Math.max(bubbleX, getX() + PADDING - style.talkBubble.getMinWidth() * scale / 2);
-				bubbleX = Math.min(bubbleX,
-						getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale * .5f);
-				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + style.bubbledy;
+        float bubbleX =
+            unprojectTmp.x - style.talkBubble.getMinWidth() * scale * .5f + style.bubbledx;
+        // check screen exit
+        bubbleX = Math.max(bubbleX, getX() + PADDING - style.talkBubble.getMinWidth() * scale / 2);
+        bubbleX =
+            Math.min(
+                bubbleX,
+                getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale * .5f);
+        float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + style.bubbledy;
 
-				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
-						style.talkBubble.getMinHeight() * scale);
-			}
+        style.talkBubble.draw(
+            batch,
+            bubbleX,
+            bubbleY,
+            style.talkBubble.getMinWidth() * scale,
+            style.talkBubble.getMinHeight() * scale);
+      }
 
-			if (style.talkBackground != null) {
-				style.talkBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
-			}
+      if (style.talkBackground != null) {
+        style.talkBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
+      }
 
-		} else if (text.type == Text.Type.SUBTITLE) {
-			if (style.rectBackground != null) {
-				style.rectBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
-			}
+    } else if (text.type == Text.Type.SUBTITLE) {
+      if (style.rectBackground != null) {
+        style.rectBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
+      }
 
-			if (charIcon != null) {
-				float scale = getStage().getViewport().getScreenHeight() / (float) world.getHeight();
-				batch.draw(charIcon, getX() - charIcon.getRegionWidth() * scale, getY(),
-						charIcon.getRegionWidth() * scale, charIcon.getRegionHeight() * scale);
-			}
+      if (charIcon != null) {
+        float scale = getStage().getViewport().getScreenHeight() / (float) world.getHeight();
+        batch.draw(
+            charIcon,
+            getX() - charIcon.getRegionWidth() * scale,
+            getY(),
+            charIcon.getRegionWidth() * scale,
+            charIcon.getRegionHeight() * scale);
+      }
+    }
 
-		}
+    style.font.draw(batch, layout, fontX, getY() + PADDING + layout.height);
+  }
 
-		style.font.draw(batch, layout, fontX, getY() + PADDING + layout.height);
-	}
+  private TextManagerUIStyle getStyle(Text text) {
+    String key = "default";
 
-	private TextManagerUIStyle getStyle(Text text) {
-		String key = "default";
+    if (text != null && text.style != null && !text.style.isEmpty()) {
+      key = text.style;
+    } else if (text.actorId != null) {
+      CharacterActor a = (CharacterActor) world.getCurrentScene().getActor(text.actorId, false);
 
-		if (text != null && text.style != null && !text.style.isEmpty()) {
-			key = text.style;
-		} else if (text.actorId != null) {
-			CharacterActor a = (CharacterActor) world.getCurrentScene().getActor(text.actorId, false);
+      if (a != null && a.getTextStyle() != null) key = a.getTextStyle();
+    }
 
-			if (a != null && a.getTextStyle() != null)
-				key = a.getTextStyle();
-		}
+    TextManagerUIStyle s = styles.get(key);
 
-		TextManagerUIStyle s = styles.get(key);
+    if (s == null) {
+      EngineLogger.error("TextManagerUIStyle not found: " + key);
+      return styles.get("default");
+    }
 
-		if (s == null) {
-			EngineLogger.error("TextManagerUIStyle not found: " + key);
-			return styles.get("default");
-		}
+    return s;
+  }
 
-		return s;
-	}
+  /** The style for the TextManagerUI */
+  public static class TextManagerUIStyle {
+    /** Optional. */
+    public Drawable rectBackground;
 
-	/** The style for the TextManagerUI */
-	static public class TextManagerUIStyle {
-		/** Optional. */
-		public Drawable rectBackground;
-		public Drawable talkBackground;
-		public Drawable talkBubble;
-		public BitmapFont font;
-		public Color defaultColor;
-		public float subtitlePosPercent = 0.90f;
-		public float bubbleSize = 1f;
-		public float bubbledx = 0;
-		public float bubbledy = 0;
-		public int maxCharWidth = 80;
-		public int maxTalkCharWidth = 35;
+    public Drawable talkBackground;
+    public Drawable talkBubble;
+    public BitmapFont font;
+    public Color defaultColor;
+    public float subtitlePosPercent = 0.90f;
+    public float bubbleSize = 1f;
+    public float bubbledx = 0;
+    public float bubbledy = 0;
+    public int maxCharWidth = 80;
+    public int maxTalkCharWidth = 35;
 
-		public TextManagerUIStyle() {
-		}
+    public TextManagerUIStyle() {}
 
-		public TextManagerUIStyle(TextManagerUIStyle style) {
-			rectBackground = style.rectBackground;
-			talkBackground = style.talkBackground;
-			talkBubble = style.talkBubble;
-			font = style.font;
-			defaultColor = style.defaultColor;
-			subtitlePosPercent = style.subtitlePosPercent;
-			bubbleSize = style.bubbleSize;
-			bubbledx = style.bubbledx;
-			bubbledy = style.bubbledy;
-			maxCharWidth = style.maxCharWidth;
-			maxTalkCharWidth = style.maxTalkCharWidth;
-		}
-	}
+    public TextManagerUIStyle(TextManagerUIStyle style) {
+      rectBackground = style.rectBackground;
+      talkBackground = style.talkBackground;
+      talkBubble = style.talkBubble;
+      font = style.font;
+      defaultColor = style.defaultColor;
+      subtitlePosPercent = style.subtitlePosPercent;
+      bubbleSize = style.bubbleSize;
+      bubbledx = style.bubbledx;
+      bubbledy = style.bubbledy;
+      maxCharWidth = style.maxCharWidth;
+      maxTalkCharWidth = style.maxTalkCharWidth;
+    }
+  }
 }

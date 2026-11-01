@@ -6,53 +6,55 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.MusicManager;
 import com.bladecoder.engine.util.InterpolationMode;
 
-/**
- * Tween for Music fade in/out
- */
+/** Tween for Music fade in/out */
 public class MusicVolumeTween extends Tween<MusicManager> {
-	
-	private float startVolume;
-	private float targetVolume;
-	
-	public MusicVolumeTween() {
-	}
 
-	public void start(MusicManager mm, float tVolume, float duration, InterpolationMode interpolation, ActionCallback cb) {	
-		this.target = mm;
-		
-		startVolume = mm.getVolume();
-		targetVolume = tVolume;
-		
-		setDuration(duration);
-		setType(Type.NO_REPEAT);
-		setCount(1);
-		setInterpolation(interpolation);
+  private float startVolume;
+  private float targetVolume;
 
-		if (cb != null) {
-			setCb(cb);
-		}
-		
-		restart();
-	}
+  public MusicVolumeTween() {}
 
-	@Override
-	public void updateTarget() {
-		target.setVolume(startVolume + getPercent() * (targetVolume - startVolume));
-	}
-	
-	@Override
-	public void write(Json json) {
-		super.write(json);
+  public void start(
+      MusicManager mm,
+      float tVolume,
+      float duration,
+      InterpolationMode interpolation,
+      ActionCallback cb) {
+    this.target = mm;
 
-		json.writeValue("startVolume", startVolume);
-		json.writeValue("targetVolume", targetVolume);
-	}
+    startVolume = mm.getVolume();
+    targetVolume = tVolume;
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);	
-		
-		startVolume = json.readValue("startVolume", Float.class, 1f, jsonData);
-		targetVolume = json.readValue("targetVolume", Float.class, 1f, jsonData);
-	}
+    setDuration(duration);
+    setType(Type.NO_REPEAT);
+    setCount(1);
+    setInterpolation(interpolation);
+
+    if (cb != null) {
+      setCb(cb);
+    }
+
+    restart();
+  }
+
+  @Override
+  public void updateTarget() {
+    target.setVolume(startVolume + getPercent() * (targetVolume - startVolume));
+  }
+
+  @Override
+  public void write(Json json) {
+    super.write(json);
+
+    json.writeValue("startVolume", startVolume);
+    json.writeValue("targetVolume", targetVolume);
+  }
+
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    super.read(json, jsonData);
+
+    startVolume = json.readValue("startVolume", Float.class, 1f, jsonData);
+    targetVolume = json.readValue("targetVolume", Float.class, 1f, jsonData);
+  }
 }

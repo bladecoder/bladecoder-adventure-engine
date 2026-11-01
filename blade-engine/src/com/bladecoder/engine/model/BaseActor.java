@@ -11,139 +11,137 @@ import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes
- * 
+ *
  * @author rgarcia
  */
-abstract public class BaseActor implements Serializable {
-	protected String id;
-	protected Scene scene = null;
-	private boolean visible = true;
-	private final Polygon bbox = new Polygon();
-	private String initScene;
-	protected long dirtyProps = 0L;
+public abstract class BaseActor implements Serializable {
+  protected String id;
+  protected Scene scene = null;
+  private boolean visible = true;
+  private final Polygon bbox = new Polygon();
+  private String initScene;
+  protected long dirtyProps = 0L;
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public Polygon getBBox() {
-		return bbox;
-	}
+  public Polygon getBBox() {
+    return bbox;
+  }
 
-	public boolean hit(float x, float y) {
-		return getBBox().contains(x, y);
-	}
+  public boolean hit(float x, float y) {
+    return getBBox().contains(x, y);
+  }
 
-	public boolean isVisible() {
-		return visible;
-	}
+  public boolean isVisible() {
+    return visible;
+  }
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-		setDirtyProp(DirtyProps.VISIBLE);
-	}
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+    setDirtyProp(DirtyProps.VISIBLE);
+  }
 
-	public void setScene(Scene s) {
-		scene = s;
-	}
+  public void setScene(Scene s) {
+    scene = s;
+  }
 
-	public Scene getScene() {
-		return scene;
-	}
+  public Scene getScene() {
+    return scene;
+  }
 
-	abstract public void update(float delta);
+  public abstract void update(float delta);
 
-	protected void setDirtyProp(DirtyProps dp) {
-		dirtyProps |= (1L << dp.ordinal());
-	}
+  protected void setDirtyProp(DirtyProps dp) {
+    dirtyProps |= (1L << dp.ordinal());
+  }
 
-	protected boolean isDirty(DirtyProps dp) {
-		return (dirtyProps & (1L << dp.ordinal())) != 0;
-	}
+  protected boolean isDirty(DirtyProps dp) {
+    return (dirtyProps & (1L << dp.ordinal())) != 0;
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
 
-		sb.append("\nObject: ").append(id);
-		sb.append("\n  Visible: ").append(visible);
-		sb.append("\n  Pos: ").append(getBBox().getX() + " , " + getBBox().getY());
-		sb.append("\n  Scale: ").append(getBBox().getScaleX());
-		sb.append("\n");
+    sb.append("\nObject: ").append(id);
+    sb.append("\n  Visible: ").append(visible);
+    sb.append("\n  Pos: ").append(getBBox().getX() + " , " + getBBox().getY());
+    sb.append("\n  Scale: ").append(getBBox().getScaleX());
+    sb.append("\n");
 
-		return sb.toString();
-	}
+    return sb.toString();
+  }
 
-	public float getX() {
-		return bbox.getX();
-	}
+  public float getX() {
+    return bbox.getX();
+  }
 
-	public float getY() {
-		return bbox.getY();
-	}
+  public float getY() {
+    return bbox.getY();
+  }
 
-	public void setPosition(float x, float y) {
-		if (x != bbox.getX() || y != bbox.getY()) {
-			bbox.setPosition(x, y);
-			setDirtyProp(DirtyProps.POS);
-		}
-	}
+  public void setPosition(float x, float y) {
+    if (x != bbox.getX() || y != bbox.getY()) {
+      bbox.setPosition(x, y);
+      setDirtyProp(DirtyProps.POS);
+    }
+  }
 
-	public String getInitScene() {
-		return initScene;
-	}
+  public String getInitScene() {
+    return initScene;
+  }
 
-	public void setInitScene(String initScene) {
-		this.initScene = initScene;
-	}
+  public void setInitScene(String initScene) {
+    this.initScene = initScene;
+  }
 
-	@Override
-	public void write(Json json) {
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("id", id);
-			json.writeValue("bbox", bbox.getVertices());
-		} else {
-			if (dirtyProps != 0L)
-				json.writeValue("dirtyProps", dirtyProps);
-		}
+  @Override
+  public void write(Json json) {
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      json.writeValue("id", id);
+      json.writeValue("bbox", bbox.getVertices());
+    } else {
+      if (dirtyProps != 0L) json.writeValue("dirtyProps", dirtyProps);
+    }
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.POS)) {
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
-			json.writeValue("pos", scaledPos);
-		}
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.POS)) {
+      float worldScale = EngineAssetManager.getInstance().getScale();
+      Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
+      json.writeValue("pos", scaledPos);
+    }
 
-		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.VISIBLE))
-			json.writeValue("visible", visible);
-	}
+    if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.VISIBLE))
+      json.writeValue("visible", visible);
+  }
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		BladeJson bjson = (BladeJson) json;
-		if (bjson.getMode() == Mode.MODEL) {
-			id = json.readValue("id", String.class, jsonData);
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    BladeJson bjson = (BladeJson) json;
+    if (bjson.getMode() == Mode.MODEL) {
+      id = json.readValue("id", String.class, jsonData);
 
-			float[] verts = json.readValue("bbox", float[].class, jsonData);
+      float[] verts = json.readValue("bbox", float[].class, jsonData);
 
-			if (verts.length > 0)
-				bbox.setVertices(verts);
-		}
+      if (verts.length > 0) bbox.setVertices(verts);
+    }
 
-		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
+    Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
 
-		if (pos != null) {
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
-			bbox.setScale(worldScale, worldScale);
-		}
+    if (pos != null) {
+      float worldScale = EngineAssetManager.getInstance().getScale();
+      bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
+      bbox.setScale(worldScale, worldScale);
+    }
 
-		visible = json.readValue("visible", boolean.class, visible, jsonData);
+    visible = json.readValue("visible", boolean.class, visible, jsonData);
 
-		dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
-	}
+    dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
+  }
 }

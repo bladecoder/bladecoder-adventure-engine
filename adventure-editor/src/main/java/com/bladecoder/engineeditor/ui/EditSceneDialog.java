@@ -32,262 +32,347 @@ import com.bladecoder.engineeditor.undo.UndoEditScene;
 
 public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
-	public static final String INFO = "An adventure is composed of many scenes (rooms/screens).\n"
-			+ "Inside a scene, there are actors and a 'player'.\nThe player/user can interact with actors throught 'verbs'.";
+  public static final String INFO =
+      "An adventure is composed of many scenes (rooms/screens).\n"
+          + "Inside a scene, there are actors and a 'player'.\nThe player/user can interact with actors throught 'verbs'.";
 
-	private Image bgImage;
-	private Container<Image> infoContainer;
-	private TextureAtlas atlas;
+  private Image bgImage;
+  private Container<Image> infoContainer;
+  private TextureAtlas atlas;
 
-	private InputPanel id;
-	private InputPanel backgroundAtlas;
-	private InputPanel backgroundRegion;
-	private InputPanel depthVector;
-	private InputPanel state;
-	private InputPanel music;
-	private InputPanel loopMusic;
-	private InputPanel volumeMusic;
-	private InputPanel initialMusicDelay;
-	private InputPanel repeatMusicDelay;
-	private InputPanel stopWhenLeaving;
-	private InputPanel sceneSize;
-	private InputPanel walkzone;
+  private InputPanel id;
+  private InputPanel backgroundAtlas;
+  private InputPanel backgroundRegion;
+  private InputPanel depthVector;
+  private InputPanel state;
+  private InputPanel music;
+  private InputPanel loopMusic;
+  private InputPanel volumeMusic;
+  private InputPanel initialMusicDelay;
+  private InputPanel repeatMusicDelay;
+  private InputPanel stopWhenLeaving;
+  private InputPanel sceneSize;
+  private InputPanel walkzone;
 
-	@SuppressWarnings("unchecked")
-	public EditSceneDialog(Skin skin, World parent, Scene e) {
+  @SuppressWarnings("unchecked")
+  public EditSceneDialog(Skin skin, World parent, Scene e) {
 
-		super(skin);
+    super(skin);
 
-		id = InputPanelFactory.createInputPanel(skin, "Scene ID", "The ID is mandatory for scenes.", true);
-		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
-				"The atlas where the background for the scene is located", Type.ATLAS_ASSET, false);
-		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
-				"The region id for the background.", new String[0], false);
-//		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
-//				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
-//				Param.Type.VECTOR2, false);
+    id =
+        InputPanelFactory.createInputPanel(
+            skin, "Scene ID", "The ID is mandatory for scenes.", true);
+    backgroundAtlas =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Background Atlas",
+            "The atlas where the background for the scene is located",
+            Type.ATLAS_ASSET,
+            false);
+    backgroundRegion =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Background Region Id",
+            "The region id for the background.",
+            new String[0],
+            false);
+    //		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
+    //				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
+    //				Param.Type.VECTOR2, false);
 
-		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth",
-				"Change actor scale based in the 'y' axis position.", Param.Type.BOOLEAN, true, "false");
+    depthVector =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Fake depth",
+            "Change actor scale based in the 'y' axis position.",
+            Param.Type.BOOLEAN,
+            true,
+            "false");
 
-		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
-		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", Type.MUSIC_ASSET,
-				false);
-		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
-				Param.Type.BOOLEAN, true, "true");
-		volumeMusic = InputPanelFactory.createInputPanel(skin, "Music Volume",
-				"The volume of the music. Value is between 0 and 1.", Param.Type.FLOAT, true, "1");
-		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
-				"The time to wait before playing", Param.Type.FLOAT, true, "0");
-		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
-				"The time to wait before repetitions", Param.Type.FLOAT, true, "-1");
-		stopWhenLeaving = InputPanelFactory.createInputPanel(skin, "Stop music when leaving",
-				"Stops the music when leaving the current scene.", Param.Type.BOOLEAN, true, "true");
+    state =
+        InputPanelFactory.createInputPanel(
+            skin, "State", "The initial state for the scene.", false);
+    music =
+        InputPanelFactory.createInputPanel(
+            skin, "Music Filename", "The music for the scene", Type.MUSIC_ASSET, false);
+    loopMusic =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Loop Music",
+            "If the music is playing in looping",
+            Param.Type.BOOLEAN,
+            true,
+            "true");
+    volumeMusic =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Music Volume",
+            "The volume of the music. Value is between 0 and 1.",
+            Param.Type.FLOAT,
+            true,
+            "1");
+    initialMusicDelay =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Initial music delay",
+            "The time to wait before playing",
+            Param.Type.FLOAT,
+            true,
+            "0");
+    repeatMusicDelay =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Repeat music delay",
+            "The time to wait before repetitions",
+            Param.Type.FLOAT,
+            true,
+            "-1");
+    stopWhenLeaving =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Stop music when leaving",
+            "Stops the music when leaving the current scene.",
+            Param.Type.BOOLEAN,
+            true,
+            "true");
 
-		sceneSize = InputPanelFactory.createInputPanel(skin, "Scene Dimension",
-				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.",
-				Param.Type.DIMENSION, false);
+    sceneSize =
+        InputPanelFactory.createInputPanel(
+            skin,
+            "Scene Dimension",
+            "Sets the size of the scene. If empty, the background image size is used as the scene dimension.",
+            Param.Type.DIMENSION,
+            false);
 
-		walkzone = InputPanelFactory.createInputPanel(skin, "Walkzone", "The initial walkzone.", Type.WALKZONE_ACTOR,
-				false);
+    walkzone =
+        InputPanelFactory.createInputPanel(
+            skin, "Walkzone", "The initial walkzone.", Type.WALKZONE_ACTOR, false);
 
-		bgImage = new Image();
-		bgImage.setScaling(Scaling.fit);
-		infoContainer = new Container<Image>(bgImage);
-		setInfo(INFO);
+    bgImage = new Image();
+    bgImage.setScaling(Scaling.fit);
+    infoContainer = new Container<Image>(bgImage);
+    setInfo(INFO);
 
-		((FilteredSelectBox<String>) backgroundAtlas.getField()).addListener(new ChangeListener() {
+    ((FilteredSelectBox<String>) backgroundAtlas.getField())
+        .addListener(
+            new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				try {
-					fillBGRegions(backgroundAtlas, backgroundRegion);
-				} catch (Exception e) {
-					EditorLogger.error("Error loading regions from selected atlas: " + backgroundAtlas.getText() + "."
-							+ backgroundRegion.getText());
-				}
-			}
-		});
+              @Override
+              public void changed(ChangeEvent event, Actor actor) {
+                try {
+                  fillBGRegions(backgroundAtlas, backgroundRegion);
+                } catch (Exception e) {
+                  EditorLogger.error(
+                      "Error loading regions from selected atlas: "
+                          + backgroundAtlas.getText()
+                          + "."
+                          + backgroundRegion.getText());
+                }
+              }
+            });
 
-		((FilteredSelectBox<String>) backgroundRegion.getField()).addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				showBgImage(backgroundRegion.getText());
-			}
-		});
+    ((FilteredSelectBox<String>) backgroundRegion.getField())
+        .addListener(
+            new ChangeListener() {
+              @Override
+              public void changed(ChangeEvent event, Actor actor) {
+                showBgImage(backgroundRegion.getText());
+              }
+            });
 
-		try {
-			fillBGRegions(backgroundAtlas, backgroundRegion);
-		} catch (Exception e2) {
-			EditorLogger.error("Error loading regions from selected atlas: " + backgroundAtlas.getText() + "."
-					+ backgroundRegion.getText());
-		}
+    try {
+      fillBGRegions(backgroundAtlas, backgroundRegion);
+    } catch (Exception e2) {
+      EditorLogger.error(
+          "Error loading regions from selected atlas: "
+              + backgroundAtlas.getText()
+              + "."
+              + backgroundRegion.getText());
+    }
 
-		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, depthVector, state, sceneSize, music,
-				loopMusic, volumeMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving, walkzone });
-	}
+    init(
+        parent,
+        e,
+        new InputPanel[] {
+          id,
+          backgroundAtlas,
+          backgroundRegion,
+          depthVector,
+          state,
+          sceneSize,
+          music,
+          loopMusic,
+          volumeMusic,
+          initialMusicDelay,
+          repeatMusicDelay,
+          stopWhenLeaving,
+          walkzone
+        });
+  }
 
-	private void showBgImage(String r) {
-		if (atlas == null || r == null)
-			return;
+  private void showBgImage(String r) {
+    if (atlas == null || r == null) return;
 
-		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
+    bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
 
-		infoContainer.prefWidth(250);
-		infoContainer.prefHeight(250);
-		setInfoWidget(infoContainer);
-	}
+    infoContainer.prefWidth(250);
+    infoContainer.prefHeight(250);
+    setInfoWidget(infoContainer);
+  }
 
-	private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
-		@SuppressWarnings("unchecked")
-		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) regionInput.getField();
+  private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
+    @SuppressWarnings("unchecked")
+    FilteredSelectBox<String> cb = (FilteredSelectBox<String>) regionInput.getField();
 
-		// cb.clearItems();
-		cb.getItems().clear();
+    // cb.clearItems();
+    cb.getItems().clear();
 
-		if (atlas != null) {
-			atlas.dispose();
-			atlas = null;
-		}
+    if (atlas != null) {
+      atlas.dispose();
+      atlas = null;
+    }
 
-		if (backgroundAtlas.getText().isEmpty()) {
-			setInfoWidget(new Label(INFO, getSkin()));
-			return;
-		}
+    if (backgroundAtlas.getText().isEmpty()) {
+      setInfoWidget(new Label(INFO, getSkin()));
+      return;
+    }
 
-		atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
+    atlas =
+        new TextureAtlas(
+            Gdx.files.absolute(
+                Ctx.project.getAssetPath()
+                    + Project.ATLASES_PATH
+                    + "/"
+                    + Ctx.project.getResDir()
+                    + "/"
+                    + atlasInput.getText()
+                    + ".atlas"));
 
-		Array<AtlasRegion> regions = atlas.getRegions();
+    Array<AtlasRegion> regions = atlas.getRegions();
 
-		for (AtlasRegion r : regions)
-			if (cb.getItems().indexOf(r.name, false) == -1)
-				cb.getItems().add(r.name);
+    for (AtlasRegion r : regions)
+      if (cb.getItems().indexOf(r.name, false) == -1) cb.getItems().add(r.name);
 
-		cb.getList().setItems(cb.getItems());
-		if (cb.getItems().size > 0)
-			cb.setSelectedIndex(0);
+    cb.getList().setItems(cb.getItems());
+    if (cb.getItems().size > 0) cb.setSelectedIndex(0);
 
-		cb.invalidateHierarchy();
+    cb.invalidateHierarchy();
 
-		showBgImage(regionInput.getText());
-	}
+    showBgImage(regionInput.getText());
+  }
 
-	@Override
-	protected void inputsToModel(boolean create) {
+  @Override
+  protected void inputsToModel(boolean create) {
 
-		if (create) {
-			e = new Scene(Ctx.project.getWorld());
+    if (create) {
+      e = new Scene(Ctx.project.getWorld());
 
-			// CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
-			SceneLayer l = new SceneLayer();
-			l.setName("foreground");
-			l.setVisible(true);
-			l.setDynamic(false);
-			e.addLayer(l);
+      // CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
+      SceneLayer l = new SceneLayer();
+      l.setName("foreground");
+      l.setVisible(true);
+      l.setDynamic(false);
+      e.addLayer(l);
 
-			l = new SceneLayer();
-			l.setName("dynamic");
-			l.setVisible(true);
-			l.setDynamic(true);
-			e.addLayer(l);
+      l = new SceneLayer();
+      l.setName("dynamic");
+      l.setVisible(true);
+      l.setDynamic(true);
+      e.addLayer(l);
 
-			l = new SceneLayer();
-			l.setName("background");
-			l.setVisible(true);
-			l.setDynamic(false);
-			e.addLayer(l);
-		} else {
-			parent.getScenes().remove(e.getId());
-		}
+      l = new SceneLayer();
+      l.setName("background");
+      l.setVisible(true);
+      l.setDynamic(false);
+      e.addLayer(l);
+    } else {
+      parent.getScenes().remove(e.getId());
+    }
 
-		e.setId(ElementUtils.getCheckedId(id.getText(),
-				Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
+    e.setId(
+        ElementUtils.getCheckedId(
+            id.getText(), Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
 
-		e.setBackgroundAtlas(backgroundAtlas.getText());
-		e.setBackgroundRegionId(backgroundRegion.getText());
+    e.setBackgroundAtlas(backgroundAtlas.getText());
+    e.setBackgroundRegionId(backgroundRegion.getText());
 
-		boolean dv = Boolean.parseBoolean(depthVector.getText());
+    boolean dv = Boolean.parseBoolean(depthVector.getText());
 
-		if (dv && e.getDepthVector() == null) { // create depth vector
-			e.setDepthVector(new Vector2(Ctx.project.getWorld().getHeight(), 0));
-		} else if (!dv && e.getDepthVector() != null) { // Remove depth vector
-			e.setDepthVector(null);
-		}
+    if (dv && e.getDepthVector() == null) { // create depth vector
+      e.setDepthVector(new Vector2(Ctx.project.getWorld().getHeight(), 0));
+    } else if (!dv && e.getDepthVector() != null) { // Remove depth vector
+      e.setDepthVector(null);
+    }
 
-		e.setState(state.getText());
+    e.setState(state.getText());
 
-		MusicDesc md = null;
+    MusicDesc md = null;
 
-		if (music.getText() != null) {
-			md = new MusicDesc();
+    if (music.getText() != null) {
+      md = new MusicDesc();
 
-			md.setFilename(music.getText());
-			md.setLoop(Boolean.parseBoolean(loopMusic.getText()));
-			md.setVolume(Float.parseFloat(volumeMusic.getText()));
-			md.setInitialDelay(Float.parseFloat(initialMusicDelay.getText()));
-			md.setRepeatDelay(Float.parseFloat(repeatMusicDelay.getText()));
-			md.setStopWhenLeaving(Boolean.parseBoolean(stopWhenLeaving.getText()));
-		}
+      md.setFilename(music.getText());
+      md.setLoop(Boolean.parseBoolean(loopMusic.getText()));
+      md.setVolume(Float.parseFloat(volumeMusic.getText()));
+      md.setInitialDelay(Float.parseFloat(initialMusicDelay.getText()));
+      md.setRepeatDelay(Float.parseFloat(repeatMusicDelay.getText()));
+      md.setStopWhenLeaving(Boolean.parseBoolean(stopWhenLeaving.getText()));
+    }
 
-		e.setMusicDesc(md);
+    e.setMusicDesc(md);
 
-		e.setSceneSize(Param.parseVector2(sceneSize.getText()));
+    e.setSceneSize(Param.parseVector2(sceneSize.getText()));
 
-		e.setWalkZone(walkzone.getText());
+    e.setWalkZone(walkzone.getText());
 
-		parent.addScene(e);
+    parent.addScene(e);
 
-		if (parent.getScenes().size() == 1)
-			parent.setInitScene(e.getId());
+    if (parent.getScenes().size() == 1) parent.setInitScene(e.getId());
 
-		// UNDO OP
-		if (create) {
-			Ctx.project.getUndoStack().add(new UndoCreateScene(e));
-		} else {
-			Ctx.project.getUndoStack().add(new UndoEditScene(e));
-		}
+    // UNDO OP
+    if (create) {
+      Ctx.project.getUndoStack().add(new UndoCreateScene(e));
+    } else {
+      Ctx.project.getUndoStack().add(new UndoEditScene(e));
+    }
 
-		Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, e);
-	}
+    Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, e);
+  }
 
-	@Override
-	protected void modelToInputs() {
+  @Override
+  protected void modelToInputs() {
 
-		id.setText(e.getId());
-		backgroundAtlas.setText(e.getBackgroundAtlas());
-		backgroundRegion.setText(e.getBackgroundRegionId());
+    id.setText(e.getId());
+    backgroundAtlas.setText(e.getBackgroundAtlas());
+    backgroundRegion.setText(e.getBackgroundRegionId());
 
-		if (e.getDepthVector() != null)
-			depthVector.setText("true");
-		else
-			depthVector.setText("false");
+    if (e.getDepthVector() != null) depthVector.setText("true");
+    else depthVector.setText("false");
 
-		state.setText(e.getState());
+    state.setText(e.getState());
 
-		MusicDesc md = e.getMusicDesc();
+    MusicDesc md = e.getMusicDesc();
 
-		if (md != null) {
-			music.setText(md.getFilename());
-			loopMusic.setText(Boolean.toString(md.isLoop()));
-			volumeMusic.setText(Float.toString(md.getVolume()));
-			initialMusicDelay.setText(Float.toString(md.getInitialDelay()));
-			repeatMusicDelay.setText(Float.toString(md.getRepeatDelay()));
-			stopWhenLeaving.setText(Boolean.toString(md.isStopWhenLeaving()));
-		}
+    if (md != null) {
+      music.setText(md.getFilename());
+      loopMusic.setText(Boolean.toString(md.isLoop()));
+      volumeMusic.setText(Float.toString(md.getVolume()));
+      initialMusicDelay.setText(Float.toString(md.getInitialDelay()));
+      repeatMusicDelay.setText(Float.toString(md.getRepeatDelay()));
+      stopWhenLeaving.setText(Boolean.toString(md.isStopWhenLeaving()));
+    }
 
-		if (e.getSceneSize() != null)
-			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
+    if (e.getSceneSize() != null) sceneSize.setText(Param.toStringParam(e.getSceneSize()));
 
-		walkzone.setText(e.getWalkZone());
-	}
+    walkzone.setText(e.getWalkZone());
+  }
 
-	@Override
-	protected void result(Object object) {
-		if (atlas != null) {
-			atlas.dispose();
-		}
+  @Override
+  protected void result(Object object) {
+    if (atlas != null) {
+      atlas.dispose();
+    }
 
-		super.result(object);
-	}
+    super.result(object);
+  }
 }

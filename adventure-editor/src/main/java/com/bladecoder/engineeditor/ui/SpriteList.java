@@ -1,10 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Arrays;
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -23,232 +18,240 @@ import com.bladecoder.engineeditor.ui.panels.CellRenderer;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
 import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteAnimation;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
-	private ImageButton initBtn;
-	private ImageButton flipInitBtn;
+  private ImageButton initBtn;
+  private ImageButton flipInitBtn;
 
-	public SpriteList(Skin skin) {
-		super(skin, true);
+  public SpriteList(Skin skin) {
+    super(skin, true);
 
-		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_check", "Set init animation", "Set init animation");
-		initBtn.setDisabled(true);
+    initBtn = new ImageButton(skin);
+    toolbar.addToolBarButton(initBtn, "ic_check", "Set init animation", "Set init animation");
+    initBtn.setDisabled(true);
 
-		flipInitBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(flipInitBtn, "ic_flip", "Set init animation flipped", "Set init animation flipped");
-		flipInitBtn.setDisabled(true);
+    flipInitBtn = new ImageButton(skin);
+    toolbar.addToolBarButton(
+        flipInitBtn, "ic_flip", "Set init animation flipped", "Set init animation flipped");
+    flipInitBtn.setDisabled(true);
 
-		setCellRenderer(listCellRenderer);
+    setCellRenderer(listCellRenderer);
 
-		list.addListener(new ChangeListener() {
+    list.addListener(
+        new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex();
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            int pos = list.getSelectedIndex();
 
-				String id = null;
+            String id = null;
 
-				if (pos != -1)
-					id = list.getItems().get(pos).id;
+            if (pos != -1) id = list.getItems().get(pos).id;
 
-				Ctx.project.setSelectedFA(id);
+            Ctx.project.setSelectedFA(id);
 
-				toolbar.disableEdit(pos == -1);
-				initBtn.setDisabled(pos == -1);
-				flipInitBtn.setDisabled(pos == -1);
-			}
-		});
+            toolbar.disableEdit(pos == -1);
+            initBtn.setDisabled(pos == -1);
+            flipInitBtn.setDisabled(pos == -1);
+          }
+        });
 
-		initBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				setDefault();
-			}
-		});
+    initBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            setDefault();
+          }
+        });
 
-		flipInitBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				flipInit();
-			}
-		});
+    flipInitBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            flipInit();
+          }
+        });
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog)
-						&& parent instanceof SpriteActor) {
-					HashMap<String, AnimationDesc> animations = ((AnimationRenderer) parent.getRenderer())
-							.getAnimations();
-					addElements(parent, Arrays.asList(animations.values().toArray(new AnimationDesc[0])));
-				}
-			}
-		});
-	}
+    Ctx.project.addPropertyChangeListener(
+        Project.NOTIFY_ELEMENT_CREATED,
+        new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getNewValue() instanceof Dialog
+                && !(evt.getSource() instanceof EditDialogDialog)
+                && parent instanceof SpriteActor) {
+              HashMap<String, AnimationDesc> animations =
+                  ((AnimationRenderer) parent.getRenderer()).getAnimations();
+              addElements(parent, Arrays.asList(animations.values().toArray(new AnimationDesc[0])));
+            }
+          }
+        });
+  }
 
-	private void setDefault() {
-		int pos = list.getSelectedIndex();
+  private void setDefault() {
+    int pos = list.getSelectedIndex();
 
-		if (pos == -1)
-			return;
+    if (pos == -1) return;
 
-		AnimationRenderer renderer = (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
+    AnimationRenderer renderer =
+        (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
-		String id = list.getItems().get(pos).id;
-		String oldId = renderer.getInitAnimation();
+    String id = list.getItems().get(pos).id;
+    String oldId = renderer.getInitAnimation();
 
-		renderer.setInitAnimation(id);
+    renderer.setInitAnimation(id);
 
-		Ctx.project.setModified(this, "init_animation", oldId, id);
-	}
+    Ctx.project.setModified(this, "init_animation", oldId, id);
+  }
 
-	private void flipInit() {
-		int pos = list.getSelectedIndex();
+  private void flipInit() {
+    int pos = list.getSelectedIndex();
 
-		if (pos == -1)
-			return;
+    if (pos == -1) return;
 
-		AnimationRenderer renderer = (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
+    AnimationRenderer renderer =
+        (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
-		String id = list.getItems().get(pos).id;
+    String id = list.getItems().get(pos).id;
 
-		String newValue = AnimationRenderer.getFlipId(id);
+    String newValue = AnimationRenderer.getFlipId(id);
 
-		renderer.setInitAnimation(newValue);
+    renderer.setInitAnimation(newValue);
 
-		Ctx.project.setModified(this, "init_animation", id, newValue);
-	}
+    Ctx.project.setModified(this, "init_animation", id, newValue);
+  }
 
-	@Override
-	protected void delete() {
-		AnimationDesc d = removeSelected();
+  @Override
+  protected void delete() {
+    AnimationDesc d = removeSelected();
 
-		AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
+    AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
 
-		renderer.getAnimations().remove(d.id);
+    renderer.getAnimations().remove(d.id);
 
-		// UNDO
-		Ctx.project.getUndoStack().add(new UndoDeleteAnimation(parent, d));
+    // UNDO
+    Ctx.project.getUndoStack().add(new UndoDeleteAnimation(parent, d));
 
-		// delete init_animation attr if the animation to delete is the chapter
-		// init_animation
-		if (d.id.equals(renderer.getInitAnimation())) {
-			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
-			String newValue = null;
+    // delete init_animation attr if the animation to delete is the chapter
+    // init_animation
+    if (d.id.equals(renderer.getInitAnimation())) {
+      HashMap<String, AnimationDesc> animations = renderer.getAnimations();
+      String newValue = null;
 
-			if (!animations.isEmpty())
-				newValue = animations.keySet().iterator().next();
+      if (!animations.isEmpty()) newValue = animations.keySet().iterator().next();
 
-			renderer.setInitAnimation(newValue);
+      renderer.setInitAnimation(newValue);
 
-			Ctx.project.setModified(this, "init_animation", d.id, newValue);
-		}
+      Ctx.project.setModified(this, "init_animation", d.id, newValue);
+    }
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	@Override
-	protected void copy() {
-		AnimationDesc e = list.getSelected();
+  @Override
+  protected void copy() {
+    AnimationDesc e = list.getSelected();
 
-		if (e == null)
-			return;
+    if (e == null) return;
 
-		clipboard = (AnimationDesc) ElementUtils.cloneElement(e);
-		toolbar.disablePaste(false);
-	}
+    clipboard = (AnimationDesc) ElementUtils.cloneElement(e);
+    toolbar.disablePaste(false);
+  }
 
-	@Override
-	protected void paste() {
-		AnimationDesc newElement = (AnimationDesc) ElementUtils.cloneElement(clipboard);
+  @Override
+  protected void paste() {
+    AnimationDesc newElement = (AnimationDesc) ElementUtils.cloneElement(clipboard);
 
-		if (((AnimationRenderer) parent.getRenderer()).getAnimations().get(newElement.id) != null) {
-			Message.showMsg(getStage(), "Animation already exists.", 2);
+    if (((AnimationRenderer) parent.getRenderer()).getAnimations().get(newElement.id) != null) {
+      Message.showMsg(getStage(), "Animation already exists.", 2);
 
-			return;
-		}
+      return;
+    }
 
-		int pos = list.getSelectedIndex() + 1;
+    int pos = list.getSelectedIndex() + 1;
 
-		list.getItems().insert(pos, newElement);
+    list.getItems().insert(pos, newElement);
 
-		((AnimationRenderer) parent.getRenderer()).addAnimation(newElement);
+    ((AnimationRenderer) parent.getRenderer()).addAnimation(newElement);
 
-		list.setSelectedIndex(pos);
-		list.invalidateHierarchy();
+    list.setSelectedIndex(pos);
+    list.invalidateHierarchy();
 
-		Ctx.project.setModified();
-	}
+    Ctx.project.setModified();
+  }
 
-	@Override
-	protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(AnimationDesc e) {
-		return new EditAnimationDialog(skin, parent, e);
-	}
+  @Override
+  protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(
+      AnimationDesc e) {
+    return new EditAnimationDialog(skin, parent, e);
+  }
 
-	// -------------------------------------------------------------------------
-	// ListCellRenderer
-	// -------------------------------------------------------------------------
-	private final CellRenderer<AnimationDesc> listCellRenderer = new CellRenderer<AnimationDesc>() {
+  // -------------------------------------------------------------------------
+  // ListCellRenderer
+  // -------------------------------------------------------------------------
+  private final CellRenderer<AnimationDesc> listCellRenderer =
+      new CellRenderer<AnimationDesc>() {
 
-		@Override
-		protected String getCellTitle(AnimationDesc e) {
-			String name = e.id;
-			SpriteActor actor = (SpriteActor) Ctx.project.getSelectedActor();
-			AnimationRenderer renderer = (AnimationRenderer) actor.getRenderer();
+        @Override
+        protected String getCellTitle(AnimationDesc e) {
+          String name = e.id;
+          SpriteActor actor = (SpriteActor) Ctx.project.getSelectedActor();
+          AnimationRenderer renderer = (AnimationRenderer) actor.getRenderer();
 
-			String init = renderer.getInitAnimation();
+          String init = renderer.getInitAnimation();
 
-			if (init == null || init.isEmpty()) {
-				if (!renderer.getAnimations().values().isEmpty())
-					init = renderer.getAnimations().values().iterator().next().id;
-				else
-					init = "";
-			}
+          if (init == null || init.isEmpty()) {
+            if (!renderer.getAnimations().values().isEmpty())
+              init = renderer.getAnimations().values().iterator().next().id;
+            else init = "";
+          }
 
-			if (init.equals(name) || AnimationRenderer.getFlipId(init).equals(name))
-				name += " <init>";
+          if (init.equals(name) || AnimationRenderer.getFlipId(init).equals(name))
+            name += " <init>";
 
-			return name;
-		}
+          return name;
+        }
 
-		@Override
-		protected String getCellSubTitle(AnimationDesc e) {
-			StringBuilder sb = new StringBuilder();
+        @Override
+        protected String getCellSubTitle(AnimationDesc e) {
+          StringBuilder sb = new StringBuilder();
 
-			if (e.source != null && !e.source.isEmpty())
-				sb.append("source: ").append(e.source);
+          if (e.source != null && !e.source.isEmpty()) sb.append("source: ").append(e.source);
 
-			sb.append(" speed: ").append(e.duration);
-			sb.append(" count: ").append(e.count);
+          sb.append(" speed: ").append(e.duration);
+          sb.append(" count: ").append(e.count);
 
-			return sb.toString();
-		}
+          return sb.toString();
+        }
 
-		@Override
-		public TextureRegion getCellImage(AnimationDesc a) {
-			String u = null;
+        @Override
+        public TextureRegion getCellImage(AnimationDesc a) {
+          String u = null;
 
-			if (a.animationType == Type.REPEAT) {
-				u = "ic_repeat";
-			} else if (a.animationType == Type.YOYO) {
-				u = "ic_yoyo";
-			} else {
-				u = "ic_sprite_actor";
-			}
+          if (a.animationType == Type.REPEAT) {
+            u = "ic_repeat";
+          } else if (a.animationType == Type.YOYO) {
+            u = "ic_yoyo";
+          } else {
+            u = "ic_sprite_actor";
+          }
 
-			return Ctx.assetManager.getIcon(u);
-		}
+          return Ctx.assetManager.getIcon(u);
+        }
 
-		@Override
-		protected boolean hasSubtitle() {
-			return true;
-		}
+        @Override
+        protected boolean hasSubtitle() {
+          return true;
+        }
 
-		@Override
-		protected boolean hasImage() {
-			return true;
-		}
-	};
+        @Override
+        protected boolean hasImage() {
+          return true;
+        }
+      };
 }

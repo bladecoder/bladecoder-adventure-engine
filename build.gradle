@@ -1,5 +1,5 @@
 plugins {
-    id "com.diffplug.spotless" version "7.2.1" apply false
+    id "com.diffplug.spotless" version "8.10.4" apply false
 }
 
 allprojects {
@@ -15,9 +15,11 @@ subprojects {
 
     spotless {
         java {
-            target 'src/**/*.java'
+            target 'src/**/*.java', 'test-src/**/*.java', 'compiler-src/**/*.java'
+            importOrder()
             removeUnusedImports()
-            //importOrder()
+            shortenFullyQualifiedTypes()
+            googleJavaFormat()
         }
     }
 }

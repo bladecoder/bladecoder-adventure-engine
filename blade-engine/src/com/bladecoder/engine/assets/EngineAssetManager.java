@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,481 +33,469 @@ import java.util.jar.JarFile;
 
 public class EngineAssetManager extends AssetManager {
 
-	public static final String WORLD_FILENAME = "world";
+  public static final String WORLD_FILENAME = "world";
 
-	public static final String DEFAULT_USER_FOLDER = "BladeEngine/";
+  public static final String DEFAULT_USER_FOLDER = "BladeEngine/";
 
-	public static final String ATLASES_DIR = "atlases/";
-	public static final String MODEL_DIR = "model/";
-	public static final String MUSIC_DIR = "music/";
-	public static final String IMAGE_DIR = "images/";
-	public static final String SOUND_DIR = "sounds/";
-	public static final String SPINE_DIR = "spine/";
-	public static final String PARTICLE_DIR = "particles/";
-	public static final String FONT_DIR = "ui/fonts/";
-	public static final String VOICE_DIR = "voices/";
+  public static final String ATLASES_DIR = "atlases/";
+  public static final String MODEL_DIR = "model/";
+  public static final String MUSIC_DIR = "music/";
+  public static final String IMAGE_DIR = "images/";
+  public static final String SOUND_DIR = "sounds/";
+  public static final String SPINE_DIR = "spine/";
+  public static final String PARTICLE_DIR = "particles/";
+  public static final String FONT_DIR = "ui/fonts/";
+  public static final String VOICE_DIR = "voices/";
 
-	public static final String SPINE_EXT = ".skel";
-	public static final String ATLAS_EXT = ".atlas";
-	public static final String INK_EXT = ".ink.json";
-	public static final String FONT_EXT = ".ttf";
+  public static final String SPINE_EXT = ".skel";
+  public static final String ATLAS_EXT = ".atlas";
+  public static final String INK_EXT = ".ink.json";
+  public static final String FONT_EXT = ".ttf";
 
-	public static final String CHAPTER_EXT = ".chapter.json";
+  public static final String CHAPTER_EXT = ".chapter.json";
 
-	private static final String OGG_EXT = ".ogg";
-	private static final String AAC_EXT = ".m4a";
+  private static final String OGG_EXT = ".ogg";
+  private static final String AAC_EXT = ".m4a";
 
-	private static EngineAssetManager instance = null;
-    private static String contentOverrideDirectory;
-    private static ContentOverrides contentOverrides;
+  private static EngineAssetManager instance = null;
+  private static String contentOverrideDirectory;
+  private static ContentOverrides contentOverrides;
 
-    /** Explicit activation; call before application creation. No directory is scanned by default. */
-    public static void configureContentOverrides(String directory) {
-        if(directory==null || directory.trim().isEmpty())throw new IllegalArgumentException("Override directory is required");
-        contentOverrideDirectory=java.nio.file.Paths.get(directory).toAbsolutePath().normalize().toString();
+  /** Explicit activation; call before application creation. No directory is scanned by default. */
+  public static void configureContentOverrides(String directory) {
+    if (directory == null || directory.trim().isEmpty())
+      throw new IllegalArgumentException("Override directory is required");
+    contentOverrideDirectory =
+        java.nio.file.Paths.get(directory).toAbsolutePath().normalize().toString();
+  }
+
+  public static ContentOverrides getContentOverrides() {
+    return contentOverrides;
+  }
+
+  private static FileHandleResolver contentResolver(FileHandleResolver packaged) {
+    contentOverrides = null;
+    if (contentOverrideDirectory == null) return packaged;
+    try {
+      contentOverrides =
+          new ContentOverrides(java.nio.file.Paths.get(contentOverrideDirectory), packaged);
+      return contentOverrides;
+    } catch (java.io.IOException failure) {
+      throw new com.badlogic.gdx.utils.GdxRuntimeException(
+          "Cannot open explicit content override store", failure);
     }
-    public static ContentOverrides getContentOverrides(){return contentOverrides;}
-    private static FileHandleResolver contentResolver(FileHandleResolver packaged) {
-        contentOverrides=null;
-        if(contentOverrideDirectory==null)return packaged;
+  }
+
+  private float scale = 1;
+
+  private EngineResolutionFileResolver resResolver;
+
+  private String userFolder = DEFAULT_USER_FOLDER;
+
+  protected EngineAssetManager() {
+    this(new InternalFileHandleResolver());
+    // getLogger().setLevel(Application.LOG_DEBUG);
+  }
+
+  protected EngineAssetManager(FileHandleResolver resolver) {
+    super(contentResolver(resolver));
+    resolver = getFileHandleResolver();
+
+    resResolver = new EngineResolutionFileResolver(resolver);
+    setLoader(Texture.class, new TextureLoader(resResolver));
+    setLoader(TextureAtlas.class, new TextureAtlasLoader(resResolver));
+    setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+    setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+    Texture.setAssetManager(this);
+  }
+
+  public float getScale() {
+    return scale;
+  }
+
+  public void setScale(int worldWidth, int worldHeight) {
+    Resolution[] r = getResolutions(resResolver.getBaseResolver(), worldWidth, worldHeight);
+
+    if (r == null || r.length == 0) {
+      EngineLogger.error(
+          "No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
+      return;
+    }
+
+    resResolver.setResolutions(r);
+    resResolver.selectResolution();
+    scale = resResolver.getResolution().portraitWidth / (float) worldWidth;
+
+    EngineLogger.debug("Setting ASSETS SCALE: " + scale);
+  }
+
+  public static EngineAssetManager getInstance() {
+    if (instance == null) {
+      instance = new EngineAssetManager();
+    }
+
+    return instance;
+  }
+
+  public void setUserFolder(String f) {
+    userFolder = f;
+  }
+
+  /**
+   * Creates a EngineAssetManager instance for edition. That is:
+   *
+   * <p>- Puts a PathResolver to locate the assets through an absolute path - Puts assets scale to
+   * "1"
+   *
+   * @param base is the project base folder
+   */
+  public static void createEditInstance(String base) {
+    if (instance != null) instance.dispose();
+
+    instance = new EngineAssetManager(new BasePathResolver(base));
+
+    instance.forceResolution("1");
+  }
+
+  /**
+   * All assets will be searched in the selected folder.
+   *
+   * @param base The asset base folder
+   */
+  public static void setAssetFolder(String base) {
+    if (instance != null) instance.dispose();
+
+    if (base != null) instance = new EngineAssetManager(new InternalFolderResolver(base));
+    else instance = new EngineAssetManager(new InternalFileHandleResolver());
+  }
+
+  public void forceResolution(String suffix) {
+    resResolver.setFixedResolution(suffix);
+
+    EngineLogger.debug("FORCING ASSETS RESOLUTION SCALE: " + suffix);
+  }
+
+  public Resolution getResolution() {
+    return resResolver.getResolution();
+  }
+
+  public boolean isLoading() {
+    return !update();
+  }
+
+  public void loadAtlas(String name) {
+    load(ATLASES_DIR + name + ATLAS_EXT, TextureAtlas.class);
+  }
+
+  public boolean isAtlasLoaded(String name) {
+    return isLoaded(ATLASES_DIR + name + ATLAS_EXT);
+  }
+
+  public void disposeAtlas(String name) {
+    if (isAtlasLoaded(name)) unload(ATLASES_DIR + name + ATLAS_EXT);
+  }
+
+  public FileHandle getModelFile(String filename) {
+    return resResolver.baseResolve(MODEL_DIR + filename);
+  }
+
+  /** Returns a file in the asset directory SEARCHING in the resolution directories */
+  public FileHandle getResAsset(String filename) {
+    return resResolver.resolve(filename);
+  }
+
+  /** Returns a file in the asset directory without searching in the resolution directories */
+  public FileHandle getAsset(String filename) {
+    return resResolver.baseResolve(filename);
+  }
+
+  public AtlasRegion getRegion(String atlas, String name) {
+    TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+
+    AtlasRegion region = a.findRegion(name);
+
+    if (region == null) {
+      EngineLogger.debug("Region " + name + " not found in atlas " + atlas);
+    }
+
+    return region;
+  }
+
+  public TextureAtlas getTextureAtlas(String atlas) {
+    TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+
+    return a;
+  }
+
+  public Array<AtlasRegion> getRegions(String atlas, String name) {
+    TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+
+    Array<AtlasRegion> region = a.findRegions(name);
+
+    if (region == null) {
+      EngineLogger.error("Regions for " + name + " not found in atlas " + atlas);
+    }
+
+    return region;
+  }
+
+  public void loadTexture(String filename) {
+    load(filename, Texture.class);
+  }
+
+  public void disposeTexture(Texture t) {
+    if (isLoaded(getAssetFileName(t))) unload(getAssetFileName(t));
+  }
+
+  public Texture getTexture(String filename) {
+    // TextureParameter param = new TextureParameter();
+    // param.minFilter = TextureFilter.Linear;
+    // param.genMipMaps = true;
+
+    return get(filename, Texture.class);
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+    instance = null;
+  }
+
+  public String checkIOSSoundName(String filename) {
+
+    if (Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(OGG_EXT)) {
+      String aac = filename.substring(0, filename.length() - OGG_EXT.length()) + AAC_EXT;
+
+      if (FileUtils.exists(EngineAssetManager.getInstance().getAsset(aac))) return aac;
+
+      EngineLogger.debug("OGG files not supported in IOS: " + filename);
+
+      return null;
+    }
+
+    return filename;
+  }
+
+  public void loadMusic(String filename) throws FileNotFoundException {
+
+    String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+    if (n == null) return;
+
+    if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
+      throw new FileNotFoundException(n);
+    }
+
+    load(n, Music.class);
+  }
+
+  public void disposeMusic(String filename) {
+    String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+    if (n == null) return;
+
+    if (isLoaded(n)) unload(n);
+  }
+
+  public Music getMusic(String filename) {
+    String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+    if (n == null) return null;
+
+    return get(n, Music.class);
+  }
+
+  public void loadSound(String filename) throws FileNotFoundException {
+    String n = checkIOSSoundName(SOUND_DIR + filename);
+
+    if (n == null) return;
+
+    if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
+      throw new FileNotFoundException(n);
+    }
+
+    load(n, Sound.class);
+  }
+
+  public Sound getSound(String filename) {
+    String n = checkIOSSoundName(SOUND_DIR + filename);
+
+    if (n == null) return null;
+
+    return get(n, Sound.class);
+  }
+
+  public void disposeSound(String filename) {
+    String n = checkIOSSoundName(SOUND_DIR + filename);
+
+    if (n == null) return;
+
+    if (isLoaded(n)) unload(n);
+  }
+
+  public FileHandle getParticle(String name) {
+    return resResolver.baseResolve(PARTICLE_DIR + name);
+  }
+
+  public boolean assetExists(String filename) {
+    return resResolver.exists(filename);
+  }
+
+  private Resolution[] getResolutions(
+      FileHandleResolver resolver, int worldWidth, int worldHeight) {
+    ArrayList<Resolution> rl = new ArrayList<>();
+
+    String[] list = null;
+
+    String configRes = Config.getInstance().getProperty(Config.RESOLUTIONS, null);
+
+    if (configRes != null) {
+      list = configRes.split(",");
+    } else {
+      list = listAssetFiles("ui");
+    }
+
+    for (String name : list) {
+
+      try {
+        float scale = Float.parseFloat(name);
+
+        EngineLogger.debug("RES FOUND: " + scale);
+
+        Resolution r =
+            new Resolution((int) (worldWidth * scale), (int) (worldHeight * scale), name);
+
+        rl.add(r);
+      } catch (NumberFormatException e) {
+
+      }
+    }
+
+    Collections.sort(
+        rl,
+        new Comparator<Resolution>() {
+          @Override
+          public int compare(Resolution a, Resolution b) {
+            return a.portraitWidth - b.portraitWidth;
+          }
+        });
+
+    return rl.toArray(new Resolution[rl.size()]);
+  }
+
+  public String[] listAssetFiles(String base) {
+    FileHandleResolver resolver = resResolver.getBaseResolver();
+
+    String[] list = null;
+
+    if (Gdx.app.getType() != ApplicationType.Desktop) {
+
+      FileHandle[] l = resolver.resolve(base).list();
+      list = new String[l.length];
+
+      for (int i = 0; i < l.length; i++) list[i] = l[i].name();
+
+    } else {
+      // FOR DESKTOP
+      URL u = EngineAssetManager.class.getResource("/" + resolver.resolve(base).path());
+
+      if (u != null && u.getProtocol().equals("jar")) {
+        list = getFilesFromJar("/" + base);
+      } else {
+        String n = resolver.resolve(base).path();
+
+        if (u != null) n = u.getFile();
+
+        FileHandle f = null;
+
         try {
-            contentOverrides=new ContentOverrides(java.nio.file.Paths.get(contentOverrideDirectory),packaged);return contentOverrides;
-        } catch(java.io.IOException failure){throw new com.badlogic.gdx.utils.GdxRuntimeException("Cannot open explicit content override store",failure);}
+          f = Gdx.files.absolute(URLDecoder.decode(n, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          EngineLogger.error("Error decoding URL", e);
+          return new String[0];
+        }
+
+        FileHandle[] l = f.list();
+        list = new String[l.length];
+
+        for (int i = 0; i < l.length; i++) list[i] = l[i].name();
+      }
     }
 
-	private float scale = 1;
-
-	private EngineResolutionFileResolver resResolver;
-
-	private String userFolder = DEFAULT_USER_FOLDER;
-
-	protected EngineAssetManager() {
-		this(new InternalFileHandleResolver());
-		// getLogger().setLevel(Application.LOG_DEBUG);
-	}
-
-	protected EngineAssetManager(FileHandleResolver resolver) {
-		super(contentResolver(resolver));
-        resolver=getFileHandleResolver();
-
-		resResolver = new EngineResolutionFileResolver(resolver);
-		setLoader(Texture.class, new TextureLoader(resResolver));
-		setLoader(TextureAtlas.class, new TextureAtlasLoader(resResolver));
-		setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-		setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
-
-		Texture.setAssetManager(this);
-	}
-
-	public float getScale() {
-		return scale;
-	}
-
-	public void setScale(int worldWidth, int worldHeight) {
-		Resolution[] r = getResolutions(resResolver.getBaseResolver(), worldWidth, worldHeight);
-
-		if (r == null || r.length == 0) {
-			EngineLogger.error("No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
-			return;
-		}
-
-		resResolver.setResolutions(r);
-		resResolver.selectResolution();
-		scale = resResolver.getResolution().portraitWidth / (float) worldWidth;
-
-		EngineLogger.debug("Setting ASSETS SCALE: " + scale);
-	}
-
-	public static EngineAssetManager getInstance() {
-		if (instance == null) {
-			instance = new EngineAssetManager();
-		}
-
-		return instance;
-	}
-
-	public void setUserFolder(String f) {
-		userFolder = f;
-	}
-
-	/**
-	 * Creates a EngineAssetManager instance for edition. That is:
-	 * <p>
-	 * - Puts a PathResolver to locate the assets through an absolute path - Puts
-	 * assets scale to "1"
-	 *
-	 * @param base is the project base folder
-	 */
-	public static void createEditInstance(String base) {
-		if (instance != null)
-			instance.dispose();
-
-		instance = new EngineAssetManager(new BasePathResolver(base));
-
-		instance.forceResolution("1");
-	}
-
-	/**
-	 * All assets will be searched in the selected folder.
-	 *
-	 * @param base The asset base folder
-	 */
-	public static void setAssetFolder(String base) {
-		if (instance != null)
-			instance.dispose();
-
-		if (base != null)
-			instance = new EngineAssetManager(new InternalFolderResolver(base));
-		else
-			instance = new EngineAssetManager(new InternalFileHandleResolver());
-	}
-
-	public void forceResolution(String suffix) {
-		resResolver.setFixedResolution(suffix);
-
-		EngineLogger.debug("FORCING ASSETS RESOLUTION SCALE: " + suffix);
-	}
-
-	public Resolution getResolution() {
-		return resResolver.getResolution();
-	}
+    return list;
+  }
 
-	public boolean isLoading() {
-		return !update();
-	}
+  /** Returns the resolutions from a jar file. */
+  private String[] getFilesFromJar(String base) {
+    URL dirURL = EngineAssetManager.class.getResource(base);
 
-	public void loadAtlas(String name) {
-		load(ATLASES_DIR + name + ATLAS_EXT, TextureAtlas.class);
-	}
+    Set<String> result = new HashSet<>(); // avoid duplicates in case
+    // it is a subdirectory
 
-	public boolean isAtlasLoaded(String name) {
-		return isLoaded(ATLASES_DIR + name + ATLAS_EXT);
-	}
+    if (dirURL.getProtocol().equals("jar")) {
+      /* A JAR path */
+      String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
+      JarFile jar;
 
-	public void disposeAtlas(String name) {
-		if (isAtlasLoaded(name))
-			unload(ATLASES_DIR + name + ATLAS_EXT);
-	}
+      try {
+        jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+      } catch (Exception e) {
+        EngineLogger.error("Locating jar file", e);
+        return result.toArray(new String[result.size()]);
+      }
 
-	public FileHandle getModelFile(String filename) {
-		return resResolver.baseResolve(MODEL_DIR + filename);
-	}
+      Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries
+      // in jar
 
-	/**
-	 * Returns a file in the asset directory SEARCHING in the resolution directories
-	 */
-	public FileHandle getResAsset(String filename) {
-		return resResolver.resolve(filename);
-	}
+      while (entries.hasMoreElements()) {
+        String name = entries.nextElement().getName();
 
-	/**
-	 * Returns a file in the asset directory without searching in the resolution
-	 * directories
-	 */
-	public FileHandle getAsset(String filename) {
-		return resResolver.baseResolve(filename);
-	}
+        int start = name.indexOf('/');
+        int end = name.lastIndexOf('/');
 
-	public AtlasRegion getRegion(String atlas, String name) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+        if (start == end) continue;
 
-		AtlasRegion region = a.findRegion(name);
+        String entry = name.substring(start + 1, end);
 
-		if (region == null) {
-			EngineLogger.debug("Region " + name + " not found in atlas " + atlas);
-		}
+        result.add(entry);
+      }
 
-		return region;
-	}
+      try {
+        jar.close();
+      } catch (IOException e) {
+        EngineLogger.error("Closing jar file", e);
+        return result.toArray(new String[result.size()]);
+      }
+    }
 
-	public TextureAtlas getTextureAtlas(String atlas) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+    return result.toArray(new String[result.size()]);
+  }
 
-		return a;
-	}
+  public FileHandle getUserFile(String filename) {
+    return getUserFolder().child(filename);
+  }
 
-	public Array<AtlasRegion> getRegions(String atlas, String name) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
+  public FileHandle getUserFolder() {
+    FileHandle file = null;
 
-		Array<AtlasRegion> region = a.findRegions(name);
+    if (Gdx.app.getType() == ApplicationType.Desktop) {
 
-		if (region == null) {
-			EngineLogger.error("Regions for " + name + " not found in atlas " + atlas);
-		}
+      StringBuilder sb = new StringBuilder();
 
-		return region;
-	}
+      if (System.getProperty("os.name").toLowerCase().contains("mac")
+          && System.getenv("HOME").contains("Containers")) {
 
-	public void loadTexture(String filename) {
-		load(filename, Texture.class);
-	}
+        file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(userFolder).toString());
+      } else {
 
-	public void disposeTexture(Texture t) {
-		if (isLoaded(getAssetFileName(t)))
-			unload(getAssetFileName(t));
-	}
+        file = Gdx.files.external(sb.append(userFolder).toString());
+      }
 
-	public Texture getTexture(String filename) {
-		// TextureParameter param = new TextureParameter();
-		// param.minFilter = TextureFilter.Linear;
-		// param.genMipMaps = true;
+    } else {
+      file = Gdx.files.local(userFolder);
+    }
 
-		return get(filename, Texture.class);
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		instance = null;
-	}
-
-	public String checkIOSSoundName(String filename) {
-
-		if (Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(OGG_EXT)) {
-			String aac = filename.substring(0, filename.length() - OGG_EXT.length()) + AAC_EXT;
-
-			if (FileUtils.exists(EngineAssetManager.getInstance().getAsset(aac)))
-				return aac;
-
-			EngineLogger.debug("OGG files not supported in IOS: " + filename);
-
-			return null;
-		}
-
-		return filename;
-	}
-
-	public void loadMusic(String filename) throws FileNotFoundException {
-
-		String n = checkIOSSoundName(MUSIC_DIR + filename);
-
-		if (n == null)
-			return;
-
-		if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
-			throw new FileNotFoundException(n);
-		}
-
-		load(n, Music.class);
-	}
-
-	public void disposeMusic(String filename) {
-		String n = checkIOSSoundName(MUSIC_DIR + filename);
-
-		if (n == null)
-			return;
-
-		if (isLoaded(n))
-			unload(n);
-	}
-
-	public Music getMusic(String filename) {
-		String n = checkIOSSoundName(MUSIC_DIR + filename);
-
-		if (n == null)
-			return null;
-
-		return get(n, Music.class);
-	}
-
-	public void loadSound(String filename) throws FileNotFoundException {
-		String n = checkIOSSoundName(SOUND_DIR + filename);
-
-		if (n == null)
-			return;
-
-		if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
-			throw new FileNotFoundException(n);
-		}
-
-		load(n, Sound.class);
-	}
-
-	public Sound getSound(String filename) {
-		String n = checkIOSSoundName(SOUND_DIR + filename);
-
-		if (n == null)
-			return null;
-
-		return get(n, Sound.class);
-	}
-
-	public void disposeSound(String filename) {
-		String n = checkIOSSoundName(SOUND_DIR + filename);
-
-		if (n == null)
-			return;
-
-		if (isLoaded(n))
-			unload(n);
-	}
-
-	public FileHandle getParticle(String name) {
-		return resResolver.baseResolve(PARTICLE_DIR + name);
-	}
-
-
-	public boolean assetExists(String filename) {
-		return resResolver.exists(filename);
-	}
-
-	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
-		ArrayList<Resolution> rl = new ArrayList<>();
-
-		String[] list = null;
-
-		String configRes = Config.getInstance().getProperty(Config.RESOLUTIONS, null);
-
-		if (configRes != null) {
-			list = configRes.split(",");
-		} else {
-			list = listAssetFiles("ui");
-		}
-
-		for (String name : list) {
-
-			try {
-				float scale = Float.parseFloat(name);
-
-				EngineLogger.debug("RES FOUND: " + scale);
-
-				Resolution r = new Resolution((int) (worldWidth * scale), (int) (worldHeight * scale), name);
-
-				rl.add(r);
-			} catch (NumberFormatException e) {
-
-			}
-		}
-
-		Collections.sort(rl, new Comparator<Resolution>() {
-			@Override
-			public int compare(Resolution a, Resolution b) {
-				return a.portraitWidth - b.portraitWidth;
-			}
-		});
-
-		return rl.toArray(new Resolution[rl.size()]);
-	}
-
-	public String[] listAssetFiles(String base) {
-		FileHandleResolver resolver = resResolver.getBaseResolver();
-
-		String[] list = null;
-
-		if (Gdx.app.getType() != ApplicationType.Desktop) {
-
-			FileHandle[] l = resolver.resolve(base).list();
-			list = new String[l.length];
-
-			for (int i = 0; i < l.length; i++)
-				list[i] = l[i].name();
-
-		} else {
-			// FOR DESKTOP
-			URL u = EngineAssetManager.class.getResource("/" + resolver.resolve(base).path());
-
-			if (u != null && u.getProtocol().equals("jar")) {
-				list = getFilesFromJar("/" + base);
-			} else {
-				String n = resolver.resolve(base).path();
-
-				if (u != null)
-					n = u.getFile();
-
-				FileHandle f = null;
-
-				try {
-					f = Gdx.files.absolute(URLDecoder.decode(n, "UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					EngineLogger.error("Error decoding URL", e);
-					return new String[0];
-				}
-
-				FileHandle[] l = f.list();
-				list = new String[l.length];
-
-				for (int i = 0; i < l.length; i++)
-					list[i] = l[i].name();
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Returns the resolutions from a jar file.
-	 */
-	private String[] getFilesFromJar(String base) {
-		URL dirURL = EngineAssetManager.class.getResource(base);
-
-		Set<String> result = new HashSet<>(); // avoid duplicates in case
-		// it is a subdirectory
-
-		if (dirURL.getProtocol().equals("jar")) {
-			/* A JAR path */
-			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
-			JarFile jar;
-
-			try {
-				jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-			} catch (Exception e) {
-				EngineLogger.error("Locating jar file", e);
-				return result.toArray(new String[result.size()]);
-			}
-
-			Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries
-			// in jar
-
-			while (entries.hasMoreElements()) {
-				String name = entries.nextElement().getName();
-
-				int start = name.indexOf('/');
-				int end = name.lastIndexOf('/');
-
-				if (start == end)
-					continue;
-
-				String entry = name.substring(start + 1, end);
-
-				result.add(entry);
-			}
-
-			try {
-				jar.close();
-			} catch (IOException e) {
-				EngineLogger.error("Closing jar file", e);
-				return result.toArray(new String[result.size()]);
-			}
-
-		}
-
-		return result.toArray(new String[result.size()]);
-	}
-
-	public FileHandle getUserFile(String filename) {
-		return getUserFolder().child(filename);
-	}
-
-	public FileHandle getUserFolder() {
-		FileHandle file = null;
-
-		if (Gdx.app.getType() == ApplicationType.Desktop) {
-
-			StringBuilder sb = new StringBuilder();
-
-			if (System.getProperty("os.name").toLowerCase().contains("mac")
-					&& System.getenv("HOME").contains("Containers")) {
-
-				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(userFolder).toString());
-			} else {
-
-				file = Gdx.files.external(sb.append(userFolder).toString());
-			}
-
-		} else {
-			file = Gdx.files.local(userFolder);
-		}
-
-		return file;
-	}
+    return file;
+  }
 }

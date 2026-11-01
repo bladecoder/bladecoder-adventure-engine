@@ -1,0 +1,19 @@
+{
+  "paths": {
+    "java": null,
+    "inklecate": null,
+    "inkscape": null,
+    "spine": null,
+    "ffmpeg": null,
+    "ffprobe": null,
+    "sox": null,
+    "magick": null,
+    "fluidsynth_library": null,
+    "soundfont": null,
+    "gradle_cache": null,
+    "gdx_jar": null,
+    "gdx_tools_jar": null,
+    "art_root": null
+  },
+  "linked_roots": {}
+}

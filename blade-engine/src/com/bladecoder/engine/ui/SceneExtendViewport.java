@@ -11,100 +11,103 @@ import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * This is a Custom ExtendViewport:
- * 
- *   - The camera uses screen coordinates. This is used to draw fonts and UI 1:1
- *   - The world dimensions is used only to calculate the dimensions of the viewport
- *   - The dimensions of the viewport is calculated to extend the world between 4:3 and 16:9
- * 
+ *
+ * <p>- The camera uses screen coordinates. This is used to draw fonts and UI 1:1 - The world
+ * dimensions is used only to calculate the dimensions of the viewport - The dimensions of the
+ * viewport is calculated to extend the world between 4:3 and 16:9
+ *
  * @author rgarcia
  */
 public class SceneExtendViewport extends Viewport {
-	private float minWorldWidth, minWorldHeight;
-	private float maxWorldWidth, maxWorldHeight;
+  private float minWorldWidth, minWorldHeight;
+  private float maxWorldWidth, maxWorldHeight;
 
-	/** Creates a new viewport using a new {@link OrthographicCamera}. */
-	public SceneExtendViewport() {
-		setCamera(new OrthographicCamera());
-	}
-	
-	@Override
-	public void update (int screenWidth, int screenHeight, boolean centerCamera) {
-		// Fit min size to the screen.
-		float worldWidth = minWorldWidth;
-		float worldHeight = minWorldHeight;
-		Vector2 scaled = Scaling.fit.apply(worldWidth, worldHeight, screenWidth, screenHeight);
+  /** Creates a new viewport using a new {@link OrthographicCamera}. */
+  public SceneExtendViewport() {
+    setCamera(new OrthographicCamera());
+  }
 
-		// Extend in the short direction.
-		int viewportWidth = Math.round(scaled.x);
-		int viewportHeight = Math.round(scaled.y);
-		if (viewportWidth < screenWidth) {
-			float toViewportSpace = viewportHeight / worldHeight;
-			float toWorldSpace = worldHeight / viewportHeight;
-			float lengthen = (screenWidth - viewportWidth) * toWorldSpace;
-			if (maxWorldWidth > 0) lengthen = Math.min(lengthen, maxWorldWidth - minWorldWidth);
-			worldWidth += lengthen;
-			viewportWidth += Math.round(lengthen * toViewportSpace);
-		} else if (viewportHeight < screenHeight) {
-			float toViewportSpace = viewportWidth / worldWidth;
-			float toWorldSpace = worldWidth / viewportWidth;
-			float lengthen = (screenHeight - viewportHeight) * toWorldSpace;
-			if (maxWorldHeight > 0) lengthen = Math.min(lengthen, maxWorldHeight - minWorldHeight);
-			worldHeight += lengthen;
-			viewportHeight += Math.round(lengthen * toViewportSpace);
-		}
+  @Override
+  public void update(int screenWidth, int screenHeight, boolean centerCamera) {
+    // Fit min size to the screen.
+    float worldWidth = minWorldWidth;
+    float worldHeight = minWorldHeight;
+    Vector2 scaled = Scaling.fit.apply(worldWidth, worldHeight, screenWidth, screenHeight);
 
-		super.setWorldSize(worldWidth, worldHeight);
+    // Extend in the short direction.
+    int viewportWidth = Math.round(scaled.x);
+    int viewportHeight = Math.round(scaled.y);
+    if (viewportWidth < screenWidth) {
+      float toViewportSpace = viewportHeight / worldHeight;
+      float toWorldSpace = worldHeight / viewportHeight;
+      float lengthen = (screenWidth - viewportWidth) * toWorldSpace;
+      if (maxWorldWidth > 0) lengthen = Math.min(lengthen, maxWorldWidth - minWorldWidth);
+      worldWidth += lengthen;
+      viewportWidth += Math.round(lengthen * toViewportSpace);
+    } else if (viewportHeight < screenHeight) {
+      float toViewportSpace = viewportWidth / worldWidth;
+      float toWorldSpace = worldWidth / viewportWidth;
+      float lengthen = (screenHeight - viewportHeight) * toWorldSpace;
+      if (maxWorldHeight > 0) lengthen = Math.min(lengthen, maxWorldHeight - minWorldHeight);
+      worldHeight += lengthen;
+      viewportHeight += Math.round(lengthen * toViewportSpace);
+    }
 
-		// Center.
-		setScreenBounds((screenWidth - viewportWidth) / 2, (screenHeight - viewportHeight) / 2, viewportWidth, viewportHeight);
+    super.setWorldSize(worldWidth, worldHeight);
 
-		apply(centerCamera);
-		
-		EngineLogger.debug("SCREEN VIEWPORT: " + getScreenWidth() + "x" + getScreenHeight());
-		EngineLogger.debug("SCREEN WORLD: " + getWorldWidth() + "x" + getWorldHeight());
-	}
+    // Center.
+    setScreenBounds(
+        (screenWidth - viewportWidth) / 2,
+        (screenHeight - viewportHeight) / 2,
+        viewportWidth,
+        viewportHeight);
 
-	@Override
-	public void apply(boolean centerCamera) {
-		HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
-		getCamera().viewportWidth = getScreenWidth();
-		getCamera().viewportHeight = getScreenHeight();
-		if (centerCamera)
-			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
-		getCamera().update();
-	}
+    apply(centerCamera);
 
-	@Override
-	public void setWorldSize(float worldWidth, float worldHeight) {
-		super.setWorldSize(worldWidth, worldHeight);
+    EngineLogger.debug("SCREEN VIEWPORT: " + getScreenWidth() + "x" + getScreenHeight());
+    EngineLogger.debug("SCREEN WORLD: " + getWorldWidth() + "x" + getWorldHeight());
+  }
 
-		// The minimum height aspect is 4:3, the maximum is the world aspect
-		minWorldWidth = Math.min(worldHeight * 4f / 3f, worldWidth);
+  @Override
+  public void apply(boolean centerCamera) {
+    HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+    getCamera().viewportWidth = getScreenWidth();
+    getCamera().viewportHeight = getScreenHeight();
+    if (centerCamera) getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
+    getCamera().update();
+  }
 
-		// The minimum width aspect is 16:9, the maximum is the world aspect
-		minWorldHeight = Math.min(worldWidth * 9f / 16f, worldHeight);
+  @Override
+  public void setWorldSize(float worldWidth, float worldHeight) {
+    super.setWorldSize(worldWidth, worldHeight);
 
-		maxWorldWidth = worldWidth;
-		maxWorldHeight = worldHeight;
-	}
+    // The minimum height aspect is 4:3, the maximum is the world aspect
+    minWorldWidth = Math.min(worldHeight * 4f / 3f, worldWidth);
 
-	@Override
-	public Vector2 unproject(Vector2 out) {
-		super.unproject(out);
-		
-		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
-		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+    // The minimum width aspect is 16:9, the maximum is the world aspect
+    minWorldHeight = Math.min(worldWidth * 9f / 16f, worldHeight);
 
-		return out;
-	}
+    maxWorldWidth = worldWidth;
+    maxWorldHeight = worldHeight;
+  }
 
-	@Override
-	public Vector3 unproject(Vector3 out) {
-		super.unproject(out);
+  @Override
+  public Vector2 unproject(Vector2 out) {
+    super.unproject(out);
 
-		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
-		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+    out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+    out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
 
-		return out;
-	}
+    return out;
+  }
+
+  @Override
+  public Vector3 unproject(Vector3 out) {
+    super.unproject(out);
+
+    out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+    out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+
+    return out;
+  }
 }

@@ -1,119 +1,122 @@
 package com.bladecoder.engineeditor.common;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.qa.QA;
 import com.strongjoshua.console.CommandExecutor;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 
 public class EditorCommandExecutor extends CommandExecutor {
-	public void qa() {
-		QA qa = new QA();
-		qa.run(Ctx.project.getWorld());
-	}
+  public void qa() {
+    QA qa = new QA();
+    qa.run(Ctx.project.getWorld());
+  }
 
-	public void checkI18NMissingKeys() {
-		try {
-			ModelTools.checkI18NMissingKeys();
-			EditorLogger.msg("PROCCESS FINISHED: checkI18NMissingKeys.");
-		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-			EditorLogger.printStackTrace(e);
-		}
-	}
+  public void checkI18NMissingKeys() {
+    try {
+      ModelTools.checkI18NMissingKeys();
+      EditorLogger.msg("PROCCESS FINISHED: checkI18NMissingKeys.");
+    } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+      EditorLogger.printStackTrace(e);
+    }
+  }
 
-	public void debug(boolean value) {
-		if (!value) {
-			EditorLogger.setDebugLevel(Levels.ERROR);
-			console.setLoggingToSystem(false);
-		} else {
-			EditorLogger.setDebugLevel(Levels.DEBUG);
-			console.setLoggingToSystem(true);
-		}
-	}
+  public void debug(boolean value) {
+    if (!value) {
+      EditorLogger.setDebugLevel(Levels.ERROR);
+      console.setLoggingToSystem(false);
+    } else {
+      EditorLogger.setDebugLevel(Levels.DEBUG);
+      console.setLoggingToSystem(true);
+    }
+  }
 
-	public void extractDialogs() {
-		ModelTools.extractDialogs();
-		EditorLogger.msg("ExtractDialogs FINISHED.");
-	}
+  public void extractDialogs() {
+    ModelTools.extractDialogs();
+    EditorLogger.msg("ExtractDialogs FINISHED.");
+  }
 
-	public void cleanI18N() {
-		Ctx.project.getI18N().cleanI18N();
-		EditorLogger.msg("CleanI18N FINISHED.");
-	}
+  public void cleanI18N() {
+    Ctx.project.getI18N().cleanI18N();
+    EditorLogger.msg("CleanI18N FINISHED.");
+  }
 
-	public void printUnusedSounds() {
-		ModelTools.printUnusedSounds();
-		EditorLogger.msg("PROCCESS FINISHED.");
-	}
+  public void printUnusedSounds() {
+    ModelTools.printUnusedSounds();
+    EditorLogger.msg("PROCCESS FINISHED.");
+  }
 
-	public void checkI18N() {
-		try {
-			EditorLogger.msg("Check for MODEL missing keys in default translation file for current chapter.");
-			ModelTools.checkI18NMissingKeys();
+  public void checkI18N() {
+    try {
+      EditorLogger.msg(
+          "Check for MODEL missing keys in default translation file for current chapter.");
+      ModelTools.checkI18NMissingKeys();
 
-			EditorLogger.msg("Compare translation files with the base file:");
-			String[] files = new File(Ctx.project.getAssetPath() + Project.MODEL_PATH).list(new FilenameFilter() {
-				@Override
-				public boolean accept(File arg0, String arg1) {
+      EditorLogger.msg("Compare translation files with the base file:");
+      String[] files =
+          new File(Ctx.project.getAssetPath() + Project.MODEL_PATH)
+              .list(
+                  new FilenameFilter() {
+                    @Override
+                    public boolean accept(File arg0, String arg1) {
 
-					if (arg1.contains("_") && arg1.endsWith(".properties"))
-						return true;
+                      if (arg1.contains("_") && arg1.endsWith(".properties")) return true;
 
-					return false;
-				}
-			});
+                      return false;
+                    }
+                  });
 
-			for (String f : files) {
-				int idx = f.indexOf('_');
-				String base = f.substring(0, idx);
-				String lang = f.substring(idx + 1, idx + 3);
-				EditorLogger.msg("Checking " + base + " LANG: " + lang);
-				I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, base, null, lang);
-			}
-		} catch (Exception e) {
-			EditorLogger.printStackTrace(e);
-		}
+      for (String f : files) {
+        int idx = f.indexOf('_');
+        String base = f.substring(0, idx);
+        String lang = f.substring(idx + 1, idx + 3);
+        EditorLogger.msg("Checking " + base + " LANG: " + lang);
+        I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, base, null, lang);
+      }
+    } catch (Exception e) {
+      EditorLogger.printStackTrace(e);
+    }
 
-		EditorLogger.msg("PROCCESS FINISHED.");
-	}
+    EditorLogger.msg("PROCCESS FINISHED.");
+  }
 
-	public void extractInkTexts(String story, String lang) {
-		try {
-			ModelTools.extractInkTexts(Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT, lang);
-		} catch (Exception e) {
-			EditorLogger.printStackTrace(e);
-		}
+  public void extractInkTexts(String story, String lang) {
+    try {
+      ModelTools.extractInkTexts(
+          Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT, lang);
+    } catch (Exception e) {
+      EditorLogger.printStackTrace(e);
+    }
 
-		EditorLogger.msg("PROCCESS FINISHED.");
-	}
+    EditorLogger.msg("PROCCESS FINISHED.");
+  }
 
-	public void importInkTSV(String tsvFile, String storyName) {
-		try {
-			I18NUtils.importTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH, tsvFile, storyName + "-ink",
-					"default");
+  public void importInkTSV(String tsvFile, String storyName) {
+    try {
+      I18NUtils.importTSV(
+          Ctx.project.getAssetPath() + Project.MODEL_PATH, tsvFile, storyName + "-ink", "default");
 
-			EditorLogger.msg(tsvFile + " imported sucessfully.");
+      EditorLogger.msg(tsvFile + " imported sucessfully.");
 
-		} catch (IOException e) {
-			EditorLogger.error("There was a problem importing the .tsv file.");
-			EditorLogger.printStackTrace(e);
-		}
+    } catch (IOException e) {
+      EditorLogger.error("There was a problem importing the .tsv file.");
+      EditorLogger.printStackTrace(e);
+    }
 
-		EditorLogger.msg("PROCCESS FINISHED.");
-	}
+    EditorLogger.msg("PROCCESS FINISHED.");
+  }
 
-	public void readableInkDialogs(String story, String lang) {
-		try {
-			ModelTools.readableInkDialogs(story, lang);
-		} catch (Exception e) {
-			EditorLogger.printStackTrace(e);
-		}
+  public void readableInkDialogs(String story, String lang) {
+    try {
+      ModelTools.readableInkDialogs(story, lang);
+    } catch (Exception e) {
+      EditorLogger.printStackTrace(e);
+    }
 
-		EditorLogger.msg("PROCCESS FINISHED.");
-	}
+    EditorLogger.msg("PROCCESS FINISHED.");
+  }
 }

@@ -1,0 +1,1117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:blade-engine:chapter:model:1",
+  "title": "Blade Engine 4.5.0-SNAPSHOT MODEL structure; class dispatch and semantics in chapter_validate.py",
+  "$ref": "#/$defs/chapter",
+  "$defs": {
+    "vector": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "color": {
+      "type": "object",
+      "properties": {
+        "r": {
+          "type": "number"
+        },
+        "g": {
+          "type": "number"
+        },
+        "b": {
+          "type": "number"
+        },
+        "a": {
+          "type": "number"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "polygon": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "anyOf": [
+        {
+          "maxItems": 0
+        },
+        {
+          "minItems": 6
+        }
+      ]
+    },
+    "action": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "class"
+      ],
+      "additionalProperties": true
+    },
+    "verb": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "actions"
+      ],
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "dynamic": {
+          "type": "boolean"
+        },
+        "parallax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "sound": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filename": {
+          "type": "string"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "volume": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number"
+        },
+        "pan": {
+          "type": "number"
+        },
+        "preload": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "filename"
+      ],
+      "additionalProperties": false
+    },
+    "music": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "volume": {
+          "type": "number"
+        },
+        "initialDelay": {
+          "type": "number"
+        },
+        "repeatDelay": {
+          "type": "number"
+        },
+        "stopWhenLeaving": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "option": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "responseText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verbId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "soundId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "responseSoundId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "once": {
+          "type": "boolean"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "dialog": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "options"
+      ],
+      "additionalProperties": false
+    },
+    "animation": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sound": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "atlas": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "duration": {
+          "type": "number"
+        },
+        "inD": {
+          "$ref": "#/$defs/vector"
+        },
+        "outD": {
+          "$ref": "#/$defs/vector"
+        },
+        "animationType": {
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED",
+            null
+          ]
+        },
+        "count": {
+          "type": "integer"
+        },
+        "preload": {
+          "type": "boolean"
+        },
+        "disposeWhenPlayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "AnchorActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "AnchorActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "ObstacleActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "ObstacleActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "WalkZoneActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "WalkZoneActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "InteractiveActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "InteractiveActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "desc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refPoint": {
+          "$ref": "#/$defs/vector"
+        },
+        "verbs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/verb"
+          }
+        },
+        "interaction": {
+          "type": "boolean"
+        },
+        "zIndex": {
+          "type": "number"
+        },
+        "layer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sounds": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/sound"
+          }
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "SpriteActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "SpriteActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "desc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refPoint": {
+          "$ref": "#/$defs/vector"
+        },
+        "verbs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/verb"
+          }
+        },
+        "interaction": {
+          "type": "boolean"
+        },
+        "zIndex": {
+          "type": "number"
+        },
+        "layer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sounds": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/sound"
+          }
+        },
+        "renderer": {
+          "$ref": "#/$defs/renderer"
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "scale": {
+          "type": "number"
+        },
+        "scaleX": {
+          "type": "number"
+        },
+        "scaleY": {
+          "type": "number"
+        },
+        "rot": {
+          "type": "number"
+        },
+        "depthType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fakeDepth": {
+          "type": "boolean"
+        },
+        "bboxFromRenderer": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "CharacterActor": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "CharacterActor"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bbox": {
+          "$ref": "#/$defs/polygon"
+        },
+        "pos": {
+          "$ref": "#/$defs/vector"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "desc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refPoint": {
+          "$ref": "#/$defs/vector"
+        },
+        "verbs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/verb"
+          }
+        },
+        "interaction": {
+          "type": "boolean"
+        },
+        "zIndex": {
+          "type": "number"
+        },
+        "layer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sounds": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/sound"
+          }
+        },
+        "renderer": {
+          "$ref": "#/$defs/renderer"
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "scale": {
+          "type": "number"
+        },
+        "scaleX": {
+          "type": "number"
+        },
+        "scaleY": {
+          "type": "number"
+        },
+        "rot": {
+          "type": "number"
+        },
+        "depthType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fakeDepth": {
+          "type": "boolean"
+        },
+        "bboxFromRenderer": {
+          "type": "boolean"
+        },
+        "dialogs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/dialog"
+          }
+        },
+        "walkingSpeed": {
+          "type": "number"
+        },
+        "textStyle": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "textColor": {
+          "$ref": "#/$defs/color"
+        },
+        "talkingTextPos": {
+          "$ref": "#/$defs/vector"
+        },
+        "standAnim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "walkAnim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "talkAnim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "class",
+        "id",
+        "bbox"
+      ],
+      "additionalProperties": false
+    },
+    "actor": {
+      "type": "object",
+      "required": [
+        "class"
+      ],
+      "additionalProperties": true,
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AnchorActor"
+        },
+        {
+          "$ref": "#/$defs/ObstacleActor"
+        },
+        {
+          "$ref": "#/$defs/WalkZoneActor"
+        },
+        {
+          "$ref": "#/$defs/InteractiveActor"
+        },
+        {
+          "$ref": "#/$defs/SpriteActor"
+        },
+        {
+          "$ref": "#/$defs/CharacterActor"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "pattern": "^[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)+$",
+              "not": {
+                "enum": [
+                  "AnchorActor",
+                  "ObstacleActor",
+                  "WalkZoneActor",
+                  "InteractiveActor",
+                  "SpriteActor",
+                  "CharacterActor"
+                ]
+              }
+            }
+          },
+          "required": [
+            "class"
+          ]
+        }
+      ]
+    },
+    "AtlasRenderer": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "AtlasRenderer"
+        },
+        "fanims": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/animation"
+          }
+        },
+        "initAnimation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "orgAlign": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "class",
+        "fanims"
+      ],
+      "additionalProperties": false
+    },
+    "ImageRenderer": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "ImageRenderer"
+        },
+        "fanims": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/animation"
+          }
+        },
+        "initAnimation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "orgAlign": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "class",
+        "fanims"
+      ],
+      "additionalProperties": false
+    },
+    "SpineRenderer": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "com.bladecoder.engine.spine.SpineRenderer"
+        },
+        "fanims": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/animation"
+          }
+        },
+        "initAnimation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "orgAlign": {
+          "type": "integer"
+        },
+        "skin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "class",
+        "fanims"
+      ],
+      "additionalProperties": false
+    },
+    "TextRenderer": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "TextRenderer"
+        },
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fontName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fontSize": {
+          "type": "integer"
+        },
+        "borderWidth": {
+          "type": "integer"
+        },
+        "shadowOffsetX": {
+          "type": "integer"
+        },
+        "shadowOffsetY": {
+          "type": "integer"
+        },
+        "align": {
+          "type": "integer"
+        },
+        "orgAlign": {
+          "type": "integer"
+        },
+        "maxWidth": {
+          "type": "integer"
+        },
+        "borderColor": {
+          "$ref": "#/$defs/color"
+        },
+        "shadowColor": {
+          "$ref": "#/$defs/color"
+        },
+        "borderStraight": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "class",
+        "fontName"
+      ],
+      "additionalProperties": false
+    },
+    "ParticleRenderer": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "const": "ParticleRenderer"
+        },
+        "atlasName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "particleName": {
+          "type": "string"
+        },
+        "orgAlign": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "class",
+        "particleName"
+      ],
+      "additionalProperties": false
+    },
+    "renderer": {
+      "type": "object",
+      "required": [
+        "class"
+      ],
+      "additionalProperties": true,
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AtlasRenderer"
+        },
+        {
+          "$ref": "#/$defs/ImageRenderer"
+        },
+        {
+          "$ref": "#/$defs/TextRenderer"
+        },
+        {
+          "$ref": "#/$defs/ParticleRenderer"
+        },
+        {
+          "$ref": "#/$defs/SpineRenderer"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string",
+              "pattern": "^[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)+$",
+              "not": {
+                "enum": [
+                  "AtlasRenderer",
+                  "ImageRenderer",
+                  "TextRenderer",
+                  "ParticleRenderer",
+                  "com.bladecoder.engine.spine.SpineRenderer"
+                ]
+              }
+            }
+          },
+          "required": [
+            "class"
+          ]
+        }
+      ]
+    },
+    "scene": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/layer"
+          }
+        },
+        "actors": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/actor"
+          }
+        },
+        "verbs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/verb"
+          }
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "player": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "walkZone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "backgroundAtlas": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "backgroundRegionId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "musicDesc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/music"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "depthVector": {
+          "$ref": "#/$defs/vector"
+        },
+        "sceneSize": {
+          "$ref": "#/$defs/vector"
+        },
+        "polygonalNavGraph": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "layers",
+        "actors"
+      ],
+      "additionalProperties": false
+    },
+    "ink": {
+      "type": "object",
+      "properties": {
+        "storyName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "chapter": {
+      "type": "object",
+      "properties": {
+        "bladeEngineVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sounds": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/sound"
+          }
+        },
+        "scenes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/scene"
+          }
+        },
+        "initScene": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inkManager": {
+          "$ref": "#/$defs/ink"
+        }
+      },
+      "required": [
+        "scenes"
+      ],
+      "additionalProperties": false
+    },
+    "world": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "initChapter": {
+          "type": "string"
+        },
+        "verbs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/verb"
+          }
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "initChapter"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

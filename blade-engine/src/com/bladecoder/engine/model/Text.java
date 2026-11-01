@@ -9,100 +9,113 @@ import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 
 public class Text implements Serializable {
-	private static final float DEFAULT_TIME = 1f;
+  private static final float DEFAULT_TIME = 1f;
 
-	public static float TIME_MULTIPLIER = 1f;
+  public static float TIME_MULTIPLIER = 1f;
 
-	public enum Type {
-		PLAIN, SUBTITLE, TALK, UI
-	}
+  public enum Type {
+    PLAIN,
+    SUBTITLE,
+    TALK,
+    UI
+  }
 
-    public String str;
-	public float x;
-	public float y;
-	public float time;
-	public Type type;
-	public Color color;
-	public String style;
-	private ActionCallback cb;
-	public String actorId;
-	public String voiceId;
-	public String animation;
+  public String str;
+  public float x;
+  public float y;
+  public float time;
+  public Type type;
+  public Color color;
+  public String style;
+  private ActionCallback cb;
+  public String actorId;
+  public String voiceId;
+  public String animation;
 
-	public Text() {
-	}
+  public Text() {}
 
-	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId,
-			String voiceId, String talkAnimation, ActionCallback cb) {
-		this.str = str;
-		this.x = x;
-		this.y = y;
-		this.time = time * TIME_MULTIPLIER;
-		this.type = type;
-		this.color = color;
-		this.style = style;
-		this.cb = cb;
-		this.actorId = actorId;
-		this.voiceId = voiceId;
-		this.animation = talkAnimation;
+  public Text(
+      String str,
+      float x,
+      float y,
+      float time,
+      Type type,
+      Color color,
+      String style,
+      String actorId,
+      String voiceId,
+      String talkAnimation,
+      ActionCallback cb) {
+    this.str = str;
+    this.x = x;
+    this.y = y;
+    this.time = time * TIME_MULTIPLIER;
+    this.type = type;
+    this.color = color;
+    this.style = style;
+    this.cb = cb;
+    this.actorId = actorId;
+    this.voiceId = voiceId;
+    this.animation = talkAnimation;
 
-		// 0s -> Auto duration
-		// <0 -> Infinity
+    // 0s -> Auto duration
+    // <0 -> Infinity
 
-		if (this.time < 0 || voiceId != null) {
-			this.time = Float.MAX_VALUE;
-		} else if (this.time == 0) {
-			setAutoTime();
-		}
-	}
+    if (this.time < 0 || voiceId != null) {
+      this.time = Float.MAX_VALUE;
+    } else if (this.time == 0) {
+      setAutoTime();
+    }
+  }
 
-	public void setAutoTime() {
-		time = (DEFAULT_TIME + DEFAULT_TIME * str.length() / 20f) * TIME_MULTIPLIER;
-	}
+  public void setAutoTime() {
+    time = (DEFAULT_TIME + DEFAULT_TIME * str.length() / 20f) * TIME_MULTIPLIER;
+  }
 
-	public void callCb() {
-		if (cb != null) {
-			ActionCallback tmpcb = cb;
-			cb = null;
-			tmpcb.resume();
-		}
-	}
+  public void callCb() {
+    if (cb != null) {
+      ActionCallback tmpcb = cb;
+      cb = null;
+      tmpcb.resume();
+    }
+  }
 
-	@Override
-	public void write(Json json) {
+  @Override
+  public void write(Json json) {
 
-		json.writeValue("str", str);
-		json.writeValue("x", x);
-		json.writeValue("y", y);
-		json.writeValue("time", time);
-		json.writeValue("type", type);
-		json.writeValue("color", color);
-		json.writeValue("style", style);
-		json.writeValue("actorId", actorId);
-		json.writeValue("voiceId", voiceId);
-		json.writeValue("animation", animation);
+    json.writeValue("str", str);
+    json.writeValue("x", x);
+    json.writeValue("y", y);
+    json.writeValue("time", time);
+    json.writeValue("type", type);
+    json.writeValue("color", color);
+    json.writeValue("style", style);
+    json.writeValue("actorId", actorId);
+    json.writeValue("voiceId", voiceId);
+    json.writeValue("animation", animation);
 
-		if (cb != null) {
-			World w = ((BladeJson) json).getWorld();
-			Scene s = ((BladeJson) json).getScene();
-			json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, cb));
-		}
-	}
+    if (cb != null) {
+      World w = ((BladeJson) json).getWorld();
+      Scene s = ((BladeJson) json).getScene();
+      json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, cb));
+    }
+  }
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		str = json.readValue("str", String.class, jsonData);
-		x = json.readValue("x", Float.class, jsonData);
-		y = json.readValue("y", Float.class, jsonData);
-		time = json.readValue("time", Float.class, jsonData);
-		type = json.readValue("type", Type.class, jsonData);
-		color = json.readValue("color", Color.class, jsonData);
-		style = json.readValue("style", String.class, jsonData);
-		actorId = json.readValue("actorId", String.class, jsonData);
-		voiceId = json.readValue("voiceId", String.class, jsonData);
-		animation = json.readValue("animation", String.class, jsonData);
-		BladeJson bjson = (BladeJson) json;
-		cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
-				json.readValue("cb", String.class, jsonData));
-	}
+  @Override
+  public void read(Json json, JsonValue jsonData) {
+    str = json.readValue("str", String.class, jsonData);
+    x = json.readValue("x", Float.class, jsonData);
+    y = json.readValue("y", Float.class, jsonData);
+    time = json.readValue("time", Float.class, jsonData);
+    type = json.readValue("type", Type.class, jsonData);
+    color = json.readValue("color", Color.class, jsonData);
+    style = json.readValue("style", String.class, jsonData);
+    actorId = json.readValue("actorId", String.class, jsonData);
+    voiceId = json.readValue("voiceId", String.class, jsonData);
+    animation = json.readValue("animation", String.class, jsonData);
+    BladeJson bjson = (BladeJson) json;
+    cb =
+        ActionCallbackSerializer.find(
+            bjson.getWorld(), bjson.getScene(), json.readValue("cb", String.class, jsonData));
+  }
 }

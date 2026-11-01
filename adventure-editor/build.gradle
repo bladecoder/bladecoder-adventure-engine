@@ -50,6 +50,7 @@ javadoc {
 }
 
 dependencies {
+    implementation project(":adventure-setup")
     implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
     implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
     implementation("com.badlogicgames.gdx:gdx-tools:1.10.0") {
@@ -132,4 +133,25 @@ distZip {
         // include desktop and thirdparty folders
         include('desktop/*', 'thirdparty/*')
     }
+}
+
+// Explicit native compatibility check; ordinary headless check/build does not launch GL.
+sourceSets {
+    setupFlow {
+        java.srcDirs = ['test-src']
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    setupFlowImplementation.extendsFrom implementation
+    setupFlowRuntimeOnly.extendsFrom runtimeOnly
+}
+tasks.register('verifySetupFlow', JavaExec) {
+    group = 'verification'
+    description = 'Exercises the actual editor create/load API on an isolated hidden GL window.'
+    dependsOn setupFlowClasses
+    classpath = sourceSets.setupFlow.runtimeClasspath
+    mainClass = 'com.bladecoder.engineeditor.setup.EditorSetupFlowTest'
+    args providers.gradleProperty('setupFlowOutput').getOrElse(layout.buildDirectory.dir('setup-flow-evidence').get().asFile.absolutePath)
 }

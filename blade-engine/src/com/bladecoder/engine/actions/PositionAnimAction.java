@@ -14,109 +14,112 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 @ActionDescription("Sets an actor Position animation")
 public class PositionAnimAction implements Action {
-    public enum Mode {
-        DURATION, SPEED
+  public enum Mode {
+    DURATION,
+    SPEED
+  }
+
+  @ActionPropertyDescription("The moving actor")
+  @ActionProperty(type = Type.SPRITE_ACTOR, required = true)
+  private String actor;
+
+  @ActionPropertyDescription("Sets the position from this actor")
+  @ActionProperty(type = Type.ACTOR)
+  private String target;
+
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The absolute world position if no target is selected. Relative to target if selected.")
+  private Vector2 pos;
+
+  @ActionProperty(required = true, defaultValue = "1.0")
+  @ActionPropertyDescription("Duration or speed in pixels/sec. mode")
+  private float speed;
+
+  @ActionProperty(required = true)
+  @ActionPropertyDescription("Duration or speed of the animation")
+  private Mode mode;
+
+  @ActionProperty(required = true, defaultValue = "-1")
+  @ActionPropertyDescription("The times to repeat. -1 for infinity")
+  private int count = -1;
+
+  @ActionProperty(required = true)
+  @ActionPropertyDescription(
+      "If this param is 'false' the text is showed and the action continues immediately")
+  private boolean wait = true;
+
+  @ActionProperty(required = true, defaultValue = "NO_REPEAT")
+  @ActionPropertyDescription("The repeat mode")
+  private Tween.Type repeat = Tween.Type.NO_REPEAT; // FIXME: This adds more
+
+  // types not present
+  // here before
+
+  @ActionProperty
+  @ActionPropertyDescription("The target actor")
+  private InterpolationMode interpolation;
+
+  private World w;
+
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
+
+  @Override
+  public boolean run(VerbRunner cb) {
+
+    float scale = EngineAssetManager.getInstance().getScale();
+
+    BaseActor a = w.getCurrentScene().getActor(actor, true);
+
+    float x = a.getX();
+    float y = a.getY();
+
+    if (target != null) {
+      BaseActor target = w.getCurrentScene().getActor(this.target, false);
+
+      x = target.getX();
+      y = target.getY();
+
+      if (target instanceof InteractiveActor && target != a) {
+        Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
+        x += refPoint.x;
+        y += refPoint.y;
+      }
+
+      if (pos != null) {
+        x += pos.x * scale;
+        y += pos.y * scale;
+      }
+    } else if (pos != null) {
+      x = pos.x * scale;
+      y = pos.y * scale;
     }
 
-    @ActionPropertyDescription("The moving actor")
-    @ActionProperty(type = Type.SPRITE_ACTOR, required = true)
-    private String actor;
+    if (!(a instanceof SpriteActor)) {
+      a.setPosition(x, y);
 
-    @ActionPropertyDescription("Sets the position from this actor")
-    @ActionProperty(type = Type.ACTOR)
-    private String target;
+      return false;
+    } else {
+      // WARNING: only spriteactors support animation
+      float s;
 
-    @ActionProperty
-    @ActionPropertyDescription("The absolute world position if no target is selected. Relative to target if selected.")
-    private Vector2 pos;
+      if (mode != null && mode == Mode.SPEED) {
+        Vector2 p0 = new Vector2(a.getX(), a.getY());
 
-    @ActionProperty(required = true, defaultValue = "1.0")
-    @ActionPropertyDescription("Duration or speed in pixels/sec. mode")
-    private float speed;
+        s = p0.dst(x, y) / (scale * speed);
+      } else {
+        s = speed;
+      }
 
-    @ActionProperty(required = true)
-    @ActionPropertyDescription("Duration or speed of the animation")
-    private Mode mode;
+      SpritePosTween t = new SpritePosTween();
+      t.start((SpriteActor) a, repeat, count, x, y, s, interpolation, wait ? cb : null);
 
-    @ActionProperty(required = true, defaultValue = "-1")
-    @ActionPropertyDescription("The times to repeat. -1 for infinity")
-    private int count = -1;
-
-    @ActionProperty(required = true)
-    @ActionPropertyDescription("If this param is 'false' the text is showed and the action continues immediately")
-    private boolean wait = true;
-
-    @ActionProperty(required = true, defaultValue = "NO_REPEAT")
-    @ActionPropertyDescription("The repeat mode")
-    private Tween.Type repeat = Tween.Type.NO_REPEAT; // FIXME: This adds more
-    // types not present
-    // here before
-
-    @ActionProperty
-    @ActionPropertyDescription("The target actor")
-    private InterpolationMode interpolation;
-
-    private World w;
-
-    @Override
-    public void init(World w) {
-        this.w = w;
+      ((SpriteActor) a).addTween(t);
     }
 
-    @Override
-    public boolean run(VerbRunner cb) {
-
-        float scale = EngineAssetManager.getInstance().getScale();
-
-        BaseActor a = w.getCurrentScene().getActor(actor, true);
-
-        float x = a.getX();
-        float y = a.getY();
-
-        if (target != null) {
-            BaseActor target = w.getCurrentScene().getActor(this.target, false);
-
-            x = target.getX();
-            y = target.getY();
-
-            if (target instanceof InteractiveActor && target != a) {
-                Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
-                x += refPoint.x;
-                y += refPoint.y;
-            }
-
-            if (pos != null) {
-                x += pos.x * scale;
-                y += pos.y * scale;
-            }
-        } else if (pos != null) {
-            x = pos.x * scale;
-            y = pos.y * scale;
-        }
-
-        if (!(a instanceof SpriteActor)) {
-            a.setPosition(x, y);
-
-            return false;
-        } else {
-            // WARNING: only spriteactors support animation
-            float s;
-
-            if (mode != null && mode == Mode.SPEED) {
-                Vector2 p0 = new Vector2(a.getX(), a.getY());
-
-                s = p0.dst(x, y) / (scale * speed);
-            } else {
-                s = speed;
-            }
-
-            SpritePosTween t = new SpritePosTween();
-            t.start((SpriteActor) a, repeat, count, x, y, s, interpolation, wait ? cb : null);
-
-            ((SpriteActor) a).addTween(t);
-        }
-
-        return wait;
-    }
-
+    return wait;
+  }
 }

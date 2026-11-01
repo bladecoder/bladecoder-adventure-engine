@@ -14,96 +14,97 @@ import com.bladecoder.engine.model.World;
 
 @ActionDescription("Draw a text in the screen")
 public class TextAction implements Action {
-	@ActionPropertyDescription("The 'text' to show")
-	@ActionProperty(type = Type.SMALL_TEXT)
-	private String text;
+  @ActionPropertyDescription("The 'text' to show")
+  @ActionProperty(type = Type.SMALL_TEXT)
+  private String text;
 
-	@ActionPropertyDescription("The 'voice' file to play if selected.")
-	@ActionProperty(type = Type.VOICE)
-	private String voiceId;
+  @ActionPropertyDescription("The 'voice' file to play if selected.")
+  @ActionProperty(type = Type.VOICE)
+  private String voiceId;
 
-	@ActionPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
-	@ActionProperty(type = Type.TEXT_STYLE, required = true, defaultValue = "default")
-	private String style;
+  @ActionPropertyDescription(
+      "The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
+  @ActionProperty(type = Type.TEXT_STYLE, required = true, defaultValue = "default")
+  private String style;
 
-	@ActionPropertyDescription("The color to use for the font (RRGGBBAA). If not set, the default color defined in the style is used.")
-	@ActionProperty(type = Type.COLOR)
-	private Color color;
+  @ActionPropertyDescription(
+      "The color to use for the font (RRGGBBAA). If not set, the default color defined in the style is used.")
+  @ActionProperty(type = Type.COLOR)
+  private Color color;
 
-	@ActionProperty
-	@ActionPropertyDescription("Obtain the text position from this actor.")
-	private SceneActorRef target;
+  @ActionProperty
+  @ActionPropertyDescription("Obtain the text position from this actor.")
+  private SceneActorRef target;
 
-	@ActionProperty
-	@ActionPropertyDescription("The position of the text. -1 for center. Absolute if no target is selected. Relative if the target is selected.")
-	private Vector2 pos;
+  @ActionProperty
+  @ActionPropertyDescription(
+      "The position of the text. -1 for center. Absolute if no target is selected. Relative if the target is selected.")
+  private Vector2 pos;
 
-	@ActionProperty(required = true, defaultValue = "SUBTITLE")
-	@ActionPropertyDescription("The type of the text.")
-	private Text.Type type = Text.Type.PLAIN;
+  @ActionProperty(required = true, defaultValue = "SUBTITLE")
+  @ActionPropertyDescription("The type of the text.")
+  private Text.Type type = Text.Type.PLAIN;
 
-	@ActionProperty(defaultValue = "false")
-	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-	private boolean queue = false;
+  @ActionProperty(defaultValue = "false")
+  @ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
+  private boolean queue = false;
 
-	@ActionProperty(required = true)
-	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	private boolean wait = true;
-	
-	private World w;
-	
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
+  @ActionProperty(required = true)
+  @ActionPropertyDescription(
+      "If this param is 'false' the text is showed and the action continues inmediatly")
+  private boolean wait = true;
 
-	@Override
-	public boolean run(VerbRunner cb) {
+  private World w;
 
-		if (text == null)
-			return false;
+  @Override
+  public void init(World w) {
+    this.w = w;
+  }
 
-		float x = TextManager.POS_CENTER, y = TextManager.POS_CENTER;
+  @Override
+  public boolean run(VerbRunner cb) {
 
-		if (target != null) {
-			Scene ts = target.getScene(w);
-			BaseActor anchorActor = ts.getActor(target.getActorId(), true);
+    if (text == null) return false;
 
-			x = anchorActor.getX();
-			y = anchorActor.getY();
+    float x = TextManager.POS_CENTER, y = TextManager.POS_CENTER;
 
-			if (anchorActor instanceof InteractiveActor) {
-				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
-				x += refPoint.x;
-				y += refPoint.y;
-			}
+    if (target != null) {
+      Scene ts = target.getScene(w);
+      BaseActor anchorActor = ts.getActor(target.getActorId(), true);
 
-			if (pos != null) {
-				float scale = EngineAssetManager.getInstance().getScale();
+      x = anchorActor.getX();
+      y = anchorActor.getY();
 
-				x += pos.x * scale;
-				y += pos.y * scale;
-			}
-		} else if (pos != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
+      if (anchorActor instanceof InteractiveActor) {
+        Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
+        x += refPoint.x;
+        y += refPoint.y;
+      }
 
-			if (pos.x != TextManager.POS_CENTER)
-				x = pos.x * scale;
+      if (pos != null) {
+        float scale = EngineAssetManager.getInstance().getScale();
 
-			if (pos.y != TextManager.POS_CENTER)
-				y = pos.y * scale;
+        x += pos.x * scale;
+        y += pos.y * scale;
+      }
+    } else if (pos != null) {
+      float scale = EngineAssetManager.getInstance().getScale();
 
-		} else {
+      if (pos.x != TextManager.POS_CENTER) x = pos.x * scale;
 
-			if (type == Text.Type.SUBTITLE) {
-				x = y = TextManager.POS_SUBTITLE;
-			}
-		}
+      if (pos.y != TextManager.POS_CENTER) y = pos.y * scale;
 
-		w.getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId, null,
-				wait ? cb : null);
+    } else {
 
-		return wait;
+      if (type == Text.Type.SUBTITLE) {
+        x = y = TextManager.POS_SUBTITLE;
+      }
+    }
 
-	}
+    w.getCurrentScene()
+        .getTextManager()
+        .addText(text, x, y, queue, type, color, style, null, voiceId, null, wait ? cb : null);
+
+    return wait;
+  }
 }

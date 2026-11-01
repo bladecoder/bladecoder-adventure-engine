@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "group": "com.badlogicgames.gdx",
+  "jars": [
+    {
+      "artifact": "gdx",
+      "version": "1.10.0",
+      "sha256": "ffb49b06711e34b1a175df17311b0f3ae0e85bf46c569a137ec00d291bb2cae1"
+    },
+    {
+      "artifact": "gdx-tools",
+      "version": "1.10.0",
+      "sha256": "c6f53499f78d5eebb3e23e90ec06ddf950d28702db6e48b6d34e77ea7277eca5"
+    }
+  ]
+}

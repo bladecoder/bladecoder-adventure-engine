@@ -2,91 +2,85 @@ package com.bladecoder.engine.model;
 
 /**
  * Keeps the information to play a music file.
- * 
+ *
  * @author rgarcia
  */
 public class MusicDesc {
-	private String filename;
-	
-	private boolean loop = false;
-	
-	/**
-	 * The music starts to play after the delay.
-	 */
-	private float initialDelay = 0;
-	
-	/** 
-	 * Time for repeating the music when no looping.
-	 *    
-	 * -1 for no repeat 
-	 */
-	private float repeatDelay = -1;
-	
-	/**
-	 * Stops the music when leaving the current scene 
-	 */
-	private boolean stopWhenLeaving = true;
-	
-	private float volume = 1.0f;
-	
-	public MusicDesc() {
-		
-	}
-	
-	public MusicDesc(MusicDesc md) {
-		filename = md.getFilename();
-		loop = md.isLoop();
-		initialDelay = md.getInitialDelay();
-		repeatDelay = md.getRepeatDelay();
-		stopWhenLeaving = md.isStopWhenLeaving();
-		volume = md.getVolume();
-	}
+  private String filename;
 
-	public String getFilename() {
-		return filename;
-	}
+  private boolean loop = false;
 
-	public void setFilename(String musicFilename) {
-		this.filename = musicFilename;
-	}
+  /** The music starts to play after the delay. */
+  private float initialDelay = 0;
 
-	public boolean isLoop() {
-		return loop;
-	}
+  /**
+   * Time for repeating the music when no looping.
+   *
+   * <p>-1 for no repeat
+   */
+  private float repeatDelay = -1;
 
-	public void setLoop(boolean loop) {
-		this.loop = loop;
-	}
+  /** Stops the music when leaving the current scene */
+  private boolean stopWhenLeaving = true;
 
-	public float getInitialDelay() {
-		return initialDelay;
-	}
+  private float volume = 1.0f;
 
-	public void setInitialDelay(float initialDelay) {
-		this.initialDelay = initialDelay;
-	}
+  public MusicDesc() {}
 
-	public float getRepeatDelay() {
-		return repeatDelay;
-	}
+  public MusicDesc(MusicDesc md) {
+    filename = md.getFilename();
+    loop = md.isLoop();
+    initialDelay = md.getInitialDelay();
+    repeatDelay = md.getRepeatDelay();
+    stopWhenLeaving = md.isStopWhenLeaving();
+    volume = md.getVolume();
+  }
 
-	public void setRepeatDelay(float repeatDelay) {
-		this.repeatDelay = repeatDelay;
-	}
+  public String getFilename() {
+    return filename;
+  }
 
-	public boolean isStopWhenLeaving() {
-		return stopWhenLeaving;
-	}
+  public void setFilename(String musicFilename) {
+    this.filename = musicFilename;
+  }
 
-	public void setStopWhenLeaving(boolean stopWhenLeaving) {
-		this.stopWhenLeaving = stopWhenLeaving;
-	}
+  public boolean isLoop() {
+    return loop;
+  }
 
-	public float getVolume() {
-		return volume;
-	}
+  public void setLoop(boolean loop) {
+    this.loop = loop;
+  }
 
-	public void setVolume(float volume) {
-		this.volume = volume;
-	}
+  public float getInitialDelay() {
+    return initialDelay;
+  }
+
+  public void setInitialDelay(float initialDelay) {
+    this.initialDelay = initialDelay;
+  }
+
+  public float getRepeatDelay() {
+    return repeatDelay;
+  }
+
+  public void setRepeatDelay(float repeatDelay) {
+    this.repeatDelay = repeatDelay;
+  }
+
+  public boolean isStopWhenLeaving() {
+    return stopWhenLeaving;
+  }
+
+  public void setStopWhenLeaving(boolean stopWhenLeaving) {
+    this.stopWhenLeaving = stopWhenLeaving;
+  }
+
+  public float getVolume() {
+    return volume;
+  }
+
+  public void setVolume(float volume) {
+    this.volume = volume;
+  }
 }

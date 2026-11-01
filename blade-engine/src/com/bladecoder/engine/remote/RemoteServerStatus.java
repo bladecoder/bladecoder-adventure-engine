@@ -1,14 +1,19 @@
 package com.bladecoder.engine.remote;
 
 interface RemoteServerStatus {
-    default String getMode() { return "player"; }
-    default String getSessionId() { return null; }
+  default String getMode() {
+    return "player";
+  }
 
-    boolean isRunning();
+  default String getSessionId() {
+    return null;
+  }
 
-    int getConfiguredPort();
+  boolean isRunning();
 
-    int getQueueLength();
+  int getConfiguredPort();
 
-    String getLastError();
+  int getQueueLength();
+
+  String getLastError();
 }
