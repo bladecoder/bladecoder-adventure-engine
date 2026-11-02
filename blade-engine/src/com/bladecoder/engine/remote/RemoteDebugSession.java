@@ -145,6 +145,7 @@ final class RemoteDebugSession {
             "capture.ui",
             "fixture.scene",
             "fixture.actor",
+            "fixture.player",
             "fixture.variables",
             "animation.atlas",
             "clock.world-step",
@@ -153,6 +154,7 @@ final class RemoteDebugSession {
             "events.actions",
             "events.audio",
             "audio.music.control",
+            "audio.music.seek",
             "audio.sfx.control",
             "input.events",
             "state.ui",
@@ -567,6 +569,7 @@ final class RemoteDebugSession {
       else if ("resume".equals(action)) world.getMusicManager().resumeMusic();
       else if ("play".equals(action)) world.getMusicManager().playMusic();
       else if ("stop".equals(action)) world.getMusicManager().stopMusic();
+      else if ("seek".equals(action)) world.getMusicManager().seekMusic(a.getFloat("position"));
       else if ("volume".equals(action)) {
         float volume = a.getFloat("volume");
         if (!Float.isFinite(volume) || volume < 0 || volume > 1)
@@ -603,6 +606,18 @@ final class RemoteDebugSession {
       ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
       events.add("fixture.scene", RemoteDebugState.value(a));
       job.done(RemoteDebugState.map("loading", true));
+      return;
+    }
+    if ("fixture.player".equals(job.operation)) {
+      if (world.getCurrentScene() == null || world.getAssetState() != World.AssetState.LOADED)
+        throw new IllegalStateException("Scene assets must be loaded");
+      BaseActor selected = world.getCurrentScene().getActor(a.getString("actor"), false);
+      if (!(selected instanceof CharacterActor))
+        throw new IllegalArgumentException(
+            "Player fixture requires a character in the current scene");
+      world.getCurrentScene().setPlayer((CharacterActor) selected);
+      events.add("fixture.player", RemoteDebugState.map("actor", selected.getId()));
+      job.done(RemoteDebugState.map("player", selected.getId(), "scope", "current scene only"));
       return;
     }
     if ("fixture.variable".equals(job.operation)) {

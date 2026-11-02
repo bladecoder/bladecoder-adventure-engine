@@ -103,6 +103,26 @@ public class MusicManager implements Serializable, AssetConsumer {
     }
   }
 
+  /** Explicit debug/authoring seek; native streaming remains owned by this manager. */
+  public void seekMusic(float seconds) {
+    if (!Float.isFinite(seconds) || seconds < 0)
+      throw new IllegalArgumentException("Music position must be finite and nonnegative");
+    if (music == null) throw new IllegalStateException("Music must be loaded before seeking");
+    music.setPosition(seconds);
+    // A requested seek is not a loop wrap. Start observing from its new position.
+    observedPosition = music.getPosition();
+    EngineLogger.diagnostic(
+        "audio.music.seeked",
+        "resource",
+        desc.getFilename(),
+        "requested_position",
+        seconds,
+        "position",
+        observedPosition,
+        "audible_output_verified",
+        false);
+  }
+
   public void pauseMusic() {
     if (music != null && music.isPlaying()) {
       music.pause();
