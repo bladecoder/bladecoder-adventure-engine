@@ -232,10 +232,16 @@ public class ScnWidget extends Widget {
 
       Vector3 v = tmpV3Draw.set(getX(), getY(), 0);
       v = v.prj(batch.getTransformMatrix());
+      getStage().getViewport().project(v);
 
       if (batch.isDrawing()) batch.end();
 
-      HdpiUtils.glViewport((int) v.x, (int) v.y, (int) getWidth(), (int) (getHeight()));
+      // Actor sizes use stage units; OpenGL needs the viewport's screen units.
+      float screenScaleX = getStage().getViewport().getScreenWidth() / getStage().getWidth();
+      float screenScaleY = getStage().getViewport().getScreenHeight() / getStage().getHeight();
+      HdpiUtils.glViewport(
+          Math.round(v.x), Math.round(v.y),
+          Math.round(getWidth() * screenScaleX), Math.round(getHeight() * screenScaleY));
 
       getStage().calculateScissors(bounds, scissors);
 

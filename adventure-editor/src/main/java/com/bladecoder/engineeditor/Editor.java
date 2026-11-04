@@ -8,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.ui.BladeSkin;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorUtils;
 import com.bladecoder.engineeditor.common.Message;
@@ -42,12 +42,15 @@ public class Editor implements ApplicationListener {
       EngineLogger.setDebug();
     }
 
+    stage = new Stage(EditorDpi.createViewport());
+    stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
     skin = new BladeSkin(Gdx.files.internal(SKIN));
+    EditorDpi.scaleFonts(skin);
     VisUI.load();
     FileChooser.setDefaultPrefsName("com.bladecoder.engineeditor.filechooser");
 
     /* STAGE SETUP */
-    stage = new Stage(new ScreenViewport());
     Gdx.input.setInputProcessor(stage);
 
     setCtx();

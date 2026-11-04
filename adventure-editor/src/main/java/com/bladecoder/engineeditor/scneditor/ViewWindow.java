@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class ViewWindow extends Container<Table> {
@@ -22,7 +22,7 @@ public class ViewWindow extends Container<Table> {
 
     Table table = new Table(skin);
     table.defaults().left().expandX();
-    table.top().pad(DPIUtils.getSpacing() / 2);
+    table.top().pad(EditorDpi.getSpacing() / 2);
     table.top();
     table.add(new Label("View", skin, "big")).center();
 

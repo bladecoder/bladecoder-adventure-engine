@@ -1,6 +1,5 @@
 package com.bladecoder.engineeditor.ui.panels;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.bladecoder.engineeditor.common.EditorDpi;
 
 public abstract class EditDialog extends Dialog {
 
@@ -36,18 +36,15 @@ public abstract class EditDialog extends Dialog {
     infoLbl.setWrap(true);
     centerPanel = new Table(skin);
     infoCell =
-        getContentTable()
-            .add((Widget) infoLbl)
-            .prefWidth(200)
-            .height(Gdx.graphics.getHeight() * 0.5f);
+        getContentTable().add((Widget) infoLbl).prefWidth(200).height(EditorDpi.getHeight() * 0.5f);
     getContentTable()
         .add(new ScrollPane(centerPanel, skin))
-        .maxHeight(Gdx.graphics.getHeight() * 0.8f)
-        .maxWidth(Gdx.graphics.getWidth() * 0.7f)
-        .minHeight(Gdx.graphics.getHeight() * 0.5f)
-        .minWidth(Gdx.graphics.getWidth() * 0.5f);
+        .maxHeight(EditorDpi.getHeight() * 0.8f)
+        .maxWidth(EditorDpi.getWidth() * 0.7f)
+        .minHeight(EditorDpi.getHeight() * 0.5f)
+        .minWidth(EditorDpi.getWidth() * 0.5f);
 
-    getContentTable().setHeight(Gdx.graphics.getHeight() * 0.7f);
+    getContentTable().setHeight(EditorDpi.getHeight() * 0.7f);
 
     centerPanel.addListener(
         new InputListener() {

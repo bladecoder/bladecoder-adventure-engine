@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.WindowUtils;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class DesktopLauncher extends BladeEngine {
 	private static final int WINDOW_WIDTH = 1920 / 2;
     private static final int WINDOW_HEIGHT = 1080 / 2;
 
+    private int windowHeight = WINDOW_HEIGHT;
     private boolean fullscreen = true;
     private boolean automationWindow;
     private Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
@@ -61,6 +63,19 @@ public class DesktopLauncher extends BladeEngine {
             iconList.add("icons/icon16.png");
 
         cfg.setWindowIcon(FileType.Internal, iconList.toArray(new String[0]));
+
+        // X11 sizes are pixels, including XWayland's globally scaled coordinate space.
+        // Native Wayland/macOS already use logical window sizes and must not be scaled again.
+        Lwjgl3ApplicationConfiguration.getDisplayMode(); // Initialize GLFW before querying it.
+        float scale = 1;
+        if (GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_X11) {
+            float[] x = {1}, y = {1};
+            GLFW.glfwGetMonitorContentScale(GLFW.glfwGetPrimaryMonitor(), x, y);
+            if (x[0] > 0 && Float.isFinite(x[0])) scale = x[0];
+        }
+        WindowUtils.setWindowScale(scale);
+        cfg.setWindowedMode(WindowUtils.toWindowUnits(WINDOW_WIDTH),
+                WindowUtils.toWindowUnits(windowHeight));
 
         new Lwjgl3Application(this, cfg);
 	}
@@ -108,11 +123,11 @@ public class DesktopLauncher extends BladeEngine {
 					String aspect = args[i];
 
                     if (aspect.equals("16:9")) {
-                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 9 / 16);
+                        windowHeight = WINDOW_WIDTH * 9 / 16;
                     } else if (aspect.equals("4:3")) {
-                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 3 / 4);
+                        windowHeight = WINDOW_WIDTH * 3 / 4;
                     } else if (aspect.equals("16:10") || aspect.equals("8:5")) {
-                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 10 / 16);
+                        windowHeight = WINDOW_WIDTH * 10 / 16;
                     }
 				}
 			} else if (s.equals("-w")) {
@@ -169,8 +184,6 @@ public class DesktopLauncher extends BladeEngine {
             cfg.setForegroundFPS(60);
             cfg.useVsync(false);
         }
-        if(!fullscreen)
-            cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 
     private static String value(String[] args, int index, String flag) {

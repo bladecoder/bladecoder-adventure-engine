@@ -30,8 +30,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.Message;
@@ -61,14 +61,14 @@ public class SceneList extends ModelList<World, Scene> {
     super(skin, true);
 
     HorizontalGroup chapterPanel = new HorizontalGroup();
-    chapterPanel.padRight(DPIUtils.MARGIN_SIZE);
+    chapterPanel.padRight(EditorDpi.getMarginSize());
 
     chapters = new SelectBox<>(skin);
     // chapters.setFillParent(true);
     TextButton inkBtn = new TextButton("Ink", skin, "no-toggled");
 
     TextTooltip t = new TextTooltip("Sets the Ink Story file", skin);
-    t.getContainer().pad(DPIUtils.getSpacing() / 2);
+    t.getContainer().pad(EditorDpi.getSpacing() / 2);
     inkBtn.addListener(t);
 
     inkBtn.addListener(

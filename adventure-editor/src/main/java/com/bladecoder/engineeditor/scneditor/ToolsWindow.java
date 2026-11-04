@@ -1,6 +1,5 @@
 package com.bladecoder.engineeditor.scneditor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.I18NUtils;
 import com.bladecoder.engineeditor.common.ImageUtils;
@@ -60,7 +59,7 @@ public class ToolsWindow extends Container<Table> {
     TextButton compileInk = new TextButton("Compile Ink Script", skin, "no-toggled");
 
     table.defaults().left().expandX();
-    table.top().pad(DPIUtils.getSpacing() / 2);
+    table.top().pad(EditorDpi.getSpacing() / 2);
     table.add(new Label("Tools", skin, "big")).center();
 
     Drawable drawable = skin.getDrawable("trans");
@@ -210,7 +209,7 @@ public class ToolsWindow extends Container<Table> {
 
   protected void createUIAtlas() {
     FileChooser fileChooser = new FileChooser(Mode.OPEN);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(ViewMode.LIST);
 
     fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
@@ -258,7 +257,7 @@ public class ToolsWindow extends Container<Table> {
 
   protected void exportUIImages() {
     FileChooser fileChooser = new FileChooser(Mode.OPEN);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(ViewMode.LIST);
 
     fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
@@ -292,7 +291,7 @@ public class ToolsWindow extends Container<Table> {
   private void exportTSV() {
 
     FileChooser fileChooser = new FileChooser(Mode.SAVE);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(ViewMode.LIST);
 
     fileChooser.setSelectionMode(SelectionMode.FILES);
@@ -329,7 +328,7 @@ public class ToolsWindow extends Container<Table> {
   private void importTSV() {
 
     FileChooser fileChooser = new FileChooser(Mode.OPEN);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(ViewMode.LIST);
 
     fileChooser.setSelectionMode(SelectionMode.FILES);

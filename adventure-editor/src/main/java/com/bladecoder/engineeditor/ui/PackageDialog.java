@@ -20,6 +20,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.HttpUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.OrderedProperties;
@@ -352,7 +353,7 @@ public class PackageDialog extends EditDialog {
 
   private void downloadJDK(String url, String fileName) {
     FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(FileChooser.ViewMode.LIST);
 
     fileChooser.setSelectionMode(FileChooser.SelectionMode.DIRECTORIES);

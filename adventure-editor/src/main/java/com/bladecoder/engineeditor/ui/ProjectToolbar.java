@@ -17,8 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorUtils;
 import com.bladecoder.engineeditor.common.Message;
@@ -63,7 +63,7 @@ public class ProjectToolbar extends Table {
     atlasBtn = new ImageButton(skin);
 
     fileChooser = new FileChooser(Mode.OPEN);
-    fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+    fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
     fileChooser.setViewMode(ViewMode.LIST);
 
     addToolBarButton(skin, newBtn, "ic_new", "New", "Create a new project");
@@ -212,7 +212,7 @@ public class ProjectToolbar extends Table {
     add(button);
     button.setDisabled(true);
     TextTooltip t = new TextTooltip(tooltip, skin);
-    t.getContainer().pad(DPIUtils.getSpacing() / 2);
+    t.getContainer().pad(EditorDpi.getSpacing() / 2);
     button.addListener(t);
   }
 

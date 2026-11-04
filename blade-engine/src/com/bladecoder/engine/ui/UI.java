@@ -18,6 +18,7 @@ import com.bladecoder.engine.ui.retro.VerbUI;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engine.util.WindowUtils;
 
 public class UI {
 
@@ -44,7 +45,8 @@ public class UI {
   private final TesterBot testerBot;
   private final RemoteControlServer remoteControlServer;
 
-  private boolean fullscreen = false;
+  private int windowWidth;
+  private int windowHeight;
 
   private BladeScreen screen;
 
@@ -231,12 +233,15 @@ public class UI {
   }
 
   public void toggleFullScreen() {
-    if (!fullscreen) {
+    if (!Gdx.graphics.isFullscreen()) {
+      // These are already backend units; restore them without applying the scale twice.
+      windowWidth = Gdx.graphics.getWidth();
+      windowHeight = Gdx.graphics.getHeight();
       Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-      fullscreen = true;
+    } else if (windowWidth > 0 && windowHeight > 0) {
+      Gdx.graphics.setWindowedMode(windowWidth, windowHeight);
     } else {
-      Gdx.graphics.setWindowedMode(w.getWidth(), w.getHeight());
-      fullscreen = false;
+      WindowUtils.setWindowedMode(w.getWidth(), w.getHeight());
     }
   }
 

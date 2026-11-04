@@ -1,6 +1,5 @@
 package com.bladecoder.engineeditor.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorDpi;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ImageUtils;
 import com.bladecoder.engineeditor.common.Message;
@@ -215,7 +215,7 @@ public class AssetsList extends Table {
       fileChooser.setSelectionMode(SelectionMode.FILES);
       fileChooser.setMultiSelectionEnabled(true);
 
-      fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+      fileChooser.setSize(EditorDpi.getWidth() * 0.7f, EditorDpi.getHeight() * 0.7f);
       fileChooser.setViewMode(ViewMode.LIST);
 
       getStage().addActor(fileChooser);
