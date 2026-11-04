@@ -402,13 +402,14 @@ public class ScnWidget extends Widget {
 
       worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
 
-      float x = tmpV2Transform.x;
-      float y = tmpV2Transform.y;
+      // The batch draws in parent coordinates; projection returns widget-local coordinates.
+      float x = tmpV2Transform.x + getX();
+      float y = tmpV2Transform.y + getY();
 
       worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
 
-      float x2 = tmpV2Transform.x;
-      float y2 = tmpV2Transform.y;
+      float x2 = tmpV2Transform.x + getX();
+      float y2 = tmpV2Transform.y + getY();
 
       batch.draw(scnMoveIcon, x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2);
 
