@@ -643,30 +643,24 @@ public class ScnWidget extends Widget {
   }
 
   public void localToWorldCoords(Vector2 coords) {
-    localToStageCoordinates(coords);
-    getStage().stageToScreenCoordinates(coords);
-
-    tmpV3.set(coords.x, coords.y, 0);
-    camera.unproject(tmpV3, getX(), getY(), getWidth(), getHeight());
+    // Convert widget-local coordinates to the scene camera's normalized viewport.
+    tmpV3.set(2 * coords.x / getWidth() - 1, 2 * coords.y / getHeight() - 1, -1);
+    tmpV3.prj(camera.invProjectionView);
     coords.set(tmpV3.x, tmpV3.y);
   }
 
   public void screenToWorldCoords(Vector2 coords) {
-    tmpV2.set(0, 0);
-    localToStageCoordinates(tmpV2);
-    // getStage().stageToScreenCoordinates(tmpV2);
-    tmpV3.set(coords.x, coords.y, 0);
-    camera.unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
-    coords.set(tmpV3.x, tmpV3.y);
+    // The stage viewport accounts for desktop scaling before entering widget units.
+    getStage().screenToStageCoordinates(coords);
+    stageToLocalCoordinates(coords);
+    localToWorldCoords(coords);
   }
 
+  /** Projects scene coordinates into widget-local units for overlay drawing and hit testing. */
   public void worldToScreenCoords(Vector2 coords) {
-    tmpV2.set(getX(), getY());
-    localToStageCoordinates(tmpV2);
     tmpV3.set(coords.x, coords.y, 0);
-    camera.project(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
+    camera.project(tmpV3, 0, 0, getWidth(), getHeight());
     coords.set(tmpV3.x, tmpV3.y);
-    stageToLocalCoordinates(coords);
   }
 
   public boolean inScaleIcon(float px, float py) {

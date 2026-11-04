@@ -16,6 +16,7 @@ import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
@@ -46,6 +47,7 @@ public class AnimationWidget extends Widget {
       renderer = new AtlasRenderer();
     }
 
+    renderer.setWorld(Ctx.project.getWorld());
     renderer.setOrgAlign(Align.bottom);
 
     try {

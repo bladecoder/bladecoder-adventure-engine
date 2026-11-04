@@ -8,6 +8,7 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.*;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engineeditor.Ctx;
 
 /**
  * Frame Animation renderer.
@@ -47,6 +48,7 @@ public class AnimationDrawer {
         renderer = new AtlasRenderer();
       }
 
+      renderer.setWorld(Ctx.project.getWorld());
       renderer.setOrgAlign(Align.bottom);
     }
   }
