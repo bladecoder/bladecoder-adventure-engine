@@ -63,8 +63,14 @@ public class AtlasRenderer extends AnimationRenderer {
   }
 
   public void setFrame(int i) {
+    Array<AtlasRegion> regions =
+        currentAnimation == null ? null : ((AtlasAnimationDesc) currentAnimation).regions;
+    if (regions == null || i < 0 || i >= regions.size) {
+      tex = null;
+      return;
+    }
     currentFrameIndex = i;
-    tex = ((AtlasAnimationDesc) currentAnimation).regions.get(i);
+    tex = regions.get(i);
   }
 
   @Override
@@ -144,12 +150,16 @@ public class AtlasRenderer extends AnimationRenderer {
     if (fa.regions == null) {
 
       retrieveFA(fa);
+    }
 
-      if (fa.regions == null || fa.regions.size == 0) {
-        EngineLogger.error(
-            currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
-        fanims.remove(currentAnimation.id);
-      }
+    if (fa.regions == null || fa.regions.size == 0) {
+      EngineLogger.error(
+          currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
+      tex = null;
+      faTween = null;
+      computeBbox();
+      if (cb != null) cb.resume();
+      return;
     }
 
     if (fa.regions.size == 1 || fa.duration == 0.0) {
