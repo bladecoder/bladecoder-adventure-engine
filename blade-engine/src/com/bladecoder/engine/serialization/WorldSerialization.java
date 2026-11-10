@@ -93,6 +93,15 @@ public class WorldSerialization implements Serializable {
   }
 
   public void saveWorldDesc(FileHandle file) throws IOException {
+    String s = worldDescToJson();
+
+    Writer w = file.writer(false, "UTF-8");
+    w.write(s);
+    w.close();
+  }
+
+  /** Serializes the world description using the same MODEL format as the editor. */
+  public String worldDescToJson() {
 
     float scale = EngineAssetManager.getInstance().getScale();
 
@@ -108,14 +117,8 @@ public class WorldSerialization implements Serializable {
     w.getVerbManager().write(json);
     json.writeObjectEnd();
 
-    String s = null;
-
-    if (EngineLogger.debugMode()) s = json.prettyPrint(json.getWriter().getWriter().toString());
-    else s = json.getWriter().getWriter().toString();
-
-    Writer w = file.writer(false, "UTF-8");
-    w.write(s);
-    w.close();
+    String s = json.getWriter().getWriter().toString();
+    return json.prettyPrint(s);
   }
 
   public void loadChapter() throws IOException {
@@ -185,13 +188,7 @@ public class WorldSerialization implements Serializable {
 
     if (w.isDisposed()) return;
 
-    Json json = new BladeJson(w, Mode.MODEL);
-    json.setOutputType(OutputType.json);
-
-    String s = null;
-
-    if (EngineLogger.debugMode()) s = json.prettyPrint(this);
-    else s = json.toJson(this);
+    String s = modelToJson();
 
     Writer w =
         EngineAssetManager.getInstance()
@@ -206,6 +203,15 @@ public class WorldSerialization implements Serializable {
     } finally {
       w.close();
     }
+  }
+
+  /** Serializes the loaded chapter using the same MODEL format as the editor. */
+  public String modelToJson() {
+
+    Json json = new BladeJson(w, Mode.MODEL);
+    json.setOutputType(OutputType.json);
+
+    return json.prettyPrint(this);
   }
 
   public void loadGameState(FileHandle savedFile) throws IOException {

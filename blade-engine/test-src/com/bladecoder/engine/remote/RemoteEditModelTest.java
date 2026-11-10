@@ -35,7 +35,7 @@ final class RemoteEditModelTest {
           root.resolve("00.chapter.json"),
           "{initScene:room,scenes:{room:{id:room,layers:[],actors:{hero:{id:hero,class:AnchorActor,bbox:[],pos:{x:0,y:0}}},player:hero,verbs:{init:{id:init,actions:[{class:Camera,followActor:none}]}}}}}"
               .getBytes(StandardCharsets.UTF_8));
-      RemoteEditModel model = new RemoteEditModel(project);
+      RemoteEditModel model = new RemoteEditModel(project, false);
       RemoteProtocolTest.check(model.revision == 0, "camera followActor none is a valid sentinel");
       JsonValue badCamera =
           json(
@@ -86,7 +86,7 @@ final class RemoteEditModelTest {
           new String(Files.readAllBytes(root.resolve("00.chapter.json")), StandardCharsets.UTF_8)
               .contains("10"),
           "explicit save persists authored content");
-      RemoteEditModel reopened = new RemoteEditModel(project);
+      RemoteEditModel reopened = new RemoteEditModel(project, false);
       RemoteProtocolTest.check(reopened.chapter("00") != null, "saved model reopens");
       Files.write(
           root.resolve("00.chapter.json"), "external edit".getBytes(StandardCharsets.UTF_8));

@@ -5,7 +5,10 @@ import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActionProperty;
 import com.bladecoder.engine.actions.CameraAction;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.serialization.BladeJson;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
@@ -15,16 +18,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-/** Lossless authoring workspace. Never serializes a running game's STATE. */
+/** MODEL authoring workspace. Never serializes a running game's STATE. */
 final class RemoteEditModel {
   private final Path root;
+  private final boolean loadTypedModels;
   private final RemoteEditSchema schema = new RemoteEditSchema();
   private Map<String, JsonValue> documents = new LinkedHashMap<>();
+  private Map<String, World> models = new LinkedHashMap<>();
   private final Map<String, byte[]> originals = new LinkedHashMap<>();
   private final Set<String> dirty = new LinkedHashSet<>();
   long revision;
 
   RemoteEditModel(Path project) throws IOException {
+    this(project, true);
+  }
+
+  /** The headless protocol fixture keeps its filesystem checks without creating GL resources. */
+  RemoteEditModel(Path project, boolean loadTypedModels) throws IOException {
+    this.loadTypedModels = loadTypedModels;
     root = project.toRealPath().resolve("assets/model").toRealPath();
     if (!root.startsWith(project.toRealPath()))
       throw new IOException("Model directory escapes project");
@@ -44,6 +55,7 @@ final class RemoteEditModel {
       }
     }
     validate(documents);
+    if (loadTypedModels) models = loadModels(documents);
   }
 
   private String worldName() {
@@ -143,13 +155,17 @@ final class RemoteEditModel {
 
   void applyWithPreview(JsonValue commands, long expected, Preview preview) throws Exception {
     Map<String, JsonValue> old = documents;
+    Map<String, World> oldModels = models;
     Set<String> oldDirty = new LinkedHashSet<>(dirty);
     long oldRevision = revision;
     try {
-      apply(commands, expected);
+      applyInternal(commands, expected);
       preview.validate();
+      disposeModels(oldModels);
     } catch (Exception failure) {
+      if (models != oldModels) disposeModels(models);
       documents = old;
+      models = oldModels;
       dirty.clear();
       dirty.addAll(oldDirty);
       revision = oldRevision;
@@ -158,6 +174,12 @@ final class RemoteEditModel {
   }
 
   void apply(JsonValue commands, long expected) {
+    Map<String, World> oldModels = models;
+    applyInternal(commands, expected);
+    disposeModels(oldModels);
+  }
+
+  private void applyInternal(JsonValue commands, long expected) {
     if (expected != revision) throw new IllegalStateException("Revision conflict");
     Map<String, JsonValue> next = new LinkedHashMap<>();
     for (Map.Entry<String, JsonValue> doc : documents.entrySet())
@@ -165,12 +187,71 @@ final class RemoteEditModel {
     for (JsonValue command : commands)
       mutate(next, command.getString("operation"), command.require("arguments"));
     validate(next);
+    Map<String, World> nextModels = loadTypedModels ? loadModels(next) : new LinkedHashMap<>();
     Set<String> changed = new LinkedHashSet<>(documents.keySet());
     changed.addAll(next.keySet());
+    try {
+      for (String name : changed) {
+        if (Objects.equals(encoded(documents.get(name)), encoded(next.get(name)))) continue;
+        if (!loadTypedModels) continue;
+        if (name.equals(worldName())) {
+          World model = nextModels.values().iterator().next();
+          next.put(name, new JsonReader().parse(model.getSerializer().worldDescToJson()));
+        } else if (name.endsWith(".chapter.json") && nextModels.containsKey(name)) {
+          next.put(
+              name, new JsonReader().parse(nextModels.get(name).getSerializer().modelToJson()));
+        }
+      }
+      validate(next);
+    } catch (RuntimeException failure) {
+      disposeModels(nextModels);
+      throw failure;
+    }
     for (String name : changed)
       if (!Objects.equals(encoded(documents.get(name)), encoded(next.get(name)))) dirty.add(name);
     documents = next;
+    models = nextModels;
     revision++;
+  }
+
+  private Map<String, World> loadModels(Map<String, JsonValue> docs) {
+    Map<String, World> loaded = new LinkedHashMap<>();
+    JsonValue description = required(docs.get(worldName()));
+    float scale = EngineAssetManager.getInstance().getScale();
+    try {
+      for (Map.Entry<String, JsonValue> entry : docs.entrySet()) {
+        if (!entry.getKey().endsWith(".chapter.json")) continue;
+        World model = new World();
+        try {
+          model.setWidth((int) (description.getInt("width") * scale));
+          model.setHeight((int) (description.getInt("height") * scale));
+          model.setInitChapter(description.getString("initChapter"));
+          BladeJson json = new BladeJson(model, BladeJson.Mode.MODEL, false);
+          json.setIgnoreUnknownFields(true);
+          model.getVerbManager().read(json, copy(description));
+          model.getSerializer().read(json, copy(entry.getValue()));
+          model.setChapter(
+              entry.getKey().substring(0, entry.getKey().length() - ".chapter.json".length()));
+          loaded.put(entry.getKey(), model);
+        } catch (RuntimeException failure) {
+          model.dispose();
+          throw failure;
+        }
+      }
+      return loaded;
+    } catch (RuntimeException failure) {
+      disposeModels(loaded);
+      throw failure;
+    }
+  }
+
+  private static void disposeModels(Map<String, World> values) {
+    for (World model : values.values()) model.dispose();
+  }
+
+  void close() {
+    disposeModels(models);
+    models.clear();
   }
 
   private static String encoded(JsonValue value) {
@@ -433,10 +514,13 @@ final class RemoteEditModel {
         }
         Path tmp = Files.createTempFile(root, ".edit-", ".tmp");
         try {
-          Files.write(
-              tmp,
-              (documents.get(name).prettyPrint(JsonWriter.OutputType.json, 0) + "\n")
-                  .getBytes(StandardCharsets.UTF_8));
+          String content;
+          if (!loadTypedModels)
+            content = documents.get(name).prettyPrint(JsonWriter.OutputType.json, 0) + "\n";
+          else if (name.equals(worldName()))
+            content = models.values().iterator().next().getSerializer().worldDescToJson();
+          else content = models.get(name).getSerializer().modelToJson();
+          Files.write(tmp, content.getBytes(StandardCharsets.UTF_8));
           Files.move(
               tmp,
               root.resolve(name),

@@ -222,6 +222,7 @@ final class RemoteEditSession {
 
   void close() {
     if (preview != null) preview.dispose();
+    model.close();
     lines.dispose();
     batch.dispose();
   }
