@@ -143,6 +143,8 @@ public class DesktopLauncher extends BladeEngine {
                 setContentOverrideDirectory(value(args, ++i, s));
             } else if (s.equals("-edit-project")) {
                 setEditProject(value(args, ++i, s));
+            } else if (s.equals("-edit-allow-missing-references")) {
+                setEditAllowMissingReferences(true);
             } else if (s.equals("-http-mode")) {
                 httpOptions = true;
                 httpMode = value(args, ++i, s);
@@ -205,6 +207,7 @@ public class DesktopLauncher extends BladeEngine {
 				+ "-http [port]\tEnable localhost HTTP remote control (default: 8080; 0 selects an available port in debug/edit mode)\n"
                 + "-http-mode player|debug|edit\tSelect HTTP capabilities (default: player)\n"
                 + "-edit-project DIRECTORY\tCanonical project root required by edit mode\n"
+                + "-edit-allow-missing-references\tOpen edit mode with broken object references and log warnings\n"
                 + "-http-info path\tWrite a new private discovery file\n"
                 + "-content-overrides path\tEnable an explicit external content store (restart boundary)\n"
                 + "-automation-window\tUse an invisible continuously rendered GL window for unattended tests\n"

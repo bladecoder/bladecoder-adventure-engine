@@ -33,10 +33,16 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
   private volatile RemoteDebugSession debugSession;
   private RemoteEditSession editSession;
   private String editProject, editChapter;
+  private boolean editAllowMissingReferences;
 
   public void configureEdit(String project, String chapter) {
+    configureEdit(project, chapter, false);
+  }
+
+  public void configureEdit(String project, String chapter, boolean allowMissingReferences) {
     editProject = project;
     editChapter = chapter;
+    editAllowMissingReferences = allowMissingReferences;
   }
 
   public boolean renderEdit() {
@@ -114,7 +120,7 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
       if (mode == RemoteControlMode.DEBUG)
         debugSession = new RemoteDebugSession(ui, world, commandExecutor);
       if (mode == RemoteControlMode.EDIT)
-        editSession = new RemoteEditSession(editProject, editChapter);
+        editSession = new RemoteEditSession(editProject, editChapter, editAllowMissingReferences);
       running = true;
       lastError = null;
 

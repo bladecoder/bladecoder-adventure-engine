@@ -40,6 +40,11 @@ public class BladeEngine implements ApplicationListener {
   }
 
   private String editProject;
+  private boolean editAllowMissingReferences;
+
+  public void setEditAllowMissingReferences(boolean allow) {
+    editAllowMissingReferences = allow;
+  }
 
   public void setEditProject(String path) {
     editProject = path;
@@ -143,11 +148,13 @@ public class BladeEngine implements ApplicationListener {
           "Edit mode requires an explicit project and HTTP server, without gameplay startup options");
     if (!editing() && editProject != null)
       throw new IllegalArgumentException("Edit project requires edit mode");
+    if (!editing() && editAllowMissingReferences)
+      throw new IllegalArgumentException("Allowing missing references requires edit mode");
     loadGame(editing() ? new java.io.File(editProject, "assets").getAbsolutePath() : null);
     if (editing()) {
       if (com.bladecoder.engine.assets.EngineAssetManager.getContentOverrides() != null)
         throw new IllegalArgumentException("Edit mode rejects content overrides");
-      ui.getRemoteControlServer().configureEdit(editProject, chapter);
+      ui.getRemoteControlServer().configureEdit(editProject, chapter, editAllowMissingReferences);
     }
 
     if (remoteControlPort != null)

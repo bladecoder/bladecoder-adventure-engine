@@ -9,6 +9,11 @@ localization bundles, source assets and recipes retain their discipline workflow
 Start a source session with an engine and generated DesktopLauncher that support
 `-http-mode edit -edit-project ABSOLUTE_PROJECT_ROOT`. Older engines/launchers must
 be updated first. Editing uses canonical assets, not packaged JARs or overrides.
+If object references are broken, launch the generated DesktopLauncher with
+`-http-mode edit -edit-project ABSOLUTE_PROJECT_ROOT -edit-allow-missing-references`.
+Startup logs each missing reference as `EDIT WARNING`; `/edit/v1/session` also
+lists them in `model.missing_references`. The preview may be unavailable until
+the broken references are corrected, but queries, edits, and saves remain available.
 
 ```sh
 python3 -B ai-toolkit/tools/project.py edit start --out /new/edit-session --chapter 00 --json

@@ -95,6 +95,26 @@ final class RemoteEditModelTest {
         throw new AssertionError("external edit overwritten");
       } catch (IOException expected) {
       }
+      Files.write(
+          root.resolve("00.chapter.json"),
+          "{initScene:room,scenes:{room:{id:room,layers:[],actors:{hero:{id:hero,class:AnchorActor,bbox:[],pos:{x:0,y:0}}},player:ghost,verbs:{init:{id:init,actions:[{class:Camera,target:ghost}]}}}}}"
+              .getBytes(StandardCharsets.UTF_8));
+      try {
+        new RemoteEditModel(project, false);
+        throw new AssertionError("strict edit accepted broken references");
+      } catch (IllegalArgumentException expected) {
+      }
+      RemoteEditModel repair = new RemoteEditModel(project, false, true);
+      RemoteProtocolTest.check(
+          repair.status().toString().contains("ghost"), "repair mode reports missing references");
+      repair.apply(
+          json(
+              "[{operation:entity.update,arguments:{target:{kind:scene,id:room,parent:{kind:chapter,id:\"00\"}},fields:{player:hero}}}]"),
+          0);
+      RemoteProtocolTest.check(
+          repair.status().toString().contains("ghost"), "repair mode permits partial corrections");
+      repair.save(1);
+      repair.close();
       return 6;
     } finally {
       try (Stream<Path> paths = Files.walk(project)) {

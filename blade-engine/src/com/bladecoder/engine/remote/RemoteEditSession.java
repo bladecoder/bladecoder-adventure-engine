@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.*;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.*;
 import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.util.EngineLogger;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
@@ -21,6 +22,7 @@ import java.util.zip.Deflater;
 final class RemoteEditSession {
   final String token = UUID.randomUUID().toString();
   private final RemoteEditModel model;
+  private final boolean allowMissingReferences;
   private final Map<String, String> requests = new LinkedHashMap<>();
   private final Map<String, Object> results = new LinkedHashMap<>();
   private final Map<String, byte[]> artifacts = new LinkedHashMap<>();
@@ -31,9 +33,32 @@ final class RemoteEditSession {
   private String chapterId, sceneId;
 
   RemoteEditSession(String project, String chapter) throws Exception {
-    model = new RemoteEditModel(Paths.get(project));
+    this(project, chapter, false);
+  }
+
+  RemoteEditSession(String project, String chapter, boolean allowMissingReferences)
+      throws Exception {
+    this.allowMissingReferences = allowMissingReferences;
+    model = new RemoteEditModel(Paths.get(project), true, allowMissingReferences);
     chapterId = chapter == null ? model.initialChapter() : chapter;
-    select(chapterId, null);
+    if (allowMissingReferences) refreshPreview();
+    else select(chapterId, null);
+  }
+
+  private void refreshPreview() throws Exception {
+    try {
+      String chapter = model.chapter(chapterId) == null ? model.initialChapter() : chapterId;
+      JsonValue value = model.chapter(chapter);
+      if (value == null) throw new IllegalArgumentException("Unknown chapter: " + chapter);
+      select(chapter, sceneId != null && value.require("scenes").has(sceneId) ? sceneId : null);
+    } catch (Exception failure) {
+      if (!allowMissingReferences) throw failure;
+      EngineLogger.error("EDIT WARNING: Preview unavailable: " + failure.getMessage());
+      if (preview != null) preview.dispose();
+      preview = null;
+      scene = null;
+      sceneId = null;
+    }
   }
 
   private void select(String chapter, String selected) throws Exception {
@@ -132,17 +157,19 @@ final class RemoteEditSession {
                 "scene",
                 sceneId,
                 "viewport",
-                RemoteDebugState.map(
-                    "width",
-                    preview.getWidth(),
-                    "height",
-                    preview.getHeight(),
-                    "x",
-                    scene.getCamera().position.x,
-                    "y",
-                    scene.getCamera().position.y,
-                    "scale",
-                    EngineAssetManager.getInstance().getScale())));
+                preview == null
+                    ? null
+                    : RemoteDebugState.map(
+                        "width",
+                        preview.getWidth(),
+                        "height",
+                        preview.getHeight(),
+                        "x",
+                        scene.getCamera().position.x,
+                        "y",
+                        scene.getCamera().position.y,
+                        "scale",
+                        EngineAssetManager.getInstance().getScale())));
       if (request.method.equals("GET") && path.startsWith("/commands/"))
         return results.containsKey(path.substring(10))
             ? response(200, results.get(path.substring(10)))
@@ -201,10 +228,7 @@ final class RemoteEditSession {
             commands,
             model.revision,
             () -> {
-              String chapter =
-                  model.chapter(chapterId) == null ? model.initialChapter() : chapterId;
-              JsonValue valueModel = model.chapter(chapter);
-              select(chapter, valueModel.require("scenes").has(sceneId) ? sceneId : null);
+              refreshPreview();
             });
         value = model.status();
       }

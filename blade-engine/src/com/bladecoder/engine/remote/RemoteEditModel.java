@@ -1,5 +1,6 @@
 package com.bladecoder.engine.remote;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.*;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActionProperty;
@@ -9,6 +10,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.util.EngineLogger;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.channels.FileChannel;
@@ -22,6 +24,8 @@ import java.util.*;
 final class RemoteEditModel {
   private final Path root;
   private final boolean loadTypedModels;
+  private final boolean allowMissingReferences;
+  private final List<String> missingReferences = new ArrayList<>();
   private final RemoteEditSchema schema = new RemoteEditSchema();
   private Map<String, JsonValue> documents = new LinkedHashMap<>();
   private Map<String, World> models = new LinkedHashMap<>();
@@ -35,7 +39,13 @@ final class RemoteEditModel {
 
   /** The headless protocol fixture keeps its filesystem checks without creating GL resources. */
   RemoteEditModel(Path project, boolean loadTypedModels) throws IOException {
-    this.loadTypedModels = loadTypedModels;
+    this(project, loadTypedModels, false);
+  }
+
+  RemoteEditModel(Path project, boolean loadTypedModels, boolean allowMissingReferences)
+      throws IOException {
+    this.loadTypedModels = loadTypedModels && !allowMissingReferences;
+    this.allowMissingReferences = allowMissingReferences;
     root = project.toRealPath().resolve("assets/model").toRealPath();
     if (!root.startsWith(project.toRealPath()))
       throw new IOException("Model directory escapes project");
@@ -75,7 +85,18 @@ final class RemoteEditModel {
   }
 
   Object status() {
-    return RemoteDebugState.map("revision", revision, "dirty", new ArrayList<>(dirty));
+    return RemoteDebugState.map(
+        "revision",
+        revision,
+        "dirty",
+        new ArrayList<>(dirty),
+        "missing_references",
+        new ArrayList<>(missingReferences));
+  }
+
+  private void missing(String message, List<String> warnings) {
+    if (!allowMissingReferences) throw new IllegalArgumentException(message);
+    warnings.add(message);
   }
 
   static JsonValue copy(JsonValue value) {
@@ -349,27 +370,34 @@ final class RemoteEditModel {
   }
 
   private void validate(Map<String, JsonValue> docs) {
+    List<String> warnings = new ArrayList<>();
     JsonValue world = required(docs.get(worldName()));
     schema.validate(world, "world");
     if (world.getInt("width") <= 0 || world.getInt("height") <= 0)
       throw new IllegalArgumentException("World dimensions must be positive");
     String initial = world.getString("initChapter");
     if (!docs.containsKey(initial + ".chapter.json"))
-      throw new IllegalArgumentException("Missing initial chapter: " + initial);
+      missing("Missing initial chapter: " + initial, warnings);
     for (Map.Entry<String, JsonValue> doc : docs.entrySet())
       if (doc.getKey().endsWith(".chapter.json")) {
         JsonValue chapter = doc.getValue(), scenes = chapter.require("scenes");
         schema.validate(chapter, "chapter");
-        if (!scenes.isObject() || !scenes.has(chapter.getString("initScene")))
-          throw new IllegalArgumentException("Missing initial scene in " + doc.getKey());
+        if (!scenes.isObject())
+          throw new IllegalArgumentException("Invalid scenes in " + doc.getKey());
+        if (!scenes.has(chapter.getString("initScene")))
+          missing(
+              "Missing initial scene in " + doc.getKey() + ": " + chapter.getString("initScene"),
+              warnings);
         for (JsonValue scene : scenes) {
           if (!scene.name.equals(scene.getString("id")))
             throw new IllegalArgumentException("Scene key/id mismatch");
           JsonValue actors = scene.require("actors");
           String player = scene.getString("player", null);
           if (player != null && !actors.has(player))
-            throw new IllegalArgumentException("Missing player: " + player);
-          references(scene, scenes, scene, docs, doc.getKey() + "/scenes/" + scene.name);
+            missing(
+                doc.getKey() + "/scenes/" + scene.name + "/player: missing actor " + player,
+                warnings);
+          references(scene, scenes, scene, docs, doc.getKey() + "/scenes/" + scene.name, warnings);
           for (JsonValue actor : actors) {
             if (!actor.name.equals(actor.getString("id")))
               throw new IllegalArgumentException("Actor key/id mismatch");
@@ -386,14 +414,39 @@ final class RemoteEditModel {
               boolean found = false;
               for (JsonValue candidate : scene.get("layers"))
                 if (layer.equals(candidate.getString("name"))) found = true;
-              if (!found) throw new IllegalArgumentException("Missing layer: " + layer);
+              if (!found)
+                missing(
+                    doc.getKey()
+                        + "/scenes/"
+                        + scene.name
+                        + "/actors/"
+                        + actor.name
+                        + "/layer: missing layer "
+                        + layer,
+                    warnings);
             }
             JsonValue renderer = actor.get("renderer");
             if (renderer != null && !hasInitialAnimation(renderer))
-              throw new IllegalArgumentException("Missing initial animation: " + actor.name);
+              missing(
+                  doc.getKey()
+                      + "/scenes/"
+                      + scene.name
+                      + "/actors/"
+                      + actor.name
+                      + ": missing initial animation",
+                  warnings);
           }
         }
       }
+    if (allowMissingReferences) {
+      for (String warning : warnings)
+        if (!missingReferences.contains(warning)) {
+          if (Gdx.app == null) System.err.println("EDIT WARNING: " + warning);
+          else EngineLogger.error("EDIT WARNING: " + warning);
+        }
+      missingReferences.clear();
+      missingReferences.addAll(warnings);
+    }
   }
 
   static boolean hasInitialAnimation(JsonValue renderer) {
@@ -410,7 +463,12 @@ final class RemoteEditModel {
   }
 
   private void references(
-      JsonValue node, JsonValue scenes, JsonValue scene, Map<String, JsonValue> docs, String path) {
+      JsonValue node,
+      JsonValue scenes,
+      JsonValue scene,
+      Map<String, JsonValue> docs,
+      String path,
+      List<String> warnings) {
     if (node.isObject() && node.has("class")) {
       Class<?> type = ActionFactory.getClassTags().get(node.getString("class"));
       if (type == null)
@@ -431,19 +489,15 @@ final class RemoteEditModel {
               || ref.equals("inventory")
               || ref.equals("previous")) continue;
           if (semantic.equals("CHAPTER") && !docs.containsKey(ref + ".chapter.json"))
-            throw new IllegalArgumentException(
-                path + "/" + field.getName() + ": missing chapter " + ref);
+            missing(path + "/" + field.getName() + ": missing chapter " + ref, warnings);
           if (semantic.equals("SOUND")) {
             boolean found = false;
             for (JsonValue document : docs.values())
               if (document.has("sounds") && document.get("sounds").has(ref)) found = true;
-            if (!found)
-              throw new IllegalArgumentException(
-                  path + "/" + field.getName() + ": missing sound " + ref);
+            if (!found) missing(path + "/" + field.getName() + ": missing sound " + ref, warnings);
           }
           if (semantic.equals("SCENE") && !scenes.has(ref))
-            throw new IllegalArgumentException(
-                path + "/" + field.getName() + ": missing scene " + ref);
+            missing(path + "/" + field.getName() + ": missing scene " + ref, warnings);
           if (semantic.contains("ACTOR") && !semantic.equals("ACTOR_ANIMATION")) {
             JsonValue owner = scene;
             String actor = ref;
@@ -451,8 +505,10 @@ final class RemoteEditModel {
             if (separator >= 0) {
               owner = scenes.get(ref.substring(0, separator));
               actor = ref.substring(separator + 1);
-              if (owner == null)
-                throw new IllegalArgumentException(path + ": missing scene in " + ref);
+              if (owner == null) {
+                missing(path + "/" + field.getName() + ": missing scene in " + ref, warnings);
+                continue;
+              }
             }
             if (owner != null && !actor.startsWith("$") && !owner.require("actors").has(actor)) {
               boolean exists = false;
@@ -460,14 +516,19 @@ final class RemoteEditModel {
                 for (JsonValue candidate : scenes)
                   if (candidate.require("actors").has(actor)) exists = true;
               if (!exists)
-                throw new IllegalArgumentException(
-                    path + "/" + field.getName() + ": missing actor " + ref);
+                missing(path + "/" + field.getName() + ": missing actor " + ref, warnings);
             }
           }
         }
     }
     for (JsonValue child : node)
-      references(child, scenes, scene, docs, path + "/" + (child.name == null ? "[]" : child.name));
+      references(
+          child,
+          scenes,
+          scene,
+          docs,
+          path + "/" + (child.name == null ? "[]" : child.name),
+          warnings);
   }
 
   void save(long expected) throws IOException {
