@@ -30,6 +30,8 @@ final class RemoteEditModel {
   private Map<String, JsonValue> documents = new LinkedHashMap<>();
   private Map<String, World> models = new LinkedHashMap<>();
   private final Map<String, byte[]> originals = new LinkedHashMap<>();
+  private final Map<String, byte[]> propertyOriginals = new LinkedHashMap<>();
+  private Map<String, byte[]> properties = new LinkedHashMap<>();
   private final Set<String> dirty = new LinkedHashSet<>();
   long revision;
 
@@ -65,7 +67,22 @@ final class RemoteEditModel {
       }
     }
     validate(documents);
+    loadProperties();
     if (loadTypedModels) models = loadModels(documents);
+  }
+
+  private void loadProperties() throws IOException {
+    LinkedHashSet<String> names = new LinkedHashSet<>();
+    names.add("world.properties");
+    for (String name : documents.keySet())
+      if (name.endsWith(".chapter.json"))
+        names.add(name.substring(0, name.length() - ".chapter.json".length()) + ".properties");
+    for (String name : names) {
+      Path file = root.resolve(name);
+      byte[] bytes = Files.exists(file) ? Files.readAllBytes(file) : new byte[0];
+      properties.put(name, bytes);
+      if (Files.exists(file)) propertyOriginals.put(name, bytes);
+    }
   }
 
   private String worldName() {
@@ -100,8 +117,7 @@ final class RemoteEditModel {
   }
 
   static JsonValue copy(JsonValue value) {
-    if (value.isNull()) return new JsonValue(JsonValue.ValueType.nullValue);
-    return new JsonReader().parse(value.toJson(JsonWriter.OutputType.json));
+    return new JsonValue(value);
   }
 
   private static String collection(String kind) {
@@ -177,6 +193,7 @@ final class RemoteEditModel {
   void applyWithPreview(JsonValue commands, long expected, Preview preview) throws Exception {
     Map<String, JsonValue> old = documents;
     Map<String, World> oldModels = models;
+    Map<String, byte[]> oldProperties = properties;
     Set<String> oldDirty = new LinkedHashSet<>(dirty);
     long oldRevision = revision;
     try {
@@ -187,6 +204,7 @@ final class RemoteEditModel {
       if (models != oldModels) disposeModels(models);
       documents = old;
       models = oldModels;
+      properties = oldProperties;
       dirty.clear();
       dirty.addAll(oldDirty);
       revision = oldRevision;
@@ -207,6 +225,7 @@ final class RemoteEditModel {
       next.put(doc.getKey(), copy(doc.getValue()));
     for (JsonValue command : commands)
       mutate(next, command.getString("operation"), command.require("arguments"));
+    Map<String, byte[]> nextProperties = RemoteEditI18N.extract(next, properties);
     validate(next);
     Map<String, World> nextModels = loadTypedModels ? loadModels(next) : new LinkedHashMap<>();
     Set<String> changed = new LinkedHashSet<>(documents.keySet());
@@ -230,8 +249,13 @@ final class RemoteEditModel {
     }
     for (String name : changed)
       if (!Objects.equals(encoded(documents.get(name)), encoded(next.get(name)))) dirty.add(name);
+    LinkedHashSet<String> changedProperties = new LinkedHashSet<>(properties.keySet());
+    changedProperties.addAll(nextProperties.keySet());
+    for (String name : changedProperties)
+      if (!Arrays.equals(properties.get(name), nextProperties.get(name))) dirty.add(name);
     documents = next;
     models = nextModels;
+    properties = nextProperties;
     revision++;
   }
 
@@ -548,8 +572,55 @@ final class RemoteEditModel {
     }
   }
 
+  private void prepareForSave() {
+    Map<String, JsonValue> next = new LinkedHashMap<>();
+    for (Map.Entry<String, JsonValue> entry : documents.entrySet())
+      next.put(entry.getKey(), copy(entry.getValue()));
+    Map<String, byte[]> nextProperties = RemoteEditI18N.extract(next, properties);
+
+    LinkedHashSet<String> changedDocuments = new LinkedHashSet<>();
+    for (String name : documents.keySet())
+      if (!Objects.equals(encoded(documents.get(name)), encoded(next.get(name))))
+        changedDocuments.add(name);
+    LinkedHashSet<String> changedProperties = new LinkedHashSet<>();
+    LinkedHashSet<String> propertyNames = new LinkedHashSet<>(properties.keySet());
+    propertyNames.addAll(nextProperties.keySet());
+    for (String name : propertyNames)
+      if (!Arrays.equals(properties.get(name), nextProperties.get(name)))
+        changedProperties.add(name);
+    if (changedDocuments.isEmpty() && changedProperties.isEmpty()) return;
+
+    validate(next);
+    Map<String, World> nextModels = loadTypedModels ? loadModels(next) : new LinkedHashMap<>();
+    try {
+      for (String name : changedDocuments) {
+        if (!loadTypedModels) continue;
+        if (name.equals(worldName())) {
+          World model = nextModels.values().iterator().next();
+          next.put(name, new JsonReader().parse(model.getSerializer().worldDescToJson()));
+        } else if (name.endsWith(".chapter.json") && nextModels.containsKey(name)) {
+          next.put(
+              name, new JsonReader().parse(nextModels.get(name).getSerializer().modelToJson()));
+        }
+      }
+      validate(next);
+    } catch (RuntimeException failure) {
+      disposeModels(nextModels);
+      throw failure;
+    }
+
+    for (String name : changedDocuments) dirty.add(name);
+    for (String name : changedProperties) dirty.add(name);
+    Map<String, World> oldModels = models;
+    documents = next;
+    models = nextModels;
+    properties = nextProperties;
+    disposeModels(oldModels);
+  }
+
   private void saveLocked(long expected) throws IOException {
     if (expected != revision) throw new IllegalStateException("Revision conflict");
+    prepareForSave();
     for (String name : documents.keySet())
       if (Files.isSymbolicLink(root.resolve(name)))
         throw new IOException("Symlink model file: " + name);
@@ -557,31 +628,48 @@ final class RemoteEditModel {
       if (!Files.exists(root.resolve(name))
           || !Arrays.equals(originals.get(name), Files.readAllBytes(root.resolve(name))))
         throw new IOException("External modification: " + name);
+    for (String name : properties.keySet()) {
+      Path file = root.resolve(name);
+      if (propertyOriginals.containsKey(name)) {
+        if (!Files.exists(file)
+            || !Arrays.equals(propertyOriginals.get(name), Files.readAllBytes(file)))
+          throw new IOException("External modification: " + name);
+      } else if (Files.exists(file)) throw new IOException("External file exists: " + name);
+    }
     for (String name : dirty)
-      if (!originals.containsKey(name) && Files.exists(root.resolve(name)))
+      if (!originals.containsKey(name)
+          && !propertyOriginals.containsKey(name)
+          && Files.exists(root.resolve(name)))
         throw new IOException("External file exists: " + name);
     if (dirty.isEmpty()) return;
     Path recovery = root.resolve(".edit-recovery");
     Files.createDirectory(recovery);
     try {
-      for (String name : dirty)
-        if (originals.containsKey(name)) Files.write(recovery.resolve(name), originals.get(name));
+      for (String name : dirty) {
+        byte[] original = originals.get(name);
+        if (original == null) original = propertyOriginals.get(name);
+        if (original != null) Files.write(recovery.resolve(name), original);
+      }
       Files.write(
           recovery.resolve("manifest"), String.join("\n", dirty).getBytes(StandardCharsets.UTF_8));
       for (String name : dirty) {
-        if (!documents.containsKey(name)) {
+        if (!documents.containsKey(name) && !properties.containsKey(name)) {
           Files.delete(root.resolve(name));
           continue;
         }
         Path tmp = Files.createTempFile(root, ".edit-", ".tmp");
         try {
-          String content;
-          if (!loadTypedModels)
-            content = documents.get(name).prettyPrint(JsonWriter.OutputType.json, 0) + "\n";
-          else if (name.equals(worldName()))
-            content = models.values().iterator().next().getSerializer().worldDescToJson();
-          else content = models.get(name).getSerializer().modelToJson();
-          Files.write(tmp, content.getBytes(StandardCharsets.UTF_8));
+          if (properties.containsKey(name)) {
+            Files.write(tmp, properties.get(name));
+          } else {
+            String content;
+            if (!loadTypedModels)
+              content = documents.get(name).prettyPrint(JsonWriter.OutputType.json, 0) + "\n";
+            else if (name.equals(worldName()))
+              content = models.values().iterator().next().getSerializer().worldDescToJson();
+            else content = models.get(name).getSerializer().modelToJson();
+            Files.write(tmp, content.getBytes(StandardCharsets.UTF_8));
+          }
           Files.move(
               tmp,
               root.resolve(name),
@@ -593,7 +681,9 @@ final class RemoteEditModel {
       }
     } catch (IOException failure) {
       for (String name : dirty) {
-        if (originals.containsKey(name)) Files.write(root.resolve(name), originals.get(name));
+        byte[] original = originals.get(name);
+        if (original == null) original = propertyOriginals.get(name);
+        if (original != null) Files.write(root.resolve(name), original);
         else Files.deleteIfExists(root.resolve(name));
       }
       try (DirectoryStream<Path> files = Files.newDirectoryStream(recovery)) {
@@ -605,6 +695,10 @@ final class RemoteEditModel {
     originals.clear();
     for (String name : documents.keySet())
       originals.put(name, Files.readAllBytes(root.resolve(name)));
+    propertyOriginals.clear();
+    for (String name : properties.keySet())
+      if (Files.exists(root.resolve(name)))
+        propertyOriginals.put(name, Files.readAllBytes(root.resolve(name)));
     try (DirectoryStream<Path> files = Files.newDirectoryStream(recovery)) {
       for (Path file : files) Files.delete(file);
     }

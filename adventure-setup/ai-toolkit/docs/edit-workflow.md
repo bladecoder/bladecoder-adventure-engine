@@ -9,11 +9,13 @@ localization bundles, source assets and recipes retain their discipline workflow
 Start a source session with an engine and generated DesktopLauncher that support
 `-http-mode edit -edit-project ABSOLUTE_PROJECT_ROOT`. Older engines/launchers must
 be updated first. Editing uses canonical assets, not packaged JARs or overrides.
-If object references are broken, launch the generated DesktopLauncher with
-`-http-mode edit -edit-project ABSOLUTE_PROJECT_ROOT -edit-allow-missing-references`.
-Startup logs each missing reference as `EDIT WARNING`; `/edit/v1/session` also
-lists them in `model.missing_references`. The preview may be unavailable until
-the broken references are corrected, but queries, edits, and saves remain available.
+Use `--allow-missing-references` **only and exclusively** to repair a project
+with broken object references. Never use it for normal editing. It passes
+`-edit-allow-missing-references` to the launcher; startup logs each missing
+reference as `EDIT WARNING` and `/edit/v1/session` lists them in
+`model.missing_references`. Repair, save and stop that session, then validate the
+result in a new normal strict session. The flag does not tolerate invalid schema
+or unrelated errors.
 
 ```sh
 python3 -B ai-toolkit/tools/project.py edit start --out /new/edit-session --chapter 00 --json
@@ -42,6 +44,13 @@ Errors preserve the model revision; inspect their cause rather than blindly
 retrying. `--revision N` pins the revision read earlier. `--request-id ID` provides
 idempotency within the session; retain it if a connection times out. HTTP callers
 can query `/edit/v1/commands/ID` before retrying.
+
+Remote authoring applies the same localization extraction contract as the
+graphical editor. Literal MODEL descriptions, text-renderer content, dialogue
+options/responses and action fields ending in `text` are replaced by `@` keys;
+their source strings are appended to the chapter or world `.properties` bundle.
+Existing translations and file bytes are preserved, and MODEL plus bundles are
+committed by the same explicit atomic `edit save`.
 
 ```sh
 python3 -B ai-toolkit/tools/project.py edit select --session /new/edit-session --arguments '{"chapter":"00","scene":"room"}' --json

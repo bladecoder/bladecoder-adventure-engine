@@ -83,12 +83,14 @@ def validate_condition(condition, depth=0):
     if not isinstance(condition, dict) or not isinstance(condition.get('path'), str) or (condition['path'] and (not condition['path'].startswith('/'))):
         raise RuntimeFailure('Condition requires a JSON pointer path.')
     operators = set(condition) - {'path'}
-    if len(operators) != 1 or not operators <= {'equals', 'not_equals', 'contains', 'has_id', 'truthy'}:
+    if len(operators) != 1 or not operators <= {'equals', 'not_equals', 'contains', 'has_id', 'has_fields', 'truthy'}:
         raise RuntimeFailure('Condition requires exactly one supported operator.')
     if re.search('~(?![01])', condition['path']):
         raise RuntimeFailure('Invalid JSON pointer escape.')
     if 'has_id' in condition and (not isinstance(condition['has_id'], str)):
         raise RuntimeFailure('has_id requires a string.')
+    if 'has_fields' in condition and (not isinstance(condition['has_fields'], dict) or not condition['has_fields']):
+        raise RuntimeFailure('has_fields requires a nonempty object.')
     if 'truthy' in condition and type(condition['truthy']) is not bool:
         raise RuntimeFailure('truthy requires boolean.')
 
@@ -133,6 +135,12 @@ def matches(state, condition):
         return bool(value) == expected
     if op == 'has_id':
         return isinstance(value, list) and any((isinstance(v, dict) and v.get('id') == expected for v in value))
+    if op == 'has_fields':
+        return isinstance(value, list) and any(
+            isinstance(item, dict)
+            and all(key in item and json_equal(item[key], field) for key, field in expected.items())
+            for item in value
+        )
     if op == 'contains':
         if isinstance(value, list): return any(json_equal(v, expected) for v in value)
         return isinstance(value, (str, dict)) and isinstance(expected, str) and expected in value

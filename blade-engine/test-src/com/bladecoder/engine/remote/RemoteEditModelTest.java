@@ -18,6 +18,9 @@ final class RemoteEditModelTest {
         RemoteEditModel.copy(new JsonValue(JsonValue.ValueType.nullValue)).isNull(),
         "nullable MODEL fields survive copying");
     RemoteProtocolTest.check(
+        "Texto, con coma".equals(RemoteEditModel.copy(new JsonValue("Texto, con coma")).asString()),
+        "string MODEL fields with JSON punctuation survive copying");
+    RemoteProtocolTest.check(
         RemoteEditModel.hasInitialAnimation(
             json("{initAnimation:stand.left,fanims:{stand.right:{}}}")),
         "mirrored initial animation is valid");
@@ -30,13 +33,37 @@ final class RemoteEditModelTest {
     try {
       Files.write(
           root.resolve("world"),
-          "{width:800,height:600,initChapter:\"00\",verbs:{}}".getBytes(StandardCharsets.UTF_8));
+          "{width:800,height:600,initChapter:\"00\",verbs:{lookat:{id:lookat,actions:[{class:Say,actor:hero,text:\"No me interesa.\"}]}}}"
+              .getBytes(StandardCharsets.UTF_8));
       Files.write(
           root.resolve("00.chapter.json"),
-          "{initScene:room,scenes:{room:{id:room,layers:[],actors:{hero:{id:hero,class:AnchorActor,bbox:[],pos:{x:0,y:0}}},player:hero,verbs:{init:{id:init,actions:[{class:Camera,followActor:none}]}}}}}"
+          "{initScene:room,scenes:{room:{id:room,layers:[],actors:{hero:{id:hero,class:AnchorActor,bbox:[],pos:{x:0,y:0}}},player:hero,verbs:{init:{id:init,actions:[{class:Camera,followActor:none},{class:Say,actor:hero,text:\"Hola: mundo\"}]}}}}}"
               .getBytes(StandardCharsets.UTF_8));
+      Files.write(
+          root.resolve("00.properties"),
+          "existing.key=Conservar\n".getBytes(StandardCharsets.UTF_8));
       RemoteEditModel model = new RemoteEditModel(project, false);
       RemoteProtocolTest.check(model.revision == 0, "camera followActor none is a valid sentinel");
+      model.save(0);
+      String initialChapter =
+          new String(Files.readAllBytes(root.resolve("00.chapter.json")), StandardCharsets.UTF_8);
+      String initialChapterTranslations =
+          new String(Files.readAllBytes(root.resolve("00.properties")), StandardCharsets.UTF_8);
+      String initialWorld =
+          new String(Files.readAllBytes(root.resolve("world")), StandardCharsets.UTF_8);
+      String initialWorldTranslations =
+          new String(Files.readAllBytes(root.resolve("world.properties")), StandardCharsets.UTF_8);
+      RemoteProtocolTest.check(
+          initialChapter.contains("@room.init.1.text"),
+          "explicit save extracts existing chapter literals without an edit operation");
+      RemoteProtocolTest.check(
+          initialChapterTranslations.contains("existing.key=Conservar")
+              && initialChapterTranslations.contains("room.init.1.text=Hola\\: mundo"),
+          "save preserves existing chapter translations while extracting literals");
+      RemoteProtocolTest.check(
+          initialWorld.contains("@default.lookat.0.text")
+              && initialWorldTranslations.contains("default.lookat.0.text=No me interesa."),
+          "save extracts existing world literals into the world bundle");
       JsonValue badCamera =
           json(
               "[{operation:entity.create,arguments:{target:{kind:verb,id:bad,parent:{kind:scene,id:room,parent:{kind:chapter,id:\"00\"}}},value:{id:bad,actions:[{class:Camera,target:none}]}}}]");
@@ -82,10 +109,25 @@ final class RemoteEditModelTest {
       }
       RemoteProtocolTest.check(model.revision == 1, "preview failure rolls back model");
       model.save(1);
+      String savedChapter =
+          new String(Files.readAllBytes(root.resolve("00.chapter.json")), StandardCharsets.UTF_8);
       RemoteProtocolTest.check(
-          new String(Files.readAllBytes(root.resolve("00.chapter.json")), StandardCharsets.UTF_8)
-              .contains("10"),
+          savedChapter.contains("10") && savedChapter.contains("@room.init.1.text"),
           "explicit save persists authored content");
+      String translations =
+          new String(Files.readAllBytes(root.resolve("00.properties")), StandardCharsets.UTF_8);
+      RemoteProtocolTest.check(
+          translations.contains("existing.key=Conservar")
+              && translations.contains("room.init.1.text=Hola\\: mundo"),
+          "remote save extracts chapter text without rewriting existing translations");
+      String savedWorld =
+          new String(Files.readAllBytes(root.resolve("world")), StandardCharsets.UTF_8);
+      String worldTranslations =
+          new String(Files.readAllBytes(root.resolve("world.properties")), StandardCharsets.UTF_8);
+      RemoteProtocolTest.check(
+          savedWorld.contains("@default.lookat.0.text")
+              && worldTranslations.contains("default.lookat.0.text=No me interesa."),
+          "remote save extracts world text");
       RemoteEditModel reopened = new RemoteEditModel(project, false);
       RemoteProtocolTest.check(reopened.chapter("00") != null, "saved model reopens");
       Files.write(
@@ -115,7 +157,7 @@ final class RemoteEditModelTest {
           repair.status().toString().contains("ghost"), "repair mode permits partial corrections");
       repair.save(1);
       repair.close();
-      return 6;
+      return 12;
     } finally {
       try (Stream<Path> paths = Files.walk(project)) {
         paths

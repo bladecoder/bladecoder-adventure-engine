@@ -45,9 +45,11 @@ class ScenarioTests(unittest.TestCase):
         self.assertFalse(matches({'value':[{'flag':0}]}, {'path':'/value','contains':{'flag':False}}))
 
     def test_queries_resolve_actual_collections_and_escaped_keys(self):
-        state={'items':[{'id':'gum'}],'a/b':{'~x':'hello'}}
+        state={'items':[{'id':'gum','visible':False}],'a/b':{'~x':'hello'}}
         self.assertTrue(matches(state,{'path':'/items','has_id':'gum'}))
         self.assertFalse(matches(state,{'path':'/items','has_id':'spray'}))
+        self.assertTrue(matches(state,{'path':'/items','has_fields':{'id':'gum','visible':False}}))
+        self.assertFalse(matches(state,{'path':'/items','has_fields':{'id':'gum','visible':True}}))
         self.assertTrue(matches(state,{'path':'/a~1b/~0x','contains':'ell'}))
         self.assertFalse(matches(state,{'path':'/items/-1/id','equals':'gum'}))
 
