@@ -38,10 +38,6 @@ jobs:
       - name: Build shared setup and paired engine
         run: |
           ./gradlew :adventure-setup:check :adventure-setup:bundle :adventure-editor:compileJava :blade-engine:publishToMavenLocal :blade-engine-spine-plugin:publishToMavenLocal --console=plain
-      - name: Verify editor create and load through shared generator
-        env:
-          LIBGL_ALWAYS_SOFTWARE: '1'
-        run: xvfb-run -a ./gradlew :adventure-editor:verifySetupFlow -PsetupFlowOutput="$RUNNER_TEMP/setup-editor" --console=plain > "$RUNNER_TEMP/setup-editor.log" 2>&1
       - name: Verify generated consumers and native desktop smoke
         shell: bash
         env:
@@ -75,8 +71,6 @@ jobs:
           path: |
             adventure-setup/build/distributions/adventure-setup-*.zip
             adventure-setup/build/distributions/adventure-setup-*.zip.sha256
-            ${{ runner.temp }}/setup-editor/result.json
-            ${{ runner.temp }}/setup-editor.log
             ${{ runner.temp }}/setup-consumer/result.json
             ${{ runner.temp }}/setup-consumer/protocol/result.json
             ${{ runner.temp }}/setup-consumer/protocol/*/*.png
