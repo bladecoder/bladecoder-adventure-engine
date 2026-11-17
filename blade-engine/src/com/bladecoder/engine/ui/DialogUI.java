@@ -223,9 +223,10 @@ public class DialogUI extends ScrollPane {
       recorder.add(i);
     }
 
-    world.selectDialogOption(i);
-
+    // Hide the current options before selection: Ink can synchronously offer the next set.
     setVisible(false);
+
+    world.selectDialogOption(i);
   }
 
   /** The style for the DialogUI */
